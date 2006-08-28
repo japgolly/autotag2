@@ -1,0 +1,758 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0072)http://uweb.txstate.edu/~me02/tutorials/sound_file_formats/mpeg/tags.htm -->
+<HTML><HEAD><TITLE>Tag format specs</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=shift_jis">
+<META content="MSHTML 6.00.2800.1400" name=GENERATOR></HEAD>
+<BODY bgProperties=fixed bgColor=#ffffff>
+<H2 align=left>ID3v1.0 Tag</H2>
+<P>An ID3v1.0 tag is 128 bytes of text divided into 6 fields which can be added 
+on the end of any MPEG audio file (*.mp1, *.mp2, or *.mp3). In theory, unused 
+bytes should be set to 0x20 (ASCII 'space') not 0x00 (binary zero).</P>
+<CENTER>
+<TABLE cols=7 width="80%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <P align=center>Bytes (0 - 2) </P></TD>
+    <TD>
+      <P align=center>3 - 32 </P></TD>
+    <TD>
+      <P align=center>33 - 62 </P></TD>
+    <TD>
+      <P align=center>63 - 92 </P></TD>
+    <TD>
+      <P align=center>93 - 96 </P></TD>
+    <TD>
+      <P align=center>97 - 127 </P></TD></TR>
+  <TR>
+    <TD>
+      <P align=center>'TAG' </P></TD>
+    <TD>
+      <P align=center>Track Name </P></TD>
+    <TD>
+      <P align=center>Artist Name </P></TD>
+    <TD>
+      <P align=center>Album Name </P></TD>
+    <TD>
+      <P align=center>Year </P></TD>
+    <TD>
+      <P align=center>Comment </P></TD></TR></TBODY></TABLE><BR>
+<HR width="95%">
+<BR></CENTER>
+<P></P>
+<H2 align=left>ID3v1.1 Tag</H2>
+<P>An ID3v1.1 tag is 127 bytes of text divided into 6 fields and a 1 byte 
+(unsigned integer) Genre code (see below).</P>
+<CENTER>
+<TABLE cols=7 width="80%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <P align=center>Bytes (0 - 2) </P></TD>
+    <TD>
+      <P align=center>3 - 32 </P></TD>
+    <TD>
+      <P align=center>33 - 62 </P></TD>
+    <TD>
+      <P align=center>63 - 92 </P></TD>
+    <TD>
+      <P align=center>93 - 96 </P></TD>
+    <TD>
+      <P align=center>97 - 126 </P></TD>
+    <TD>
+      <P align=center>127 </P></TD></TR>
+  <TR>
+    <TD>
+      <P align=center>'TAG' </P></TD>
+    <TD>
+      <P align=center>Track Name </P></TD>
+    <TD>
+      <P align=center>Artist Name </P></TD>
+    <TD>
+      <P align=center>Album Name </P></TD>
+    <TD>
+      <P align=center>Year </P></TD>
+    <TD>
+      <P align=center>Comment </P></TD>
+    <TD>
+      <P align=center>Genre </P></TD></TR></TBODY></TABLE><BR>
+<CENTER>
+<HR width="95%">
+<BR></CENTER>
+<P></P>
+<H2 align=left>ID3v1.1b Tag</H2>
+<P align=left>An ID3v1.1b tag is 125 bytes of text divided into 6 fields and 3 
+bytes (unsigned integers) representing a zeroed byte, the track number (on the 
+CD you ripped), and a Genre code (see below).</P>
+<CENTER>
+<TABLE cols=7 width="80%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <P align=center>Bytes (0 - 2) </P></TD>
+    <TD>
+      <P align=center>3 - 32 </P></TD>
+    <TD>
+      <P align=center>33 - 62 </P></TD>
+    <TD>
+      <P align=center>63 - 92 </P></TD>
+    <TD>
+      <P align=center>93 - 96 </P></TD>
+    <TD>
+      <P align=center>97 - 124 </P></TD>
+    <TD>
+      <DIV align=center>125</DIV></TD>
+    <TD>
+      <P align=center>126 </P></TD>
+    <TD>
+      <P align=center>127 </P></TD></TR>
+  <TR>
+    <TD>
+      <P align=center>'TAG' </P></TD>
+    <TD>
+      <P align=center>Track Name </P></TD>
+    <TD>
+      <P align=center>Artist Name </P></TD>
+    <TD>
+      <P align=center>Album Name </P></TD>
+    <TD>
+      <P align=center>Year </P></TD>
+    <TD>
+      <P align=center>Comment </P></TD>
+    <TD>
+      <DIV align=center>0x00</DIV></TD>
+    <TD>
+      <P align=center>Track # </P></TD>
+    <TD>
+      <P align=center>Genre </P></TD></TR></TBODY></TABLE></CENTER>
+<P>&nbsp;</P>
+<P>&nbsp;</P></CENTER>
+<P>Genres are determined by only one byte of data from the following table: </P>
+<TABLE cellSpacing=0 cellPadding=2 align=left border=1>
+  <TBODY>
+  <TR>
+    <TD vAlign=top align=middle>
+      <TABLE border=0>
+        <TBODY>
+        <TR bgColor=#cccccc>
+          <TD colSpan=3>
+            <P align=center><B>00 - 1F</B> </P></TD></TR>
+        <TR>
+          <TD><FONT size=-1>00 </FONT></TD>
+          <TD><CODE>00 </CODE></TD>
+          <TD noWrap><FONT size=-1>Blues</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>01 </FONT></TD>
+          <TD><CODE>01 </CODE></TD>
+          <TD noWrap><FONT size=-1>Classic Rock</FONT></TD></TR>
+        <TR>
+          <TD height=9><FONT size=-1>02 </FONT></TD>
+          <TD height=9><CODE>02 </CODE></TD>
+          <TD noWrap><FONT size=-1>Country</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>03 </FONT></TD>
+          <TD><CODE>03 </CODE></TD>
+          <TD noWrap><FONT size=-1>Dance</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>04 </FONT></TD>
+          <TD><CODE>04 </CODE></TD>
+          <TD noWrap><FONT size=-1>Disco</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>05 </FONT></TD>
+          <TD><CODE>05 </CODE></TD>
+          <TD noWrap><FONT size=-1>Funk</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>06 </FONT></TD>
+          <TD><CODE>06 </CODE></TD>
+          <TD noWrap><FONT size=-1>Grunge</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>07 </FONT></TD>
+          <TD><CODE>07 </CODE></TD>
+          <TD noWrap><FONT size=-1>Hip-Hop</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>08 </FONT></TD>
+          <TD><CODE>08 </CODE></TD>
+          <TD noWrap><FONT size=-1>Jazz</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>09 </FONT></TD>
+          <TD><CODE>09 </CODE></TD>
+          <TD noWrap><FONT size=-1>Metal</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>10 </FONT></TD>
+          <TD><CODE>0A </CODE></TD>
+          <TD noWrap><FONT size=-1>New Age</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>11 </FONT></TD>
+          <TD><CODE>0B </CODE></TD>
+          <TD noWrap><FONT size=-1>Oldies</FONT></TD></TR>
+        <TR>
+          <TD><B><FONT size=-1>12 </FONT></B></TD>
+          <TD><B><CODE>0C </CODE></B></TD>
+          <TD noWrap><B><FONT size=-1>Other</FONT></B></TD></TR>
+        <TR>
+          <TD><FONT size=-1>13 </FONT></TD>
+          <TD><CODE>0D </CODE></TD>
+          <TD noWrap><FONT size=-1>Pop</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>14 </FONT></TD>
+          <TD><CODE>0E </CODE></TD>
+          <TD noWrap><FONT size=-1>R &amp; B</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>15 </FONT></TD>
+          <TD><CODE>0F </CODE></TD>
+          <TD noWrap><FONT size=-1>Rap</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>16 </FONT></TD>
+          <TD><CODE>10 </CODE></TD>
+          <TD noWrap><FONT size=-1>Reggae</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>17 </FONT></TD>
+          <TD><CODE>11 </CODE></TD>
+          <TD noWrap><FONT size=-1>Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>18 </FONT></TD>
+          <TD><CODE>12 </CODE></TD>
+          <TD noWrap><FONT size=-1>Techno</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>19 </FONT></TD>
+          <TD><CODE>13 </CODE></TD>
+          <TD noWrap><FONT size=-1>Industrial</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>20 </FONT></TD>
+          <TD><CODE>14 </CODE></TD>
+          <TD noWrap><FONT size=-1>Alternative</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>21 </FONT></TD>
+          <TD><CODE>15 </CODE></TD>
+          <TD noWrap><FONT size=-1>Ska</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>22 </FONT></TD>
+          <TD><CODE>16 </CODE></TD>
+          <TD noWrap><FONT size=-1>Death Metal</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>23 </FONT></TD>
+          <TD><CODE>17 </CODE></TD>
+          <TD noWrap><FONT size=-1>Prank</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>24 </FONT></TD>
+          <TD><CODE>18 </CODE></TD>
+          <TD noWrap><FONT size=-1>Soundtrack</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>25 </FONT></TD>
+          <TD><CODE>19 </CODE></TD>
+          <TD noWrap><FONT size=-1>Euro-Techno</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>26 </FONT></TD>
+          <TD><CODE>1A </CODE></TD>
+          <TD noWrap><FONT size=-1>Ambient</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>27 </FONT></TD>
+          <TD><CODE>1B </CODE></TD>
+          <TD noWrap><FONT size=-1>Trip-Hop</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>28 </FONT></TD>
+          <TD><CODE>1C </CODE></TD>
+          <TD noWrap><FONT size=-1>Vocal</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>29 </FONT></TD>
+          <TD><CODE>1D </CODE></TD>
+          <TD noWrap><FONT size=-1>Jazz + Funk</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>30 </FONT></TD>
+          <TD><CODE>1E </CODE></TD>
+          <TD noWrap><FONT size=-1>Fusion</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>31 </FONT></TD>
+          <TD><CODE>1F </CODE></TD>
+          <TD noWrap><FONT size=-1>Trance</FONT></TD></TR></TBODY></TABLE></TD>
+    <TD vAlign=top align=middle>
+      <TABLE border=0>
+        <TBODY>
+        <TR bgColor=#cccccc>
+          <TD colSpan=3>
+            <P align=center><B>20 - 3F</B> </P></TD></TR>
+        <TR>
+          <TD><FONT size=-1>32 </FONT></TD>
+          <TD><CODE>20 </CODE></TD>
+          <TD noWrap><FONT size=-1>Classical</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>33 </FONT></TD>
+          <TD><CODE>21 </CODE></TD>
+          <TD noWrap><FONT size=-1>Instrumental</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>34 </FONT></TD>
+          <TD><CODE>22 </CODE></TD>
+          <TD noWrap><FONT size=-1>Acid</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>35 </FONT></TD>
+          <TD><CODE>23 </CODE></TD>
+          <TD noWrap><FONT size=-1>House</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>36 </FONT></TD>
+          <TD><CODE>24 </CODE></TD>
+          <TD noWrap><FONT size=-1>Game</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>37 </FONT></TD>
+          <TD><CODE>25 </CODE></TD>
+          <TD noWrap><FONT size=-1>Sound Clip </FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>38 </FONT></TD>
+          <TD><CODE>26 </CODE></TD>
+          <TD noWrap><FONT size=-1>Gospel</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>39 </FONT></TD>
+          <TD><CODE>27 </CODE></TD>
+          <TD noWrap><FONT size=-1>Noise</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>40 </FONT></TD>
+          <TD><CODE>28 </CODE></TD>
+          <TD noWrap><FONT size=-1>Alternative Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>41 </FONT></TD>
+          <TD><CODE>29 </CODE></TD>
+          <TD noWrap><FONT size=-1>Bass</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>42 </FONT></TD>
+          <TD><CODE>2A </CODE></TD>
+          <TD noWrap><FONT size=-1>Soul</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>43 </FONT></TD>
+          <TD><CODE>2B </CODE></TD>
+          <TD noWrap><FONT size=-1>Punk</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>44 </FONT></TD>
+          <TD><CODE>2C </CODE></TD>
+          <TD noWrap><FONT size=-1>Space</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>45 </FONT></TD>
+          <TD><CODE>2D </CODE></TD>
+          <TD noWrap><FONT size=-1>Meditative</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>46 </FONT></TD>
+          <TD><CODE>2E </CODE></TD>
+          <TD noWrap><FONT size=-1>Instrumental Pop</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>47 </FONT></TD>
+          <TD><CODE>2F </CODE></TD>
+          <TD noWrap><FONT size=-1>Instrumental Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>48 </FONT></TD>
+          <TD><CODE>30 </CODE></TD>
+          <TD noWrap><FONT size=-1>Ethnic</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>49 </FONT></TD>
+          <TD><CODE>31 </CODE></TD>
+          <TD noWrap><FONT size=-1>Gothic</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>50 </FONT></TD>
+          <TD><CODE>32 </CODE></TD>
+          <TD noWrap><FONT size=-1>Darkwave</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>51 </FONT></TD>
+          <TD><CODE>33 </CODE></TD>
+          <TD noWrap><FONT size=-1>Techno-Industrial</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>52 </FONT></TD>
+          <TD><CODE>34 </CODE></TD>
+          <TD noWrap><FONT size=-1>Electronic</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>53 </FONT></TD>
+          <TD><CODE>35 </CODE></TD>
+          <TD noWrap><FONT size=-1>Pop-Fol </FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>54 </FONT></TD>
+          <TD><CODE>36 </CODE></TD>
+          <TD noWrap><FONT size=-1>Eurodance</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>55 </FONT></TD>
+          <TD><CODE>37 </CODE></TD>
+          <TD noWrap><FONT size=-1>Dream</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>56 </FONT></TD>
+          <TD><CODE>38 </CODE></TD>
+          <TD noWrap><FONT size=-1>Southern Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>57 </FONT></TD>
+          <TD><CODE>39 </CODE></TD>
+          <TD noWrap><FONT size=-1>Comedy</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>58 </FONT></TD>
+          <TD><CODE>3A </CODE></TD>
+          <TD noWrap><FONT size=-1>Cult</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>59 </FONT></TD>
+          <TD><CODE>3B </CODE></TD>
+          <TD noWrap><FONT size=-1>Gangsta</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>60 </FONT></TD>
+          <TD><CODE>3C </CODE></TD>
+          <TD noWrap><FONT size=-1>Top 40</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>61 </FONT></TD>
+          <TD><CODE>3D </CODE></TD>
+          <TD noWrap><FONT size=-1>Christian Rap</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>62 </FONT></TD>
+          <TD><CODE>3E </CODE></TD>
+          <TD noWrap><FONT size=-1>Pop/Funk</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>63 </FONT></TD>
+          <TD><CODE>3F </CODE></TD>
+          <TD noWrap><FONT size=-1>Jungle</FONT></TD></TR></TBODY></TABLE></TD>
+    <TD vAlign=top align=middle>
+      <TABLE border=0>
+        <TBODY>
+        <TR bgColor=#cccccc>
+          <TD colSpan=3>
+            <P align=center><B>40 - 5F</B> </P></TD></TR>
+        <TR>
+          <TD><FONT size=-1>64 </FONT></TD>
+          <TD><CODE>40 </CODE></TD>
+          <TD noWrap><FONT size=-1>Native US </FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>65 </FONT></TD>
+          <TD><CODE>41 </CODE></TD>
+          <TD noWrap><FONT size=-1>Cabaret</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>66 </FONT></TD>
+          <TD><CODE>42 </CODE></TD>
+          <TD noWrap><FONT size=-1>New Wave</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>67 </FONT></TD>
+          <TD><CODE>43 </CODE></TD>
+          <TD noWrap><FONT size=-1>Psychadelic</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>68 </FONT></TD>
+          <TD><CODE>44 </CODE></TD>
+          <TD noWrap><FONT size=-1>Rave</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>69 </FONT></TD>
+          <TD><CODE>45 </CODE></TD>
+          <TD noWrap><FONT size=-1>Showtunes</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>70 </FONT></TD>
+          <TD><CODE>46 </CODE></TD>
+          <TD noWrap><FONT size=-1>Trailer</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>71 </FONT></TD>
+          <TD><CODE>47 </CODE></TD>
+          <TD noWrap><FONT size=-1>Lo-Fi</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>72 </FONT></TD>
+          <TD><CODE>48 </CODE></TD>
+          <TD noWrap><FONT size=-1>Tribal</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>73 </FONT></TD>
+          <TD><CODE>49 </CODE></TD>
+          <TD noWrap><FONT size=-1>Acid Punk</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>74 </FONT></TD>
+          <TD><CODE>4A </CODE></TD>
+          <TD noWrap><FONT size=-1>Acid Jazz</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>75 </FONT></TD>
+          <TD><CODE>4B </CODE></TD>
+          <TD noWrap><FONT size=-1>Polka</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>76 </FONT></TD>
+          <TD><CODE>4C </CODE></TD>
+          <TD noWrap><FONT size=-1>Retro</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>77 </FONT></TD>
+          <TD><CODE>4D </CODE></TD>
+          <TD noWrap><FONT size=-1>Musical</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>78 </FONT></TD>
+          <TD><CODE>4E </CODE></TD>
+          <TD noWrap><FONT size=-1>Rock &amp; Roll</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>79 </FONT></TD>
+          <TD><CODE>4F </CODE></TD>
+          <TD noWrap><FONT size=-1>Hard Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>80 </FONT></TD>
+          <TD><CODE>50 </CODE></TD>
+          <TD noWrap><FONT size=-1>Folk</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>81 </FONT></TD>
+          <TD><CODE>51 </CODE></TD>
+          <TD noWrap><FONT size=-1>Folk-Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>82 </FONT></TD>
+          <TD><CODE>52 </CODE></TD>
+          <TD noWrap><FONT size=-1>National Folk</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>83 </FONT></TD>
+          <TD><CODE>53 </CODE></TD>
+          <TD noWrap><FONT size=-1>Swing</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>84 </FONT></TD>
+          <TD><CODE>54 </CODE></TD>
+          <TD noWrap><FONT size=-1>Fast Fusion</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>85 </FONT></TD>
+          <TD><CODE>55 </CODE></TD>
+          <TD noWrap><FONT size=-1>Bebop</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>86 </FONT></TD>
+          <TD><CODE>56 </CODE></TD>
+          <TD noWrap><FONT size=-1>Latin</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>87 </FONT></TD>
+          <TD><CODE>57 </CODE></TD>
+          <TD noWrap><FONT size=-1>Revival</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>88 </FONT></TD>
+          <TD><CODE>58 </CODE></TD>
+          <TD noWrap><FONT size=-1>Celtic</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>89 </FONT></TD>
+          <TD><CODE>59 </CODE></TD>
+          <TD noWrap><FONT size=-1>Bluegrass</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>90 </FONT></TD>
+          <TD><CODE>5A </CODE></TD>
+          <TD noWrap><FONT size=-1>Avantgarde</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>91 </FONT></TD>
+          <TD><CODE>5B </CODE></TD>
+          <TD noWrap><FONT size=-1>Gothic Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>92 </FONT></TD>
+          <TD><CODE>5C </CODE></TD>
+          <TD noWrap><FONT size=-1>Progressive Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>93 </FONT></TD>
+          <TD><CODE>5D </CODE></TD>
+          <TD noWrap><FONT size=-1>Psychedelic Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>94 </FONT></TD>
+          <TD><CODE>5E </CODE></TD>
+          <TD noWrap><FONT size=-1>Symphonic Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>95 </FONT></TD>
+          <TD><CODE>5F </CODE></TD>
+          <TD noWrap><FONT size=-1>Slow Rock</FONT></TD></TR></TBODY></TABLE></TD>
+    <TD vAlign=top align=middle>
+      <TABLE border=0>
+        <TBODY>
+        <TR bgColor=#cccccc>
+          <TD colSpan=3>
+            <P align=center><B>60 - 7F</B> </P></TD></TR>
+        <TR>
+          <TD><FONT size=-1>96 </FONT></TD>
+          <TD><CODE>60 </CODE></TD>
+          <TD noWrap><FONT size=-1>Big Band</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>97 </FONT></TD>
+          <TD><CODE>61 </CODE></TD>
+          <TD noWrap><FONT size=-1>Chorus</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>98 </FONT></TD>
+          <TD><CODE>62 </CODE></TD>
+          <TD noWrap><FONT size=-1>Easy Listening</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>99 </FONT></TD>
+          <TD><CODE>63 </CODE></TD>
+          <TD noWrap><FONT size=-1>Acoustic</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>100 </FONT></TD>
+          <TD><CODE>64 </CODE></TD>
+          <TD noWrap><FONT size=-1>Humour</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>101 </FONT></TD>
+          <TD><CODE>65 </CODE></TD>
+          <TD noWrap><FONT size=-1>Speech</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>102 </FONT></TD>
+          <TD><CODE>66 </CODE></TD>
+          <TD noWrap><FONT size=-1>Chanson</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>103 </FONT></TD>
+          <TD><CODE>67 </CODE></TD>
+          <TD noWrap><FONT size=-1>Opera</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>104 </FONT></TD>
+          <TD><CODE>68 </CODE></TD>
+          <TD noWrap><FONT size=-1>Chamber Music</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>105 </FONT></TD>
+          <TD><CODE>69 </CODE></TD>
+          <TD noWrap><FONT size=-1>Sonata</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>106 </FONT></TD>
+          <TD><CODE>6A </CODE></TD>
+          <TD noWrap><FONT size=-1>Symphony</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>107 </FONT></TD>
+          <TD><CODE>6B </CODE></TD>
+          <TD noWrap><FONT size=-1>Booty Bass</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>108 </FONT></TD>
+          <TD><CODE>6C </CODE></TD>
+          <TD noWrap><FONT size=-1>Primus</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>109 </FONT></TD>
+          <TD><CODE>6D </CODE></TD>
+          <TD noWrap><FONT size=-1>Porn Groove</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>110 </FONT></TD>
+          <TD><CODE>6E </CODE></TD>
+          <TD noWrap><FONT size=-1>Satire</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>111 </FONT></TD>
+          <TD><CODE>6F </CODE></TD>
+          <TD noWrap><FONT size=-1>Slow Jam</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>112 </FONT></TD>
+          <TD><CODE>70 </CODE></TD>
+          <TD noWrap><FONT size=-1>Club</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>113 </FONT></TD>
+          <TD><CODE>71 </CODE></TD>
+          <TD noWrap><FONT size=-1>Tango</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>114 </FONT></TD>
+          <TD><CODE>72 </CODE></TD>
+          <TD noWrap><FONT size=-1>Samba</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>115 </FONT></TD>
+          <TD><CODE>73 </CODE></TD>
+          <TD noWrap><FONT size=-1>Folklore</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>116 </FONT></TD>
+          <TD><CODE>74 </CODE></TD>
+          <TD noWrap><FONT size=-1>Ballad</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>117 </FONT></TD>
+          <TD><CODE>75 </CODE></TD>
+          <TD noWrap><FONT size=-1>Power Ballad</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>118 </FONT></TD>
+          <TD><CODE>76 </CODE></TD>
+          <TD noWrap><FONT size=-1>Rhytmic Soul</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>119 </FONT></TD>
+          <TD><CODE>77 </CODE></TD>
+          <TD noWrap><FONT size=-1>Freestyle</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>120 </FONT></TD>
+          <TD><CODE>78 </CODE></TD>
+          <TD noWrap><FONT size=-1>Duet</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>121 </FONT></TD>
+          <TD><CODE>79 </CODE></TD>
+          <TD noWrap><FONT size=-1>Punk Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>122 </FONT></TD>
+          <TD><CODE>7A </CODE></TD>
+          <TD noWrap><FONT size=-1>Drum Solo</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>123 </FONT></TD>
+          <TD><CODE>7B </CODE></TD>
+          <TD noWrap><FONT size=-1>Acapella</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>124 </FONT></TD>
+          <TD><CODE>7C </CODE></TD>
+          <TD noWrap><FONT size=-1>Euro-House</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>125 </FONT></TD>
+          <TD><CODE>7D </CODE></TD>
+          <TD noWrap><FONT size=-1>Dance Hall</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>126 </FONT></TD>
+          <TD><CODE>7E </CODE></TD>
+          <TD noWrap><FONT size=-1>Goa</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>127 </FONT></TD>
+          <TD><CODE>7F </CODE></TD>
+          <TD noWrap><FONT size=-1>Drum &amp; 
+    Bass</FONT></TD></TR></TBODY></TABLE></TD>
+    <TD vAlign=top align=middle>
+      <TABLE border=0>
+        <TBODY>
+        <TR bgColor=#cccccc>
+          <TD colSpan=3>
+            <P align=center><B>80 - 93</B> </P></TD></TR>
+        <TR>
+          <TD><FONT size=-1>128 </FONT></TD>
+          <TD><CODE>80 </CODE></TD>
+          <TD noWrap><FONT size=-1>Club-House</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>129 </FONT></TD>
+          <TD><CODE>81 </CODE></TD>
+          <TD noWrap><FONT size=-1>Hardcore</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>130 </FONT></TD>
+          <TD><CODE>82 </CODE></TD>
+          <TD noWrap><FONT size=-1>Terror</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>131 </FONT></TD>
+          <TD><CODE>83 </CODE></TD>
+          <TD noWrap><FONT size=-1>Indie</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>132 </FONT></TD>
+          <TD><CODE>84 </CODE></TD>
+          <TD noWrap><FONT size=-1>BritPop</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>133 </FONT></TD>
+          <TD><CODE>85 </CODE></TD>
+          <TD noWrap><FONT size=-1>Negerpunk</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>134 </FONT></TD>
+          <TD><CODE>86 </CODE></TD>
+          <TD noWrap><FONT size=-1>Polsk Punk</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>135 </FONT></TD>
+          <TD><CODE>87 </CODE></TD>
+          <TD noWrap><FONT size=-1>Beat</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>136 </FONT></TD>
+          <TD><CODE>88 </CODE></TD>
+          <TD noWrap><FONT size=-1>Christian Gangsta Rap</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>137 </FONT></TD>
+          <TD><CODE>89 </CODE></TD>
+          <TD noWrap><FONT size=-1>Heavy Metal</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>138 </FONT></TD>
+          <TD><CODE>8A </CODE></TD>
+          <TD noWrap><FONT size=-1>Black Metal </FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>139 </FONT></TD>
+          <TD><CODE>8B </CODE></TD>
+          <TD noWrap><FONT size=-1>Crossover</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>140 </FONT></TD>
+          <TD><CODE>8C </CODE></TD>
+          <TD noWrap><FONT size=-1>Contemporary Christian</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>141 </FONT></TD>
+          <TD><CODE>8D </CODE></TD>
+          <TD noWrap><FONT size=-1>Christian Rock</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>142 </FONT></TD>
+          <TD><CODE>8E </CODE></TD>
+          <TD noWrap><FONT size=-1>Merengue</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>143 </FONT></TD>
+          <TD><CODE>8F </CODE></TD>
+          <TD noWrap><FONT size=-1>Salsa</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>144 </FONT></TD>
+          <TD><CODE>90 </CODE></TD>
+          <TD noWrap><FONT size=-1>Trash Meta</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>145 </FONT></TD>
+          <TD><CODE>91 </CODE></TD>
+          <TD noWrap><FONT size=-1>Anime</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>146 </FONT></TD>
+          <TD><CODE>92 </CODE></TD>
+          <TD noWrap><FONT size=-1>Jpop</FONT></TD></TR>
+        <TR>
+          <TD><FONT size=-1>147 </FONT></TD>
+          <TD><CODE>93 </CODE></TD>
+          <TD noWrap><FONT 
+  size=-1>Synthpop</FONT></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P>&nbsp;</P></BODY></HTML>

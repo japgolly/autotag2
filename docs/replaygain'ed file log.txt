@@ -1,0 +1,58 @@
+loud1.mp3
+Recommended "Track" dB change: -8.730000
+Recommended "Track" mp3 gain change: -6
+Max PCM sample at current gain: 37964.627325
+Max mp3 global gain field: 186
+Min mp3 global gain field: 114
+
+loud2.mp3
+Recommended "Track" dB change: -11.160000
+Recommended "Track" mp3 gain change: -7
+Max PCM sample at current gain: 37754.243366
+Max mp3 global gain field: 210
+Min mp3 global gain field: 60
+
+soft1.mp3
+Recommended "Track" dB change: -0.660000
+Recommended "Track" mp3 gain change: 0
+Max PCM sample at current gain: 28544.016917
+Max mp3 global gain field: 181
+Min mp3 global gain field: 140
+
+soft2.mp3
+Recommended "Track" dB change: -3.370000
+Recommended "Track" mp3 gain change: -2
+Max PCM sample at current gain: 32700.607857
+Max mp3 global gain field: 194
+Min mp3 global gain field: 0
+
+
+Recommended "Album" dB change for all files: -10.250000
+Recommended "Album" mp3 gain change for all files: -7
+
+
+04186488                                     41 50 45 54 41 47              APETAG
+04186505   45 58 D0 07 00 00 7C 01  00 00 0B 00 00 00 00 00 00   EXÐ...|..........
+04186522   A0 00 00 00 00 00 00 00  00 09 00 00 00 00 00 00 00    ................
+04186539   41 72 74 69 73 74 00 54  65 73 74 61 6D 65 6E 74 04   Artist.Testament.
+04186556   00 00 00 00 00 00 00 59  65 61 72 00 32 30 30 31 19   .......Year.2001.
+04186573   00 00 00 00 00 00 00 41  6C 62 75 6D 00 46 69 72 73   .......Album.Firs
+04186590   74 20 53 74 72 69 6B 65  20 53 74 69 6C 6C 20 44 65   t Strike Still De
+04186607   61 64 6C 79 02 00 00 00  00 00 00 00 54 72 61 63 6B   adly........Track
+04186624   00 30 32 0C 00 00 00 00  00 00 00 54 69 74 6C 65 00   .02........Title.
+04186641   49 6E 74 6F 20 54 68 65  20 50 69 74 07 00 00 00 00   Into The Pit.....
+04186658   00 00 00 4D 50 33 47 41  49 4E 5F 4D 49 4E 4D 41 58   ...MP3GAIN_MINMAX
+04186675   00 31 31 34 2C 31 38 36  07 00 00 00 00 00 00 00 4D   .114,186........M
+04186692   50 33 47 41 49 4E 5F 41  4C 42 55 4D 5F 4D 49 4E 4D   P3GAIN_ALBUM_MINM
+04186709   41 58 00 30 30 30 2C 32  31 30 0C 00 00 00 00 00 00   AX.000,210.......
+04186726   00 52 45 50 4C 41 59 47  41 49 4E 5F 54 52 41 43 4B   .REPLAYGAIN_TRACK
+04186743   5F 47 41 49 4E 00 2D 38  2E 37 33 30 30 30 30 20 64   _GAIN.-8.730000 d
+04186760   42 08 00 00 00 00 00 00  00 52 45 50 4C 41 59 47 41   B........REPLAYGA
+04186777   49 4E 5F 54 52 41 43 4B  5F 50 45 41 4B 00 31 2E 31   IN_TRACK_PEAK.1.1
+04186794   35 38 35 38 38 0C 00 00  00 00 00 00 00 52 45 50 4C   58588........REPL
+04186811   41 59 47 41 49 4E 5F 41  4C 42 55 4D 5F 47 41 49 4E   AYGAIN_ALBUM_GAIN
+04186828   00 2D 31 30 2E 32 35 30  30 30 20 64 42 08 00 00 00   .-10.25000 dB....
+04186845   00 00 00 00 52 45 50 4C  41 59 47 41 49 4E 5F 41 4C   ....REPLAYGAIN_AL
+04186862   42 55 4D 5F 50 45 41 4B  00 31 2E 31 35 38 35 38 38   BUM_PEAK.1.158588
+04186879   41 50 45 54 41 47 45 58  D0 07 00 00 7C 01 00 00 0B   APETAGEXÐ...|....
+04186896   00 00 00 00 00 00 80 00  00 00 00 00 00 00 00         ......€........

@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Replay Gain - Data format</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="David Robinson" name=author>
+<META content="Byte representation of the Replay Gain" name=Description>
+<META 
+content="77dB,calculate,replay,gain,loudness,mp3,wav,audio,dynamic,range,compression,K-system,mastering,David John Michael Robinson,audio research,Christian,UK" 
+name=Keywords>
+<META content=David@Robinson.org name=Reply-to><LINK href="style1.css" 
+type=text/css rel=STYLESHEET>
+<META content="MSHTML 6.00.2800.1400" name=GENERATOR></HEAD>
+<BODY vLink=#9f0000 aLink=#ff4f4f link=#ff0000 bgColor=#ffffff>
+<H1 align=center>Replay Gain - A Proposed Standard</H1>
+<H2 align=center>Replay Gain Data Format</H2>
+<H3>What to store</H3>
+<P align=justify>Three values must be stored. </P>
+<OL class=important>
+  <LI><A href="peak.html">Peak signal amplitude</A> 
+  <LI>"Radio" = Replay Gain adjustment required to make all tracks equal 
+  loudness 
+  <LI>"Audiophile" = Replay Gain adjustment required to give ideal listening 
+  loudness </LI></OL>
+<P align=justify>If calculated on a track-by-track basis, ReplayGain yields (2). 
+If calculated on a disc-by-disc basis, ReplayGain will usually yield (3), though 
+this value may be more accurately determined by a human listener if required. 
+</P>
+<P align=justify><B>To allow for future expansion:</B> If more than three values 
+are stored, players should ignore those they do not recognise, but process those 
+that they do. If additional Replay Gain adjustments other than "Radio" and 
+"Audiophile" are stored, they should come <I>after</I> "Radio" and "Audiophile". 
+The Peak Amplitude must always occupy the first 4 bytes of the Replay Gain 
+header frame. The three values listed above (or at least fields to hold the 
+three values, should the values themselves be unknown) are <B>required</B> in 
+all Replay Gain headers. </P>
+<H3>Range</H3>
+<P align=justify>The replay gain adjustment must be between -51.0dB and +51.0dB. 
+Values outside this range must be limited to be within the range, though they 
+are certainly in error, and should probably be re-calculated, or stored as "not 
+set". For example, trying to cause a silent 24-bit file to play at 83dB will 
+yield a replay gain adjustment of +57dB. </P>
+<P align=justify>In practice, adjustment values from -23dB to +17dB are the 
+likely extremes, and values from -18dB to +2dB are more usual. </P>
+<H3>Bit format</H3>
+<P align=justify>Each Replay Gain value should be stored in a Replay Gain 
+Adjustment field consisting of two bytes (16 bits). Here are two example Replay 
+Gain Adjustment fields: </P><PRE><FONT face=Courier,fixed>
+               Radio Gain Adjustment              Audiophile Gain Adjustment
+
+          0 0 1 0 1 1 1 0 0 1 1 1 1 1 0 1       0 1 0 0 1 0 0 0 0 0 0 1 0 1 0 0
+          \___/ \___/ | \_______________/       \___/ \___/ | \_______________/
+            |     |   |         |                 |     |   |         |
+          name    |  sign       |               name    |  sign       |
+          code    |  bit        |               code    |  bit        |
+                  |             |                       |             |
+             originator         |                  originator         |
+                code            |                     code            |
+                           Replay Gain                           Replay Gain
+                            Adjustment                            Adjustment
+
+</FONT></PRE>
+<P align=justify>In the above example, the Radio Gain Adjustment is -12.5dB, and 
+was calculated automatically. The Audiophile Gain Adjustment is +2.0dB, and was 
+set by the user. </P>
+<H3>- Name code</H3>
+<DIV align=center>
+<TABLE cellSpacing=0 cellPadding=0 border=0>
+  <TBODY>
+  <TR>
+    <TD>000 = </TD>
+    <TD>not set</TD></TR>
+  <TR>
+    <TD>001 = </TD>
+    <TD>Radio Gain Adjustment</TD></TR>
+  <TR>
+    <TD>010 = </TD>
+    <TD>Audiophile Gain Adjustment</TD></TR>
+  <TR>
+    <TD>other = </TD>
+    <TD>reserved for future use</TD></TR></TBODY></TABLE></DIV>
+<P align=justify>If space has been reserved for the Replay Gain in the file 
+header, but no replay gain calculation has been carried out, then all bits 
+(including the Name code) may be zero. </P>
+<P align=justify>For each Replay Gain Adjustment field, if the name code = 000 
+(not set), then players should ignore the rest of that individual field. </P>
+<P align=justify>For each Replay Gain Adjustment field, if the name code is an 
+unrecognised value (i.e. not 001-Radio or 010-Audiophile), then players should 
+ignore the rest of that individual field. </P>
+<P align=justify>If no valid Replay Gain Adjustment fields are found (i.e. all 
+name codes are either 000 or unknown), then the player should proceed as if the 
+file contained no Replay Gain Adjustment information (see <A 
+href="player_scale.html#absent">player requirements</A>). 
+<H3>- Originator code</H3>
+<DIV align=center>
+<TABLE cellSpacing=0 cellPadding=0 border=0>
+  <TBODY>
+  <TR>
+    <TD>000 = </TD>
+    <TD>Replay Gain unspecified</TD></TR>
+  <TR>
+    <TD>001 = </TD>
+    <TD>Replay Gain pre-set by artist/producer/mastering engineer</TD></TR>
+  <TR>
+    <TD>010 = </TD>
+    <TD>Replay Gain set by user</TD></TR>
+  <TR>
+    <TD>011 = </TD>
+    <TD>Replay Gain determined automatically, as described on this site</TD></TR>
+  <TR>
+    <TD>other = </TD>
+    <TD>reserved for future use</TD></TR></TBODY></TABLE></DIV>
+<P align=justify>For each Replay Gain Adjustment field, if the name code is 
+valid, but the Originator code is 000 (Replay Gain unspecified), then the player 
+should ignore that Replay Gain adjustment field. </P>
+<P align=justify>For each Replay Gain Adjustment field, if the name code is 
+valid, but the Originator code is unknown, then the player should <B>still</B> 
+use the information within that Replay Gain Adjustment field. This is because, 
+even if we are unsure as to how the adjustment was determined, <I>any</I> valid 
+Replay Gain adjustment is more useful than none at all. </P>
+<P align=justify>If no valid Replay Gain Adjustment fields are found (i.e. all 
+originator codes are 000), then the player should proceed as if the file 
+contained no Replay Gain Adjustment information (see <A 
+href="player_scale.html#absent">player requirements</A>). 
+<H3>- Sign bit</H3>
+<DIV align=center>
+<TABLE cellSpacing=0 cellPadding=0 border=0>
+  <TBODY>
+  <TR>
+    <TD>0 = </TD>
+    <TD>+</TD></TR>
+  <TR>
+    <TD>1 = </TD>
+    <TD>-</TD></TR></TBODY></TABLE></DIV>
+<H3>- Replay Gain Adjustment</H3>
+<P align=justify>The value, multiplied by ten, stripped of its sign (since the + 
+or - is stored in the "sign" bit), is represented in 9 bits. e.g. -3.1dB becomes 
+31 = 000011111. </P>
+<H3>Default Value</H3>
+<P align=justify>$00 $00 (0000000000000000) should be used where no Replay Gain 
+has been calculated or set. This value will be interpreted by players in the 
+same manner as a file without a Replay Gain field in the header (see <A 
+href="player_scale.html#absent">player requirements</A>). </P>
+<P align=justify>The values of xxxyyy0000000000 (where xxx is any name code, and 
+yyy is any originator code) are all valid, but indicate that the Replay Gain is 
+to be left at 83dB (0dB Replay Gain Adjustment). These are <B>not</B> default 
+values, and should only be used where appropriate (e.g. where the user, 
+producer, or Replay Gain calculation has indicated that the correct Replay Gain 
+<B>is</B> 83dB). </P>
+<H3>Illegal Values</H3>
+<P align=justify>The values xxxyyy1000000000 are all illegal. You cannot have 
+negative zero! These values may be used to convey other information in the 
+future. They must not be used at present. If enountered, players should treat 
+them in the same manner as $00 $00 (the default value). </P>
+<P align=justify>The value $xx $ff is <B>not</B> illegal, but it would give a 
+false synch value within an mp3 file. The problems this may cause should be 
+investigated, and a solution (e.g. <A 
+href="../../../www.id3.org/id3v2.3.0.html#sec5">unsychronisation</A>) sought. 
+Maybe this is a use for negative zero? </P>
+<H3>Implementation</H3>
+<P align=justify>Please <A href="contact.html">contact me</A> if you have 
+implemented any software which makes use of this format. </P>
+<H3>Suggestions and further work</H3>
+<P align=justify>Please <A href="contact.html">contact me</A> if you anticipate 
+any problems with this data format. </P>
+<HR>
+
+<P class=menu align=center><IMG height=10 alt="<" src="pics/arrow_back.gif" 
+width=10 border=0> <A href="calibration.html"><SPAN class=bt>[</SPAN> 
+Calibration <SPAN class=bt>]</SPAN></A> <SPAN style="COLOR: white">.</SPAN> <A 
+href="contents.html"><SPAN class=bt>[</SPAN> CONTENTS <SPAN 
+class=bt>]</SPAN></A> <SPAN style="COLOR: white">.</SPAN> <A 
+href="peak_data_format.html"><SPAN class=bt>[</SPAN> Peak Amplitude <SPAN 
+class=bt>]</SPAN></A> <IMG height=10 alt=">" src="pics/arrow_forward.gif" 
+width=10 border=0> </P></BODY></HTML>

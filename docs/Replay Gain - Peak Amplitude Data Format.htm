@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Replay Gain - Peak Amplitude - Data Format</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="David Robinson" name=author>
+<META content="Byte representation of the Replay Level" name=Description>
+<META 
+content="file,format,replay,level,loudness,mp3,wav,audio,dynamic,range,compression,K-system,mastering,David John Michael Robinson,audio research,Christian,UK" 
+name=Keywords>
+<META content=David@Robinson.org name=Reply-to><LINK href="style1.css" 
+type=text/css rel=STYLESHEET>
+<META content="MSHTML 6.00.2800.1400" name=GENERATOR></HEAD>
+<BODY vLink=#9f0000 aLink=#ff4f4f link=#ff0000 bgColor=#ffffff>
+<H1 align=center>Replay Gain - A Proposed Standard</H1>
+<H2 align=center>Peak Amplitude Data Format</H2>
+<H3>Why store this?</H3>
+<P align=justify>Scanning the file for the peak amplitude can be a 
+time-consuming process. Therefore, it's helpful if this single value is stored 
+within the file header. This can be used to check if the required replay gain 
+adjustment will cause the file to clip. </P>
+<H3>Data Format</H3>
+<P align=justify>The maximum peak amplitude (a single value) should be stored as 
+a 32-bit floating point number, where 1=digital full scale. </P>
+<H3>Uncompressed Files</H3>
+<P align=justify>Simply store the maximum absolute sample value held in the file 
+(on any channel). The single sample value should be converted to a 32-bit float, 
+such that digital full scale is equivalent to a value of 1. </P>
+<H3>Compressed files</H3>
+<P align=justify>Compressed audio does not exist as a waveform until it is 
+decoded. Unfortunately, psychoacoustic coding of a heavily limited file can lead 
+to sample values larger than digital full scale upon decoding. However, it is 
+likely that such values will be brought back within range after scaling by the 
+replay level. Even so, it is necessary to store the peak value of a compressed 
+file as a 32-bit floating-point representation, where +/-1 represent digital 
+full scale, and values outside this range would usually clip. </P>
+<H3>Implementation</H3>
+<P align=justify>For uncompressed files, the maximum values must be found and 
+stored. For compressed files, the files must be decoded using a fully compliant 
+decoder that allows peak overflows (i.e. has headroom), and the maximum value 
+stored. </P>
+<H3>Suggestions and further work</H3>
+<P align=justify>Some clarification of byte order, and conversion to floating 
+point may be necessary. As always, suggestions are welcome! </P>
+<HR>
+
+<P class=menu align=center><IMG height=10 alt="<" src="pics/arrow_back.gif" 
+width=10 border=0> <A href="rg_data_format.html"><SPAN class=bt>[</SPAN> Replay 
+Gain data format <SPAN class=bt>]</SPAN></A> <SPAN style="COLOR: white">.</SPAN> 
+<A href="contents.html"><SPAN class=bt>[</SPAN> CONTENTS <SPAN 
+class=bt>]</SPAN></A> <SPAN style="COLOR: white">.</SPAN> <A 
+href="file_format.html"><SPAN class=bt>[</SPAN> File Format <SPAN 
+class=bt>]</SPAN></A> <IMG height=10 alt=">" src="pics/arrow_forward.gif" 
+width=10 border=0> </P></BODY></HTML>

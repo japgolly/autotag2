@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Replay Gain - File format ID3v2 mp3 information</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="David Robinson" name=author>
+<META content="ID3v2 extension containing the Replay Gain" name=Description>
+<META 
+content="file,format,replay,level,loudness,mp3,wav,audio,dynamic,range,compression,K-system,mastering,David John Michael Robinson,audio research,Christian,UK" 
+name=Keywords>
+<META content=David@Robinson.org name=Reply-to><LINK href="style1.css" 
+type=text/css rel=STYLESHEET>
+<META content="MSHTML 6.00.2800.1400" name=GENERATOR></HEAD>
+<BODY vLink=#9f0000 aLink=#ff4f4f link=#ff0000 bgColor=#ffffff>
+<H1 align=center>Replay Gain - A Proposed Standard</H1>
+<H2 align=center>Replay Gain ID3v2 File Format</H2>
+<H3>Existing format</H3>
+<P align=justify>The ID3v2 format is explain at <A 
+href="../../../www.id3.org/default.htm">www.id3.org</A>. The most useful 
+document is the <A href="../../../www.id3.org/id3v2.3.0.html">ID3v2 v2.3.0 
+standard</A>*. Note that all ID3v2 tag frames are written in <FONT 
+color=#ff0000>Big Endian Byte order.</FONT> </P>
+<P align=justify>* <FONT size=-1>Whilst this document has been superseded by 
+v2.4.0 (see <A href="../../../www.id3.org/develop.html">ID3v2 Developer 
+Information</A>) the earlier document is complete (rather than an update), and 
+in indexed HTML form. As such, it represents a better technical introduction to 
+ID3v2.</FONT> </P>
+<P align=justify>The ID3v2 standard defines a "tag" which is situated 
+<I>before</I> the data in an mp3 file. The original ID3 (v1) tags resided at the 
+end of the file, and contained a few fields of information. The ID3v2 tags can 
+contain virtually limitless amounts of information, and new "frames" within the 
+tags may be defined. </P>
+<H3>Replay Gain Adjustment chunk</H3>
+<P align=justify>In the language of the ID3v2 standard document, a new frame is 
+suggested, thus: </P><PRE><FONT face=Courier,fixed>
+	<FONT color=#0000ff>&lt;Header for 'Replay Gain Adjustment', ID: "RGAD"&gt;
+	Peak Amplitude				$xx $xx $xx $xx
+	Radio Replay Gain Adjustment		$xx $xx
+	Audiophile Replay Gain Adjustment	$xx $xx</FONT>
+
+	Header consists of:
+	Frame ID		$52 $47 $41 $44	= "RGAD"
+	Size			$00 $00 $00 $08
+	Flags			$40 $00		(%01000000 %00000000)
+</FONT>
+</PRE>
+<P align=justify>In the RGAD frame, the flags state that the frame should be 
+preserved if the ID3v2 tag is altered, but discarded if the audio data is 
+altered. </P>
+<H3>Does it work?</H3>
+<P align=center>I haven't tried this myself. Some example code for parsing ID3v2 
+tags is available <A href="../../../www.id3.org/implement.html">here</A>, which 
+could easily be extended to write the above tag. Within-range Replay Gain data 
+<B>can</B> contain the synchronisation code ($FF), so <A 
+href="../../../www.id3.org/id3v2.3.0.html#sec5">unsynchronisation</A> may be 
+necessary for this frame. </P>
+<H3>Suggestions and Further Work</H3>
+<P align=center>If you can see any problem with this proposal, please <A 
+href="contact.html">let me know</A>. No software implements this (as yet). </P>
+<HR>
+
+<P class=menu align=center><IMG height=10 alt="<" src="pics/arrow_back.gif" 
+width=10 border=0> <A href="file_format.html"><SPAN class=bt>[</SPAN> File 
+Format <SPAN class=bt>]</SPAN></A> <SPAN style="COLOR: white">.</SPAN> <A 
+href="contents.html"><SPAN class=bt>[</SPAN> CONTENTS <SPAN 
+class=bt>]</SPAN></A> <SPAN style="COLOR: white">.</SPAN> <A 
+href="player.html"><SPAN class=bt>[</SPAN> Player Requirements <SPAN 
+class=bt>]</SPAN></A> <IMG height=10 alt=">" src="pics/arrow_forward.gif" 
+width=10 border=0> </P></BODY></HTML>
