@@ -53,11 +53,17 @@ module Autotag
     end
     
     def seek_to_start(bytes=0)
-      @fin.seek(@ignore_header + bytes, IO::SEEK_SET)
+      @fin.seek(size_of_header + bytes, IO::SEEK_SET)
+    end
+    def seek_to_end(bytes=0)
+      @fin.seek(-size_of_footer - bytes, IO::SEEK_END)
     end
     
-    def seek_to_end(bytes=0)
-      @fin.seek(-@ignore_footer - bytes, IO::SEEK_END)
+    def size_of_header
+      @ignore_header
+    end
+    def size_of_footer
+      @ignore_footer
     end
     
     private

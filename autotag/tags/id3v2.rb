@@ -80,18 +80,18 @@ module Autotag::Tags
     end
     
     SYM2TAG= {
-      :artist      => %w{0 1 2 TPE1 TPE1},
-      :album       => %w{0 1 2 TALB TALB},
-      :track       => %w{0 1 2 TIT2 TIT2},
-      :tracknumber => %w{0 1 2 TRCK TRCK},
-      :year        => %w{0 1 2 TYER TDRC},
+      :artist       => %w{0 1 2 TPE1 TPE1},
+      :album        => %w{0 1 2 TALB TALB},
+      :track        => %w{0 1 2 TIT2 TIT2},
+      :track_number => %w{0 1 2 TRCK TRCK},
+      :year         => %w{0 1 2 TYER TDRC},
     }
     SYM2TAGXXX= {
-      :albumtype => 'Albumtype',
-      :replaygain_track_gain => 'replaygain_track_gain',
+      :album_type            => 'Albumtype',
       :replaygain_album_gain => 'replaygain_album_gain',
-      :replaygain_track_peak => 'replaygain_track_peak',
       :replaygain_album_peak => 'replaygain_album_peak',
+      :replaygain_track_gain => 'replaygain_track_gain',
+      :replaygain_track_peak => 'replaygain_track_peak',
     }
     TAG2SYM= []
     SYM2TAG.each{|sym,tags|

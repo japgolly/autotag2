@@ -1,5 +1,12 @@
+require 'autotag/audio_file'
+
 module Autotag
   class Engine
+    include Tags
+    TAGS_TO_WRITE= {}
+    TAGS_TO_WRITE[:header]= {ID3v2 => {:_version => 4}}
+    TAGS_TO_WRITE[:footer]= APEv2
+    TAGS_TO_WRITE[:all]= ([TAGS_TO_WRITE[:header]] + [TAGS_TO_WRITE[:footer]]).flatten.map{|t| t.is_a?(Hash) ? t.keys : t }.flatten.uniq
       
     def self.run
       new.run
@@ -40,7 +47,9 @@ module Autotag
     end
     
     def process_album_dir(dir)
-      @metadata[:album]= convert_filedir_name(File.basename(dir))
+      File.basename(dir) =~ /^(....) - (.+)$/i
+      @metadata[:year],@metadata[:album]= $1,convert_filedir_name($2)
+      @metadata.delete(:year) unless @metadata[:year] =~ /\d+/
       indent :title => "Processing album directory: #{dir}", :dir => dir do
         Dir.glob('?? - *.mp3').each {|filename|
           process_mp3 filename
@@ -50,22 +59,42 @@ module Autotag
     
     def process_mp3(filename)
       puts filename
-      
-      filename =~ /^(..) - (.+).mp3$/i
-      @metadata[:tracknumber],@metadata[:track]= $1,convert_filedir_name($2)
-      
       # open file
       AudioFile.open(filename) do |af|
-        af.read_tags.each {|tag,hash| puts "#{tag}: #{hash.inspect}"}
         # read tags from file
-      end
-      # create new tags in memory (using replygain data)
-      # compare tags
-      # if changes need to be made then
-        # rename file
-        # open new file
-        # create new file
-    end
+        existing_tags= af.read_tags
+
+        # create new tags in memory (using replygain data)
+        metadata= @metadata.clone
+        filename =~ /^(..) - (.+).mp3$/i
+        metadata[:tracknumber],metadata[:track]= $1,convert_filedir_name($2)
+        existing_tags.each_value {|etag|
+          [:replaygain_track_gain, :replaygain_album_gain, :replaygain_track_peak, :replaygain_album_peak].each {|k|
+            metadata[k]= etag[k] if etag[k]
+          }
+        }
+        
+        # compare tags
+        expected_tags= {}
+        TAGS_TO_WRITE[:all].each {|tag_class|
+          expected_tags[tag_class]= metadata.clone
+          expected_tags[tag_class].merge!(TAGS_TO_WRITE[:header][tag_class]) if TAGS_TO_WRITE[:header].is_a?(Hash) && TAGS_TO_WRITE[:header][tag_class]
+          expected_tags[tag_class].merge!(TAGS_TO_WRITE[:footer][tag_class]) if TAGS_TO_WRITE[:footer].is_a?(Hash) && TAGS_TO_WRITE[:footer][tag_class]
+        }
+
+        if existing_tags == expected_tags
+          puts 'Up to date'
+        else
+          puts 'Updating'
+          # create tmp file
+          # write header tags
+          # copy mp3
+          # write footer tags
+          # rename files
+        end
+        
+      end # AudioFile.open
+    end # def process_mp3
     
     #----------------------------------------------------------------------------
     

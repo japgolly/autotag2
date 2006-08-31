@@ -16,11 +16,11 @@ module Autotag::Tags
       self[:album]= read_value(63,92)
       self[:year]= read_value(93,96)
       if self[:_version] == 1
-        self[:comment]= read_value(97,124)
-        self[:tracknumber]= @tag[126].to_i.to_s
+        self['Comment']= read_value(97,124)
+        self[:track_number]= @tag[126].to_i.to_s
         self[:genre]= @tag[127] unless @tag[127] == 255
       else
-        self[:comment]= read_value(97,127)
+        self['Comment']= read_value(97,127)
       end
       metadata
     end

@@ -83,16 +83,20 @@ module Autotag::Tags
     end
     
     SYM2TAG= {
-      :albumtype => 'Albumtype',
-      :replaygain_track_gain => 'replaygain_track_gain',
-      :replaygain_album_gain => 'replaygain_album_gain',
-      :replaygain_track_peak => 'replaygain_track_peak',
-      :replaygain_album_peak => 'replaygain_album_peak',
-      :artist => 'Artist',
       :album => 'Album',
+      :album_type => 'Albumtype',
+      :artist => 'Artist',
+      :disc => 'Disc',
+      :genre => 'Genre',
+      :replaygain_album_gain => 'replaygain_album_gain',
+      :replaygain_album_peak => 'replaygain_album_peak',
+      :replaygain_track_gain => 'replaygain_track_gain',
+      :replaygain_track_peak => 'replaygain_track_peak',
+      :total_discs => 'Totaldiscs',
+      :total_tracks => 'Totaltracks',
       :track => 'Title',
+      :track_number => 'Track',
       :year => 'Year',
-      :tracknumber => 'Track',
     }
     TAG2SYM= SYM2TAG.invert
   end
