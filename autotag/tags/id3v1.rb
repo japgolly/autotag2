@@ -25,6 +25,7 @@ module Autotag::Tags
       metadata
     end
     
+    #--------------------------------------------------------------------------
     private
     
     def read_value(from,to)

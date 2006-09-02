@@ -13,6 +13,7 @@ module Autotag::Tags
       metadata
     end
 
+    #--------------------------------------------------------------------------
     private
     
     def sof_tag_exists?
@@ -82,6 +83,7 @@ module Autotag::Tags
       TAG2SYM[tag] || tag
     end
     
+    #--------------------------------------------------------------------------
     SYM2TAG= {
       :album => 'Album',
       :album_type => 'Albumtype',

@@ -46,6 +46,7 @@ module Autotag::Tags
       metadata
     end
     
+    #--------------------------------------------------------------------------
     private
     
     def read_int(x=nil)
@@ -93,6 +94,7 @@ module Autotag::Tags
       end
     end
     
+    #--------------------------------------------------------------------------
     SYM2TAG= {
       :artist       => %w{2 TPE1 TPE1},
       :album        => %w{2 TALB TALB},
