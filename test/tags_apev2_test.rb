@@ -2,15 +2,14 @@ require 'test_helper'
 
 class APEv2Test < Autotag::TestCase
   
-  def test_apev2_tag_detection
-    AudioFile.open("#{test_data_dir}/apev2/apev2.mp3") do |af|
-      assert Tags::APEv2.new(af).tag_exists?
-    end
+  def test_tag_detection
+    assert tag_call(tag_class,:tag_exists?,"apev2/apev2.mp3")
+    assert !tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.4_header.mp3")
   end
   
-  def test_apev2_read
+  def test_read
     AudioFile.open("#{test_data_dir}/apev2/apev2.mp3") do |af|
-      metadata= Tags::APEv2.new(af).read
+      metadata= tag_class.new(af).read
       assert_hashes_equal({
         :artist => 'エープ',
         :track => 'ape example',
@@ -29,4 +28,9 @@ class APEv2Test < Autotag::TestCase
     end
   end
   
+  private
+  
+  def tag_class
+    Tags::APEv2
+  end
 end

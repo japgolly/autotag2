@@ -1,3 +1,5 @@
+require 'iconv'
+
 # The following keys are used in the metadata hash:
 #   :album
 #   :album_type
@@ -34,6 +36,10 @@ module Autotag::Tags
       else
         @metadata[k]= v
       end
+    end
+    
+    def convert_utf16(str,big_endian)
+      Iconv.iconv('utf-8', big_endian ?'utf-16be':'utf-16le', str)[0]
     end
     
     def fin

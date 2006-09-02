@@ -14,7 +14,7 @@ module Autotag
       if expected != test
         expected_keys= expected.keys
         test_keys= test.keys
-        assert_equal expected_keys, test_keys, "Missing: #{expected_keys-test_keys}, Has but shouldn't have: #{test_keys-expected_keys}"
+        assert_equal expected_keys, test_keys, "Missing: #{(expected_keys-test_keys).inspect}, Has but shouldn't have: #{(test_keys-expected_keys).inspect}"
         expected_keys.each {|k|
           assert_equal expected[k], test[k]
         }
@@ -22,12 +22,12 @@ module Autotag
       end
     end
     
-    def tag_read(klass,file)
-      metadata= nil
-      AudioFile.open(file) do |af|
-        metadata= klass.new(af).read
+    def tag_call(klass,method,file)
+      r= nil
+      AudioFile.open("#{test_data_dir}/#{file}") do |af|
+        r= klass.new(af).send(method)
       end
-      metadata
+      r
     end
     
     def test_data_dir

@@ -37,6 +37,10 @@ module Autotag::Tags
         end
       end
       
+      # Post-process
+      split_slash_divided_values :track_number, :total_tracks
+      split_slash_divided_values :disc, :total_discs
+      
       # Done
       @af.ignore_header size
       metadata
@@ -52,22 +56,32 @@ module Autotag::Tags
     def read_string(x)
       encoding= x[0]
       x= x[1..-1]
-      case encoding
-      when 0
-        # ISO-8859-1 [ISO-8859-1]. Terminated with $00.
-        x[0..-2].to_s
-      when 1
-        # UTF-16 [UTF-16] encoded Unicode [UNICODE] with BOM. All strings in the same frame SHALL have the same byteorder. Terminated with $00 00.
-        # Unicode strings must begin with the Unicode BOM ($FF FE or $FE FF) to identify the byte order.
-        raise 'Pending'
-      when 2
-        # UTF-16BE [UTF-16] encoded Unicode [UNICODE] without BOM. Terminated with $00 00.
-        raise 'Pending'
-      when 3
-        # UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
-        x[0..-2].to_s
-      else
-        raise "Invalid encoding flag: '#{encoding}'"
+      x= case encoding
+        when 0
+          # ISO-8859-1 [ISO-8859-1]. Terminated with $00.
+          x.to_s
+        when 1
+          # UTF-16 [UTF-16] encoded Unicode [UNICODE] with BOM. All strings in the same frame SHALL have the same byteorder. Terminated with $00 00.
+          # Unicode strings must begin with the Unicode BOM ($FF FE or $FE FF) to identify the byte order.
+          big_endian= (x[0..1]=="\xFE\xFF")
+          convert_utf16 x[2..-1].to_s, big_endian
+        when 2
+          # UTF-16BE [UTF-16] encoded Unicode [UNICODE] without BOM. Terminated with $00 00.
+          # UNTESTED
+          convert_utf16 x, true
+        when 3
+          # UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
+          x.to_s
+        else
+          raise "Invalid encoding flag: '#{encoding}'"
+        end
+      x.gsub! %r{\x00$}, ''
+      x
+    end
+    
+    def split_slash_divided_values(key1,key2)
+      if self[key1] =~ %r{([^/]+)/([^/]+)}
+        self[key1],self[key2]= $1,$2
       end
     end
     
@@ -75,16 +89,18 @@ module Autotag::Tags
       if extended_tag
         TAGXXX2SYM[tag] || tag
       else
-        TAG2SYM[self[:_version]][tag] || tag
+        TAG2SYM[self[:_version]-2][tag] || tag
       end
     end
     
     SYM2TAG= {
-      :artist       => %w{0 1 2 TPE1 TPE1},
-      :album        => %w{0 1 2 TALB TALB},
-      :track        => %w{0 1 2 TIT2 TIT2},
-      :track_number => %w{0 1 2 TRCK TRCK},
-      :year         => %w{0 1 2 TYER TDRC},
+      :artist       => %w{2 TPE1 TPE1},
+      :album        => %w{2 TALB TALB},
+      :disc         => %w{2 TPOS TPOS},
+      :genre        => %w{2 TCON TCON},
+      :track        => %w{2 TIT2 TIT2},
+      :track_number => %w{2 TRCK TRCK},
+      :year         => %w{2 TYER TDRC},
     }
     SYM2TAGXXX= {
       :album_type            => 'Albumtype',
