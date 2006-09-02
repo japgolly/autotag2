@@ -15,31 +15,35 @@ module Autotag::Tags
       self[:_version]= (header[4]==0 ? header[3] : "#{header[3]}.#{header[4]}".to_f)
       #TODO: Doesn't support extended headers
       size= read_int(header[6..9])
-      pos=0
-      
-      # Read tag
-      while(1)
-        frame= {:id => fin.read(4)}
-        frame[:size]= read_int
-        frame[:flags]= fin.read(2)
-        pos += 10
-        break if frame[:id] == "\0\0\0\0" || pos > size
-        pos += frame[:size]
-        frame[:value]= read_string(fin.read(frame[:size]))
-        if frame[:id] == 'TXXX'
-          if frame[:value] =~ /^(.+?)\0(.+)$/
-            self[tag2sym($1,true)]= $2
+
+      if self[:_version] >= 3
+        pos=0
+        
+        # Read tag
+        while(1)
+          frame= {:id => fin.read(4)}
+          frame[:size]= read_int
+          frame[:flags]= fin.read(2)
+          pos += 10
+          break if frame[:id] == "\0\0\0\0" || pos > size
+          pos += frame[:size]
+          frame[:value]= read_string(fin.read(frame[:size]))
+          if frame[:id] == 'TXXX'
+            if frame[:value] =~ /^(.+?)\0(.+)$/
+              self[tag2sym($1,true)]= $2
+            else
+              self[frame[:id]]= frame[:value]
+            end
           else
-            self[frame[:id]]= frame[:value]
+            self[tag2sym(frame[:id])]= frame[:value]
           end
-        else
-          self[tag2sym(frame[:id])]= frame[:value]
         end
-      end
-      
-      # Post-process
-      split_slash_divided_values :track_number, :total_tracks
-      split_slash_divided_values :disc, :total_discs
+        
+        # Post-process
+        split_slash_divided_values :track_number, :total_tracks
+        split_slash_divided_values :disc, :total_discs
+        
+      end # if self[:_version] >= 3
       
       # Done
       @af.ignore_header size

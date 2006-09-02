@@ -3,8 +3,31 @@ require 'test_helper'
 class ID3v2Test < Autotag::TestCase
   
   def test_tag_detection
+    assert tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.2_header.mp3")
+    assert tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.3_header.mp3")
     assert tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.4_header.mp3")
     assert !tag_call(tag_class,:tag_exists?,"apev2/apev2.mp3")
+  end
+  
+  def test_read_22h
+    AudioFile.open("#{test_data_dir}/ip3v2/ip3v2.2_header.mp3") do |af|
+      metadata= tag_class.new(af).read
+      assert_hashes_equal({
+        :_version => 2,
+#        :artist => 'Cemetery Of Scream',
+#        :track => 'Where Next?',
+#        :album => 'The Event Horizon',
+#        :year => '2005',
+#        :genre => 'Metal',
+#        :track_number => '10',
+#        :total_tracks => '11',
+#        :disc => '4',
+#        :total_discs => '7',
+#        'TEN' => 'iTunes v6.0.5.20',
+      }, metadata)
+      assert_equal 2201, af.size_of_header
+      assert_equal 0, af.size_of_footer
+    end
   end
   
   def test_read_23h
