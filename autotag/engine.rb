@@ -1,8 +1,11 @@
 require 'autotag/audio_file'
+require 'autotag/metadata_overrides'
 
 module Autotag
   class Engine
+    include MetadataOverrides
     include Tags
+    
     TAGS_TO_WRITE= {}
     TAGS_TO_WRITE[:header]= {ID3v2 => {:_version => 4}}
     TAGS_TO_WRITE[:footer]= APEv2
@@ -39,8 +42,8 @@ module Autotag
     
     def process_artist_dir(dir)
       indent :title => "Processing artist directory: #{dir}", :dir => dir do
-        @metadata[:artist]= convert_filedir_name(File.basename(dir))
-        read_metadata_from_text_files true, false, false
+        @metadata[:artist]= process_file_or_directory_name(File.basename(dir))
+        read_metadata_overrides :artist
         # TODO: Handle albumtype directories
         each_subdir('???? - *') {|d| process_album_dir d}
       end
@@ -48,7 +51,7 @@ module Autotag
     
     def process_album_dir(dir)
       File.basename(dir) =~ /^(....) - (.+)$/i
-      @metadata[:year],@metadata[:album]= $1,convert_filedir_name($2)
+      @metadata[:year],@metadata[:album]= $1,process_file_or_directory_name($2)
       @metadata.delete(:year) unless @metadata[:year] =~ /\d+/
       indent :title => "Processing album directory: #{dir}", :dir => dir do
         Dir.glob('?? - *.mp3').each {|filename|
@@ -63,16 +66,19 @@ module Autotag
       AudioFile.open(filename) do |af|
         # read tags from file
         existing_tags= af.read_tags
-
+        
         # create new tags in memory (using replygain data)
         metadata= @metadata.clone
         filename =~ /^(..) - (.+).mp3$/i
-        metadata[:tracknumber],metadata[:track]= $1,convert_filedir_name($2)
+        metadata[:tracknumber],metadata[:track]= $1,process_file_or_directory_name($2)
         existing_tags.each_value {|etag|
           [:replaygain_track_gain, :replaygain_album_gain, :replaygain_track_peak, :replaygain_album_peak].each {|k|
             metadata[k]= etag[k] if etag[k]
           }
         }
+        tn= metadata[:tracknumber].to_i rescue nil
+        metadata[:track]= metadata[tn] if tn && metadata.has_key?(tn)
+        metadata.delete_if{|k,v|k.is_a?Fixnum}
         
         # compare tags
         expected_tags= {}
@@ -98,13 +104,6 @@ module Autotag
     
     #----------------------------------------------------------------------------
     
-    def convert_filedir_name(str)
-      str= str.gsub %r{ _ }, ' / '      # "aaa _ bbb" --> "aaa / bbb"
-      str= str.gsub %r{_$}, '?'         # "aaa_" --> "aaa?"
-      str= str.gsub %r{(?!= )_ }, ': '  # "aaa_ bbb" --> "aaa: bbb"
-      str= str.gsub "''", '"'           # "Take The ''A'' Train" --> "Take The "A" Train"
-    end
-    
     def each_subdir(mask='*')
       dirs= Dir.glob(mask, File::FNM_DOTMATCH) - ['.','..']
       dirs.delete_if {|d| not File.stat(d).directory?}
@@ -112,7 +111,7 @@ module Autotag
     end
     
     def indent(options={})
-  #    puts "\n"
+#      puts "\n"
       puts options[:title] if options[:title]
       @indent<< '  '
       if options[:dir]
@@ -123,22 +122,20 @@ module Autotag
       @indent= @indent[0..-3]
     end
     
+    def process_file_or_directory_name(str)
+      x= str.dup
+      x.gsub! %r{ _ }, ' / '      # "aaa _ bbb" --> "aaa / bbb"
+      x.gsub! %r{_$}, '?'         # "aaa_" --> "aaa?"
+      x.gsub! %r{(?!= )_ }, ': '  # "aaa_ bbb" --> "aaa: bbb"
+      x.gsub! "''", '"'           # "Take The ''A'' Train" --> "Take The "A" Train"
+      x
+    end
+    
     def puts(str=nil)
       str= "#{@indent}#{str}" if str
       Kernel.puts str
     end
     
-    def read_metadata_from_text_files(read_artist, read_album, read_track)
-      ['index.txt','autotag.txt'].each {|filename|
-        # TODO: Handle UTF-8/16 files
-        File.readlines(filename).each {|l|
-          l.strip!
-          @metadata[:artist]=    $1.strip if read_artist && l =~ /^ARTIST *:(.+)/i
-          @metadata[:album]=     $1.strip if read_album  && l =~ /^ALBUM *:(.+)/i
-          @metadata[:albumtype]= $1.strip if read_album  && l =~ /^ALBUMTYPE *:(.+)/i
-        } if File.exists?(filename)
-      }
-    end
     
   end
 end
