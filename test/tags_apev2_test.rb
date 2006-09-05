@@ -4,6 +4,8 @@ class APEv2Test < Autotag::TestCase
   
   def test_tag_detection
     assert tag_call(tag_class,:tag_exists?,"apev2/apev2.mp3")
+    assert !tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.2_header.mp3")
+    assert !tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.3_header.mp3")
     assert !tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.4_header.mp3")
   end
   
