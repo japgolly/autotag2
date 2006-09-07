@@ -1,8 +1,15 @@
+#===========================
+# Object
+
 class Object
   def deep_freeze
     respond_to?(:freeze) ? freeze : self
   end
 end
+
+
+#===========================
+# Collections
 
 class Array
   def deep_freeze
@@ -39,5 +46,46 @@ class Hash
     }
     freeze
   end
-  
 end
+
+
+#===========================
+# Strings + Symbols
+
+class String
+  alias :old_cmp :<=>
+  def <=>(o)
+    if o.is_a?(Symbol)
+      1
+    else
+      old_cmp o
+    end
+  end
+end
+
+class Symbol
+  def <=>(o)
+    if o.is_a?(Symbol)
+      self.to_s <=> o.to_s
+    else
+      -1
+    end
+  end
+end
+
+
+#===========================
+# Numbers
+
+module BitManipulation
+  def set_bit(bit,on)
+    if on
+      self | (1<<bit)
+    else
+      self & ~(1<<bit)
+    end
+  end
+end
+
+Fixnum.send :include, BitManipulation
+Bignum.send :include, BitManipulation
