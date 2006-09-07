@@ -4,19 +4,72 @@ module Autotag::Tags
   class APEv2 < Base
     
     def tag_exists?
-      sof_tag_exists? || eof_tag_exists?
+      bof_tag_exists? || eof_tag_exists?
     end
     
     def read
-      sof_read if sof_tag_exists?
+      bof_read if bof_tag_exists?
       eof_read if eof_tag_exists?
       metadata
+    end
+    
+    def create(content)
+      items= content.reject{|k,v| k.to_s[0] == '_'[0]}
+      tag_body= create_tag_body(items)
+      tag_header= create_tag_header(items.size, tag_body.size, true)
+      tag_footer= create_tag_footer(items.size, tag_body.size, true)
+      tag_header + tag_body + tag_footer
     end
 
     #--------------------------------------------------------------------------
     private
     
-    def sof_tag_exists?
+    def create_tag_header(item_count, body_size, has_footer)
+      create_tag_header_or_footer(item_count, body_size, true, has_footer, true)
+    end
+    
+    def create_tag_footer(item_count, body_size, has_header)
+      create_tag_header_or_footer(item_count, body_size, has_header, true, false)
+    end
+    
+    def create_tag_header_or_footer(item_count, body_size, has_header, has_footer, create_header)
+      tag_size_minus_header= body_size + (has_footer ? 32 : 0)
+      flags= 0
+      flags= flags.set_bit(31,has_header)
+      flags= flags.set_bit(30,!has_footer)
+      flags= flags.set_bit(29,create_header)
+      x= 'APETAGEX'
+      x<< create_int(2000)
+      x<< create_int(tag_size_minus_header)
+      x<< create_int(item_count)
+      x<< create_int(flags)
+      x<< create_int(0)
+      x<< create_int(0)
+    end
+    
+    def create_tag_body(items)
+      x= ''
+      items.keys.sort.each {|k| x<< create_item(k,items[k])}
+      x
+    end
+    
+    def create_item(k,v)
+      x= create_int(v.length) # len
+      x<< create_int(0)       # flags
+      x<< "#{sym2tag(k)}\0"   # key
+      x<< v                   # value
+    end
+    
+    def create_int(i)
+      [i].pack('L')
+    end
+    
+    def sym2tag(sym)
+      SYM2TAG[sym] || sym.to_s
+    end
+    
+    #--------------------------------------------------------------------------
+    def bof_tag_exists?
       @af.seek_to_start 32
       fin.read(8) == 'APETAGEX' && read_int == 2000
     end
@@ -25,21 +78,23 @@ module Autotag::Tags
       fin.read(8) == 'APETAGEX' && read_int == 2000
     end
     
-    def sof_read
+    def bof_read
       @af.seek_to_start 32
-      info= read_tag_headerfooter(fin.read(32))
+      info= read_tag_info(fin.read(32))
       @af.ignore_header(32) if info[:has_header]
       @af.ignore_header(info[:size])
       @af.seek_to_start
       read_tag_content(info)
+      self[:_header]= true
     end
     def eof_read
       @af.seek_to_end 32
-      info= read_tag_headerfooter(fin.read(32))
+      info= read_tag_info(fin.read(32))
       @af.ignore_footer(info[:size])
       @af.seek_to_end
       @af.ignore_footer(32) if info[:has_header]
       read_tag_content(info)
+      self[:_footer]= true
     end
     
     def read_tag_content(info)
@@ -52,7 +107,7 @@ module Autotag::Tags
       end
     end
     
-    def read_tag_headerfooter(data)
+    def read_tag_info(data)
       flags= read_int(data[20..23])
       {
         :items => read_int(data[16..19]),
@@ -73,10 +128,6 @@ module Autotag::Tags
         x<< ch
       end
       x
-    end
-    
-    def sym2tag(sym)
-      SYM2TAG[sym] || sym
     end
     
     def tag2sym(tag)

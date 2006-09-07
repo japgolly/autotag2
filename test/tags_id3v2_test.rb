@@ -10,9 +10,10 @@ class ID3v2Test < Autotag::TestCase
   end
   
   def test_read_22h
-    AudioFile.open("#{test_data_dir}/ip3v2/ip3v2.2_header.mp3") do |af|
+    AudioFile.open_file("#{test_data_dir}/ip3v2/ip3v2.2_header.mp3") do |af|
       metadata= tag_class.new(af).read
       assert_hashes_equal({
+        :_header => true,
         :_version => 2,
 #        :artist => 'Cemetery Of Scream',
 #        :track => 'Where Next?',
@@ -27,13 +28,17 @@ class ID3v2Test < Autotag::TestCase
       }, metadata)
       assert_equal 2201, af.size_of_header
       assert_equal 0, af.size_of_footer
+      assert_equal 5976-2201, af.size
+      assert_equal "\xFF\xFB\xB2\x00\x00", af.read_all[0..4]
+      assert_equal "\x1D\x44\x83\x7A\xC2", af.read_all[-5..-1]
     end
   end
   
   def test_read_23h
-    AudioFile.open("#{test_data_dir}/ip3v2/ip3v2.3_header.mp3") do |af|
+    AudioFile.open_file("#{test_data_dir}/ip3v2/ip3v2.3_header.mp3") do |af|
       metadata= tag_class.new(af).read
       assert_hashes_equal({
+        :_header => true,
         :_version => 3,
         :artist => '一石二鳥',
         :track => 'Vacant',
@@ -49,13 +54,17 @@ class ID3v2Test < Autotag::TestCase
       }, metadata)
       assert_equal 2411, af.size_of_header
       assert_equal 0, af.size_of_footer
+      assert_equal 5446-2411, af.size
+      assert_equal "\xFF\xFB\x90\x64\x00", af.read_all[0..4]
+      assert_equal "\x54\x4C\x22\x39\xA7", af.read_all[-5..-1]
     end
   end
   
   def test_read_24h
-    AudioFile.open("#{test_data_dir}/ip3v2/ip3v2.4_header.mp3") do |af|
+    AudioFile.open_file("#{test_data_dir}/ip3v2/ip3v2.4_header.mp3") do |af|
       metadata= tag_class.new(af).read
       assert_hashes_equal({
+        :_header => true,
         :_version => 4,
         :artist => 'monkey',
         :track => 'id3v2 example',
@@ -71,6 +80,9 @@ class ID3v2Test < Autotag::TestCase
       }, metadata)
       assert_equal 2236, af.size_of_header
       assert_equal 0, af.size_of_footer
+      assert_equal 5452-2236, af.size
+      assert_equal "\xFF\xF3\x84\x64\x00", af.read_all[0..4]
+      assert_equal "\x00\x00\x41\x4D\x45", af.read_all[-5..-1]
     end
   end
   

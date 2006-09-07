@@ -1,3 +1,4 @@
+require 'autotag/ruby_ext'
 require 'pp'
 
 module Autotag
@@ -14,7 +15,7 @@ module Autotag
       if expected != test
         expected_keys= expected.keys
         test_keys= test.keys
-        assert_equal expected_keys, test_keys, "Missing: #{(expected_keys-test_keys).inspect}, Has but shouldn't have: #{(test_keys-expected_keys).inspect}"
+        assert_equal expected_keys, test_keys, "Missing: #{(expected_keys-test_keys).sort.inspect}, Has but shouldn't have: #{(test_keys-expected_keys).sort.inspect}"
         expected_keys.each {|k|
           assert_equal expected[k], test[k]
         }
@@ -22,9 +23,9 @@ module Autotag
       end
     end
     
-    def tag_call(klass,method,file)
+    def tag_call(klass,method,source,type=:file)
       r= nil
-      AudioFile.open("#{test_data_dir}/#{file}") do |af|
+      AudioFile.send("open_#{type}", "#{test_data_dir}/#{source}") do |af|
         r= klass.new(af).send(method)
       end
       r

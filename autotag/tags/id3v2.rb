@@ -11,6 +11,7 @@ module Autotag::Tags
     def read
       # Read header
       @af.seek_to_start
+      self[:_header]= true
       header= @af.read_and_ignore_header(10)
       self[:_version]= (header[4]==0 ? header[3] : "#{header[3]}.#{header[4]}".to_f)
       #TODO: Doesn't support extended headers
