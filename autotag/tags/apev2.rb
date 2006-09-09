@@ -14,7 +14,7 @@ module Autotag::Tags
     end
     
     def create(content)
-      items= content.reject{|k,v| k.to_s[0] == '_'[0]}
+      items= remove_non_content_fields(content)
       tag_body= create_tag_body(items)
       tag_header= create_tag_header(items.size, tag_body.size, true)
       tag_footer= create_tag_footer(items.size, tag_body.size, true)

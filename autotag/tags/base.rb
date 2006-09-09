@@ -43,6 +43,10 @@ module Autotag::Tags
       @af.fin
     end
     
+    def remove_non_content_fields(hash)
+      hash.reject{|k,v| k.to_s[0] == '_'[0]}
+    end
+    
     def value_or_nil(v)
       (v.nil? || v == '') ? nil : v
     end

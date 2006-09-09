@@ -1,5 +1,6 @@
 require "#{File.dirname __FILE__}/base"
 
+# TODO: Shouldn't be using 'TXXX' as a literal
 module Autotag::Tags
   class ID3v2 < Base
     
@@ -41,8 +42,8 @@ module Autotag::Tags
         end
         
         # Post-process
-        split_slash_divided_values :track_number, :total_tracks
-        split_slash_divided_values :disc, :total_discs
+        split_slash_divided_values! :track_number, :total_tracks
+        split_slash_divided_values! :disc, :total_discs
         
       end # if self[:_version] >= 3
       
@@ -51,9 +52,78 @@ module Autotag::Tags
       metadata
     end
     
+    # TODO: Add set_content() and remove this arg
+    def create(content)
+      self[:_version]= version= content[:_version]
+      raise "Unsupported version: #{version.inspect}" unless version == 4
+      items= remove_non_content_fields(content)
+      merge_values_with_slash! items, :track_number, :total_tracks
+      merge_values_with_slash! items, :disc, :total_discs
+      
+      padding= "\0"*512
+      body= create_body(items)
+      header= create_header(body.size + padding.size)
+      header + body + padding
+    end
+    
     #--------------------------------------------------------------------------
     private
     
+    def create_header(tag_size)
+      x= "ID3"                            # header
+      x<< [self[:_version], 0].pack('cc') # version
+      x<< "\0"                            # flags
+      x<< create_int(tag_size)            # size
+    end
+    
+    def create_body(items)
+      x= ''
+      items.keys.sort.each {|k| x<< create_item(k,items[k])}
+      x
+    end
+    
+    def create_item(k,v)
+      # Prepare
+      id= sym2tag(k)
+      unless id
+        v= "#{sym2tag k, true}\0#{v}"
+        id= 'TXXX'
+      end
+      v= "_#{v}\0"
+      v[0]= contains_unicode?(v) ? 3 : 0
+      
+      # Create item
+      x= id.dup                # id
+      x<< create_int(v.length) # size
+      x<< "\0\0"               # flags
+      x<< v                    # value
+    end
+    
+    def create_int(l)
+      x= '1234'
+      x[3]= (l&127)
+      x[2]= ((l>>7)&127)
+      x[1]= ((l>>14)&127)
+      x[0]= ((l>>21)&127)
+      x
+    end
+    
+    def merge_values_with_slash!(items,key1,key2)
+      if items.has_key?(key2)
+        items[key1]= "#{items[key1] || 0}/#{items.delete key2}"
+      end
+    end
+    
+    def sym2tag(sym,extended_tag=false)
+      unless extended_tag
+        x= SYM2TAG[sym]
+        x ? x[self[:_version]-2] : nil
+      else
+        SYM2TAGXXX[sym] || sym.to_s
+      end
+    end
+    
+    #--------------------------------------------------------------------------
     def read_int(x=nil)
       x ||= fin.read(4)
       (x[3]&127) | ((x[2]&127) << 7) | ((x[1]&127) << 14) | ((x[0]&127) << 21)
@@ -85,7 +155,7 @@ module Autotag::Tags
       x
     end
     
-    def split_slash_divided_values(key1,key2)
+    def split_slash_divided_values!(key1,key2)
       if self[key1] =~ %r{([^/]+)/([^/]+)}
         self[key1],self[key2]= $1,$2
       end
@@ -108,14 +178,14 @@ module Autotag::Tags
       :track        => %w{2 TIT2 TIT2},
       :track_number => %w{2 TRCK TRCK},
       :year         => %w{2 TYER TDRC},
-    }
+    }.deep_freeze
     SYM2TAGXXX= {
       :album_type            => 'Albumtype',
       :replaygain_album_gain => 'replaygain_album_gain',
       :replaygain_album_peak => 'replaygain_album_peak',
       :replaygain_track_gain => 'replaygain_track_gain',
       :replaygain_track_peak => 'replaygain_track_peak',
-    }
+    }.deep_freeze
     TAG2SYM= []
     SYM2TAG.each{|sym,tags|
       tags.each_index{|ver|
@@ -123,7 +193,8 @@ module Autotag::Tags
         TAG2SYM[ver][tags[ver]]= sym
       }
     }
-    TAGXXX2SYM= SYM2TAGXXX.invert
+    TAG2SYM.deep_freeze
+    TAGXXX2SYM= SYM2TAGXXX.invert.deep_freeze
     
   end
 end

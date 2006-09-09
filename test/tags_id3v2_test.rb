@@ -86,6 +86,38 @@ class ID3v2Test < Autotag::TestCase
     end
   end
   
+  def test_write
+    # Create
+    content= {
+      :_header => true,
+      :_version => 4,
+      :artist => 'ＩＤ３!!',
+      :track => 'id3 example',
+      :album => 'haehe',
+      :year => '1988',
+      :genre => 'ル',
+      :track_number => '4',
+      :total_tracks => '1',
+      :disc => '2',
+      :total_discs => '2',
+      :album_type => 'Single',
+      'Bullshit' => 'werysdaf',
+    }.deep_freeze
+    t= tag_class.new(nil).create(content)
+    assert_kind_of String, t
+    # Attempt to read back
+    bullshit= 'dfanakp98ghakrjghap8ghagh'*3
+    AudioFile.open_string(t+bullshit) do |af|
+      metadata= tag_class.new(af).read
+      assert !metadata.empty?, "Tag not found. create() must be generating invalid tags."
+      assert_hashes_equal content, metadata
+      assert_equal t.size, af.size_of_header
+      assert_equal 0, af.size_of_footer
+      assert_equal bullshit.size, af.size
+      assert_equal bullshit, af.read_all
+    end
+  end
+  
   private
   
   def tag_class

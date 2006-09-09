@@ -5,6 +5,11 @@ require 'iconv'
 module Autotag
   module Unicode
     
+    def contains_unicode?(str)
+      str.each_byte {|c| return true if c > 127}
+      false
+    end
+    
     def converter(charset)
       charset= charset.to_s
       @@converters[charset] ||= Iconv.new('utf-8',charset)
