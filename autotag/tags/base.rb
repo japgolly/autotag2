@@ -28,9 +28,6 @@ module Autotag::Tags
       @metadata[k]
     end
     
-    protected
-    attr_reader :metadata
-    
     def []=(k,v)
       if v.nil?
         @metadata.delete k
@@ -39,12 +36,22 @@ module Autotag::Tags
       end
     end
     
+    def set_metadata(m)
+      @metadata.clear
+      @metadata.merge! m
+      self
+    end
+    
+    #--------------------------------------------------------------------------
+    protected
+    attr_reader :metadata
+    
     def fin
       @af.fin
     end
     
-    def remove_non_content_fields(hash)
-      hash.reject{|k,v| k.to_s[0] == '_'[0]}
+    def get_items_without_params
+      @metadata.reject{|k,v| k.to_s[0] == '_'[0]}
     end
     
     def value_or_nil(v)

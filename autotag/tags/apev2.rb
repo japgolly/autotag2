@@ -3,8 +3,8 @@ require "#{File.dirname __FILE__}/base"
 module Autotag::Tags
   class APEv2 < Base
     
-    def create(content)
-      items= remove_non_content_fields(content)
+    def create
+      items= get_items_without_params
       tag_body= create_body(items)
       tag_header= create_header(items.size, tag_body.size, true)
       tag_footer= create_footer(items.size, tag_body.size, true)

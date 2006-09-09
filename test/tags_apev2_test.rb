@@ -37,7 +37,7 @@ class APEv2Test < Autotag::TestCase
   def test_write
     # Create
     content= sample_tag_content(false)
-    t= tag_class.new(nil).create(content)
+    t= tag_class.new(nil).set_metadata(content).create
     assert_kind_of String, t
     # Check flags
     assert_equal "\0\0\0\xA0", t[20..23]

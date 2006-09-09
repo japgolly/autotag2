@@ -3,11 +3,9 @@ require "#{File.dirname __FILE__}/base"
 module Autotag::Tags
   class ID3v2 < Base
     
-    # TODO: Add set_content() and remove this arg
-    def create(content)
-      self[:_version]= version= content[:_version]
-      raise "Unsupported version: #{version.inspect}" unless version == 4
-      items= remove_non_content_fields(content)
+    def create
+      raise "Unsupported version: #{self[:_version].inspect}" unless self[:_version] == 4
+      items= get_items_without_params
       MERGED_VALUES.each {|a,b| merge_values_with_slash! items, a, b }
       
       padding= "\0"*512
