@@ -150,7 +150,7 @@ module Autotag::Tags
       :track => 'Title',
       :track_number => 'Track',
       :year => 'Year',
-    }
-    TAG2SYM= SYM2TAG.invert
+    }.deep_freeze
+    TAG2SYM= SYM2TAG.invert.deep_freeze
   end
 end

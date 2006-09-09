@@ -36,20 +36,7 @@ class APEv2Test < Autotag::TestCase
   
   def test_write
     # Create
-    content= {
-      :_footer => true,
-      :artist => 'エープ',
-      :track => 'ape example',
-      :album => 'hehe',
-      :year => '1998',
-      :genre => 'ジャンル',
-      :track_number => '2',
-      :total_tracks => '9',
-      :disc => '1',
-      :total_discs => '2',
-      :album_type => 'Album',
-      'Bullshit' => 'ahh',
-    }.deep_freeze
+    content= sample_tag_content(false)
     t= tag_class.new(nil).create(content)
     assert_kind_of String, t
     # Check flags
@@ -68,7 +55,29 @@ class APEv2Test < Autotag::TestCase
     end
   end
   
+  #----------------------------------------------------------------------------
   private
+  
+  def sample_tag_content(header)
+    {
+      (header ? :_header : :_footer) => true,
+      :artist => 'エープ',
+      :track => 'ape example',
+      :album => 'hehe',
+      :year => '1998',
+      :genre => 'ジャンル',
+      :track_number => '2',
+      :total_tracks => '9',
+      :disc => '1',
+      :total_discs => '2',
+      :album_type => 'Album',
+      'Bullshit' => 'ahh',
+      :replaygain_album_gain => '-0.46 dB',
+      :replaygain_album_peak => '0.243525',
+      :replaygain_track_gain => '+1.31 dB',
+      :replaygain_track_peak => '0.023487',
+    }.deep_freeze
+  end
   
   def tag_class
     Tags::APEv2
