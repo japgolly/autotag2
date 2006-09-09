@@ -86,23 +86,19 @@ class ID3v2Test < Autotag::TestCase
     end
   end
   
-  def test_write
+  def test_write22
+    assert_raises(RuntimeError) {tag_class.new(nil).create sample_tag_content(true,2)}
+    assert_raises(RuntimeError) {tag_class.new(nil).create sample_tag_content(false,2)}
+  end
+  
+  def test_write23
+    assert_raises(RuntimeError) {tag_class.new(nil).create sample_tag_content(true,3)}
+    assert_raises(RuntimeError) {tag_class.new(nil).create sample_tag_content(false,3)}
+  end
+  
+  def test_write24h
     # Create
-    content= {
-      :_header => true,
-      :_version => 4,
-      :artist => 'ＩＤ３!!',
-      :track => 'id3 example',
-      :album => 'haehe',
-      :year => '1988',
-      :genre => 'ル',
-      :track_number => '4',
-      :total_tracks => '1',
-      :disc => '2',
-      :total_discs => '2',
-      :album_type => 'Single',
-      'Bullshit' => 'werysdaf',
-    }.deep_freeze
+    content= sample_tag_content true, 4
     t= tag_class.new(nil).create(content)
     assert_kind_of String, t
     # Attempt to read back
@@ -118,7 +114,30 @@ class ID3v2Test < Autotag::TestCase
     end
   end
   
+  #----------------------------------------------------------------------------
   private
+  
+  def sample_tag_content(header,version)
+    {
+      (header ? :_header : :_footer) => true,
+      :_version => version,
+      :artist => 'ＩＤ３!!',
+      :track => 'id3 example',
+      :album => 'haehe',
+      :year => '1988',
+      :genre => 'ル',
+      :track_number => '4',
+      :total_tracks => '1',
+      :disc => '2',
+      :total_discs => '2',
+      :album_type => 'Single',
+      'Bullshit' => 'werysdaf',
+      :replaygain_album_gain => '+3.41 dB',
+      :replaygain_album_peak => '0.291903',
+      :replaygain_track_gain => '-8.21 dB',
+      :replaygain_track_peak => '0.154808',
+    }.deep_freeze
+  end
   
   def tag_class
     Tags::ID3v2
