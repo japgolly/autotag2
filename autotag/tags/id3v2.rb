@@ -1,69 +1,28 @@
 require "#{File.dirname __FILE__}/base"
 
-# TODO: Shouldn't be using 'TXXX' as a literal
 module Autotag::Tags
   class ID3v2 < Base
-    
-    def tag_exists?
-      @af.seek_to_start
-      fin.read(3) == 'ID3'
-    end
-    
-    def read
-      # Read header
-      @af.seek_to_start
-      self[:_header]= true
-      header= @af.read_and_ignore_header(10)
-      self[:_version]= (header[4]==0 ? header[3] : "#{header[3]}.#{header[4]}".to_f)
-      #TODO: Doesn't support extended headers
-      size= read_int(header[6..9])
-
-      if self[:_version] >= 3
-        pos=0
-        
-        # Read tag
-        while(1)
-          frame= {:id => fin.read(4)}
-          frame[:size]= read_int
-          frame[:flags]= fin.read(2)
-          pos += 10
-          break if frame[:id] == "\0\0\0\0" || pos > size
-          pos += frame[:size]
-          frame[:value]= read_string(fin.read(frame[:size]))
-          if frame[:id] == 'TXXX'
-            if frame[:value] =~ /^(.+?)\0(.+)$/
-              self[tag2sym($1,true)]= $2
-            else
-              self[frame[:id]]= frame[:value]
-            end
-          else
-            self[tag2sym(frame[:id])]= frame[:value]
-          end
-        end
-        
-        # Post-process
-        split_slash_divided_values! :track_number, :total_tracks
-        split_slash_divided_values! :disc, :total_discs
-        
-      end # if self[:_version] >= 3
-      
-      # Done
-      @af.ignore_header size
-      metadata
-    end
     
     # TODO: Add set_content() and remove this arg
     def create(content)
       self[:_version]= version= content[:_version]
       raise "Unsupported version: #{version.inspect}" unless version == 4
       items= remove_non_content_fields(content)
-      merge_values_with_slash! items, :track_number, :total_tracks
-      merge_values_with_slash! items, :disc, :total_discs
+      MERGED_VALUES.each {|a,b| merge_values_with_slash! items, a, b }
       
       padding= "\0"*512
       body= create_body(items)
       header= create_header(body.size + padding.size)
       header + body + padding
+    end
+    
+    def read
+      bof_read if bof_tag_exists?
+      metadata
+    end
+    
+    def tag_exists?
+      bof_tag_exists?
     end
     
     #--------------------------------------------------------------------------
@@ -87,7 +46,7 @@ module Autotag::Tags
       id= sym2tag(k)
       unless id
         v= "#{sym2tag k, true}\0#{v}"
-        id= 'TXXX'
+        id= tagxxx
       end
       v= "_#{v}\0"
       v[0]= contains_unicode?(v) ? 3 : 0
@@ -124,6 +83,52 @@ module Autotag::Tags
     end
     
     #--------------------------------------------------------------------------
+    
+    def bof_tag_exists?
+      @af.seek_to_start
+      fin.read(3) == 'ID3'
+    end
+    
+    def bof_read
+      @af.seek_to_start
+      self[:_header]= true
+      header= @af.read_and_ignore_header(10)
+      self[:_version]= (header[4]==0 ? header[3] : "#{header[3]}.#{header[4]}".to_f)
+      #TODO: Doesn't support extended headers
+      size= read_int(header[6..9])
+
+      if self[:_version] >= 3
+        pos=0
+        
+        # Read tag
+        while(1)
+          frame= {:id => fin.read(4)}
+          frame[:size]= read_int
+          frame[:flags]= fin.read(2)
+          pos += 10
+          break if frame[:id] == "\0\0\0\0" || pos > size
+          pos += frame[:size]
+          frame[:value]= read_string(fin.read(frame[:size]))
+          if frame[:id] == tagxxx
+            if frame[:value] =~ /^(.+?)\0(.+)$/
+              self[tag2sym($1,true)]= $2
+            else
+              self[frame[:id]]= frame[:value]
+            end
+          else
+            self[tag2sym(frame[:id])]= frame[:value]
+          end
+        end
+        
+        # Post-process
+        MERGED_VALUES.each {|a,b| split_slash_divided_values! a, b }
+        
+      end # if self[:_version] >= 3
+      
+      # Done
+      @af.ignore_header size
+    end
+    
     def read_int(x=nil)
       x ||= fin.read(4)
       (x[3]&127) | ((x[2]&127) << 7) | ((x[1]&127) << 14) | ((x[0]&127) << 21)
@@ -169,6 +174,10 @@ module Autotag::Tags
       end
     end
     
+    def tagxxx
+      TAGXXX[self[:_version]-2]
+    end
+    
     #--------------------------------------------------------------------------
     SYM2TAG= {
       :artist       => %w{2 TPE1 TPE1},
@@ -195,6 +204,10 @@ module Autotag::Tags
     }
     TAG2SYM.deep_freeze
     TAGXXX2SYM= SYM2TAGXXX.invert.deep_freeze
-    
+    TAGXXX= %w{TXX TXXX TXXX}.deep_freeze
+    MERGED_VALUES= {
+      :track_number => :total_tracks,
+      :disc => :total_discs,
+    }.deep_freeze
   end
 end
