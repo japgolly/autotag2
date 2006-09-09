@@ -3,36 +3,36 @@ require "#{File.dirname __FILE__}/base"
 module Autotag::Tags
   class APEv2 < Base
     
-    def tag_exists?
-      bof_tag_exists? || eof_tag_exists?
+    def create(content)
+      items= remove_non_content_fields(content)
+      tag_body= create_body(items)
+      tag_header= create_header(items.size, tag_body.size, true)
+      tag_footer= create_footer(items.size, tag_body.size, true)
+      tag_header + tag_body + tag_footer
     end
-    
+
     def read
       bof_read if bof_tag_exists?
       eof_read if eof_tag_exists?
       metadata
     end
     
-    def create(content)
-      items= remove_non_content_fields(content)
-      tag_body= create_tag_body(items)
-      tag_header= create_tag_header(items.size, tag_body.size, true)
-      tag_footer= create_tag_footer(items.size, tag_body.size, true)
-      tag_header + tag_body + tag_footer
+    def tag_exists?
+      bof_tag_exists? || eof_tag_exists?
     end
-
+    
     #--------------------------------------------------------------------------
     private
     
-    def create_tag_header(item_count, body_size, has_footer)
-      create_tag_header_or_footer(item_count, body_size, true, has_footer, true)
+    def create_header(item_count, body_size, has_footer)
+      create_header_or_footer(item_count, body_size, true, has_footer, true)
     end
     
-    def create_tag_footer(item_count, body_size, has_header)
-      create_tag_header_or_footer(item_count, body_size, has_header, true, false)
+    def create_footer(item_count, body_size, has_header)
+      create_header_or_footer(item_count, body_size, has_header, true, false)
     end
     
-    def create_tag_header_or_footer(item_count, body_size, has_header, has_footer, create_header)
+    def create_header_or_footer(item_count, body_size, has_header, has_footer, create_header)
       tag_size_minus_header= body_size + (has_footer ? 32 : 0)
       flags= 0
       flags= flags.set_bit(31,has_header)
@@ -47,7 +47,7 @@ module Autotag::Tags
       x<< create_int(0)
     end
     
-    def create_tag_body(items)
+    def create_body(items)
       x= ''
       items.keys.sort.each {|k| x<< create_item(k,items[k])}
       x
@@ -69,6 +69,7 @@ module Autotag::Tags
     end
     
     #--------------------------------------------------------------------------
+    
     def bof_tag_exists?
       @af.seek_to_start 32
       fin.read(8) == 'APETAGEX' && read_int == 2000
@@ -97,16 +98,6 @@ module Autotag::Tags
       self[:_footer]= true
     end
     
-    def read_tag_content(info)
-      info[:items].times do
-        len= read_int
-        flags= read_int
-        key= read_string
-        value= fin.read(len)
-        self[tag2sym(key)]= value
-      end
-    end
-    
     def read_tag_info(data)
       flags= read_int(data[20..23])
       {
@@ -116,6 +107,16 @@ module Autotag::Tags
         :has_footer => flags[30]==0,
         :read_only => flags[0]==1,
       }
+    end
+    
+    def read_tag_content(info)
+      info[:items].times do
+        len= read_int
+        flags= read_int
+        key= read_string
+        value= fin.read(len)
+        self[tag2sym(key)]= value
+      end
     end
     
     def read_int(x=nil)
