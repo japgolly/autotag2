@@ -1,0 +1,17 @@
+* Support vorbis comments in flac files
+
+* Support APE/CUE
+    CDImage.ape
+    CDImage.ape.cue
+
+* Support FLAC/CUE
+    CDImage.flac
+    CDImage.flac.cue
+
+* Support M4A
+
+* Support WMA
+
+* Delete useless crap such as
+  - useless cue files (CDImage.wav.cue)
+  - useless playlists (m3u etc)

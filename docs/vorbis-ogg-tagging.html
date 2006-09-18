@@ -1,0 +1,500 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Ogg Vorbis Comment Field Recommendations</title>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+
+<body>  <table width="100%">
+    <tr>
+      <td valign="top">
+          <p align="center"><small>Verily I say unto you, Inasmuch as ye have
+          done it unto one of the least of these my brethren, ye have done it
+          unto me. <strong>(Matthew 25:40)</strong>
+      </td>
+
+      <td valign="top">
+        <p align="center"><small><em>This document is provided for reference
+        purposes only. Statements in this document do not reflect the
+        opinions of <a href="http://reactor-core.org/">Reactor Core</a> staff
+        or the owner. If
+        you find ought to disagree with, that is as it ought be. Train your
+        mind to test every thought, ideology, train of reasoning, and claim
+        to truth. There is no justice when even a single voice goes
+        unheard.</em> <strong>(1 Thessalonians 5:21, 1 John 4:1-3, John
+        14:26, John 16:26, Revelation 12:10, Proverbs 14:15, Proverbs
+        18:13)</strong></small></p>
+      </td>
+    </tr>
+  </table>
+
+  <h1>Ogg Vorbis Comment Field Recommendations</h1>
+
+  <h2>Suggestions For Tagging Ogg Files</h2>
+
+  <p class="centeritalic">Last updated Thu Jul 3 20:35:53 PDT 2003</p>
+
+  <p class="centerbold">The following recommendations were developed by a
+  community of Ogg/Vorbis users for their own use.</p>
+
+  <p>You will find a mirror of this page <a href=
+  "http://hobba.hobba.nl/audio/mirroredpages/ogg-tagging.html">here</a>.</p>
+
+  <p>The purpose of the set of tags in this recommendation is to provide
+  information about the track that contains the tags. It is not the purpose
+  of the tags to provide general information about the piece of music in the
+  track, such as a listing of every recording that contains that same piece
+  of music. External databases and the internal Ogg metadata stream are
+  appropriate for information about the music, except where it fills one of
+  the 4 goals listed below.</p>
+
+  <h3>Goals:</h3>
+
+  <ol>
+    <li>Identify a track so the listener can know what he is listening
+    to.</li>
+
+    <li>Identify a track to allow music companies to profit from it.</li>
+
+    <li>Meet goals 1 and 2 without access to external data sources.</li>
+
+    <li>Identify a track within a database that contains information about
+    the track.</li>
+  </ol>
+
+  <h3>NOT goals:</h3>
+
+  <ol>
+    <li>Stuff every available bit of information about a track and the CD it
+    is on into the TAGS section. (liner notes, lyrics, the bandleaders dogs
+    name...)</li>
+
+    <li>Backward compatibility with ID3 and MP3 tagging schemes, structures,
+    and infrastructures.</li>
+  </ol>
+
+  <p>Piracy happens. We can't prevent it. At least we can encourage less
+  damaging behaviors, such as making sure than when someone likes a track,
+  they have enough information to reimburse the artist by going out and
+  purchasing the original source media the music came on.</p>
+
+  <p>These recommendations are written in the context of <a href=
+  "http://www.xiph.org/ogg/vorbis/doc/v-comment.html">http://www.xiph.org/ogg/vorbis/doc/v-comment.html</a>,
+  which is authoritative.</p>
+
+  <p>All tags are OPTIONAL; you can have an ogg file with NO tags present and
+  it will still be compliant. It is RECOMMENDED that you put enough tags in
+  the ogg to meet goals 1 through 4 above. The tags needed will vary with
+  each recording, and will often be no more than the tags already used.</p>
+
+  <p>Before we continue, here is a nifty bourne shell function you can stick
+  in your <code>~/.bash_profile</code>:</p>
+
+  <blockquote>
+    <pre>
+ogg-grep () {
+    REGEX="$1";
+    shift;
+    for i in "$@"; do
+        vorbiscomment -l "$i"|grep -i "$REGEX" &gt;/dev/null &amp;&amp; echo "$i";
+    done;
+}
+</pre>
+  </blockquote>
+
+  <p>You could use it like this:</p>
+
+  <blockquote>
+    <pre>
+ogg-grep "CONDUCTOR=.*Karajan" ~/music/oggfiles/*.ogg
+</pre>
+  </blockquote>
+
+  <p>It would display, one per line, all the ogg files where Karajan was the
+  conductor of the piece.</p>
+
+  <h2>What is the effect of following these Recommendations?</h2>
+
+  <dl>
+    <dt>USERS:</dt>
+
+    <dd>
+      Users will be playing their oggs; their player software is expected to
+      display the tags that exist in an oggfile, intelligently.
+
+      <p>Therefore the users are not affected by these recommendations and
+      need know nothing about them. Player programs ARE affected, and their
+      job should be made as easy as possible.</p>
+    </dd>
+
+    <dt>ENCODERS:</dt>
+
+    <dd>
+      There will be a subset of users who create ogg files. Inasmuch as it is
+      their responsibility to tag their files correctly, it would be nice if
+      they knew about these recommendations. However, their ripping software
+      should make it trivial for them to fill in the correct tags in the
+      common cases, and let them access the full tagset if they feel they
+      need it.
+
+      <p>Therefore, encoders will almost not notice the adoption of these
+      recommendations, unless they wanted to benefit from its increased
+      flexibility, in which case they will rejoice. Ripper and tagging
+      SOFTWARE on the other hand will need to support these recommendations,
+      and again, its job should be made as easy as possible.</p>
+    </dd>
+
+    <dt>CODERS:</dt>
+
+    <dd>
+      Coders are those who write the software used by users and encoders.
+      They are the ones who will need to make their software compliant, and
+      the ones who need to make sure their software is easy for people to
+      use.
+
+      <p>Therefore, it is the coders who will be affected most by these
+      recommendations. Their job should be made as easy as possible so they
+      can support it trivially and well.</p>
+    </dd>
+  </dl>
+
+  <h2>Compliance:</h2>
+
+  <p>A compliant Ogg player program will intelligently display, or let the
+  user specify how to display, all the tags in an Ogg file.</p>
+
+  <p>A compliant Ogg file may contain tags not in these recommendations.</p>
+
+  <p>Compliant tag editors and rippers may support tags not in these
+  recommendations, but should encourage use of recommended tags over tags not
+  in this document.</p>
+
+  <h2>Character Set Encoding of Tags:</h2>
+
+  <p>UTF-8 is the default encoding for tag data. Unfortunately UTF-8 muffed
+  it for Asian languages by doing the equivalent of giving the same character
+  codes to English, Russian, and Greek letters.</p>
+
+  <p>Fortunately UTF-8 itself has an internal, standard solution to the
+  problem: <a href=
+  "http://www.unicode.org/unicode/reports/tr27/#tag">http://www.unicode.org/unicode/reports/tr27/#tag</a>
+  which basically says: mark the language of text with U+E0001 LANGUAGE TAG,
+  followed by the <a href=
+  "http://www.ietf.org/rfc/rfc3066.txt">RFC&nbsp;3066</a> language ID (ie.
+  "ja") encoded in lowercase ASCII plus 0xE0000. This is the only mechanism
+  recognized by this document.</p>
+
+  <p>Programs which don't want to interpret such markup can simply ignore it;
+  it is zero width. The scope of the language setting is until the end of the
+  tag, or until a new language setting is encountered, whichever comes
+  first.</p>
+
+  <h2>We have the following STANDARD tags:</h2>
+
+  <p>Singleton tags, which should only appear once. If one of these tags
+  appears more than once, its last appearance should be displayed if there is
+  only room to display one instance of the tag.</p>
+
+  <dl>
+    <dt>ALBUM</dt>
+
+    <dd>if appropriate, an album name</dd>
+
+    <dt>ARTIST</dt>
+
+    <dd>for information to be displayed on systems with limited display
+    capabilities. it is not a replacement for the ENSEMBLE and PERFORMER
+    tags, but typically will summarize them.</dd>
+
+    <dt>PUBLISHER</dt>
+
+    <dd>who publishes the disc the track came from</dd>
+
+    <dt>COPYRIGHT</dt>
+
+    <dd>who holds copyright to the track or disc the track is on</dd>
+
+    <dt>DISCNUMBER</dt>
+
+    <dd>if part of a multi-disc album, put the disc number here</dd>
+
+    <dt>ISRC</dt>
+
+    <dd>this number lets you order a CD over the phone from a record
+    shop.</dd>
+
+    <dt>EAN/UPN</dt>
+
+    <dd>there may be a barcode on the CD; it is most likely an EAN or UPN
+    (Universal Product Number).</dd>
+
+    <dt>LABEL</dt>
+
+    <dd>the record label or imprint on the disc</dd>
+
+    <dt>LABELNO</dt>
+
+    <dd>record labels often put the catalog number of the source media
+    somewhere on the packaging. use this tag to record it.</dd>
+
+    <dt>LICENSE</dt>
+
+    <dd>the license, or URL for the license the track is under. for instance,
+    the Open Audio license.</dd>
+
+    <dt>OPUS</dt>
+
+    <dd>the number of the work; eg, Opus 10, BVW 81, K6</dd>
+
+    <dt>SOURCEMEDIA</dt>
+
+    <dd>the recording media the track came from. eg, CD, Cassette, Radio
+    Broadcast, LP, CD Single</dd>
+
+    <dt>TITLE</dt>
+
+    <dd>"the work", whether a symphony, or a pop song</dd>
+
+    <dt>TRACKNUMBER</dt>
+
+    <dd>the track number on the CD</dd>
+
+    <dt>VERSION</dt>
+
+    <dd>Make sure you don't put DATE or LOCATION information in this tag.
+    "live", "acoustic", "Radio Edit" "12 inch remix" might be typical values
+    of this tag</dd>
+
+    <dt>ENCODED-BY</dt>
+
+    <dd>The person who encoded the Ogg file. May include contact information
+    such as email address and phone number.</dd>
+
+    <dt>ENCODING</dt>
+
+    <dd>Put the settings you used to encode the Ogg file here. This tag is
+    NOT expected to be stored or returned by cddb type databases. It includes
+    information about the quality setting, bit rate, and bitrate management
+    settings used to encode the Ogg. It also is used for information about
+    which encoding software was used to do the encoding.</dd>
+  </dl>
+
+  <p>The remaining tags are multiples; if they are present more than once,
+  all their occurances are considered significant.</p>
+
+  <dl>
+    <dt>COMPOSER</dt>
+
+    <dd>composer of the work. eg, Gustav Mahler</dd>
+
+    <dt>ARRANGER</dt>
+
+    <dd>the person who arranged the piece, eg, Ravel</dd>
+
+    <dt>LYRICIST</dt>
+
+    <dd>the person who wrote the lyrics, eg Donizetti</dd>
+
+    <dt>AUTHOR</dt>
+
+    <dd>for text that is spoken, or was originally meant to be spoken, the
+    author, eg JRR Tolkien</dd>
+
+    <dt>CONDUCTOR</dt>
+
+    <dd>conductor of the work; eg Herbert von Karajan. choir directors would
+    also use this tag.</dd>
+
+    <dt>PERFORMER</dt>
+
+    <dd>individual performers singled out for mention; eg, Yoyo Ma
+    (violinist)</dd>
+
+    <dt>ENSEMBLE</dt>
+
+    <dd>the group playing the piece, whether orchestra, singing duo, or rock
+    and roll band.</dd>
+
+    <dt>PART</dt>
+
+    <dd>a division within a work; eg, a movement of a symphony. Some tracks
+    contain several parts. Use a single PART tag for each part contained in a
+    track. ie, PART="Oh sole mio"</dd>
+
+    <dt>PARTNUMBER</dt>
+
+    <dd>The part number goes in here. You can use any format you like, such
+    as Roman numerals, regular numbers, or whatever. The numbers should be
+    entered in such a way that an alphabetical sort on this tag will
+    correctly show the proper ordering of all the oggs that contain the
+    contain the piece of music.</dd>
+
+    <dt>GENRE</dt>
+
+    <dd>like the genre tag from the <a href="http://www.cddb.com/">cddb</a>
+    but without the limitations. You can put any genre you want in this tag.
+    If you think "Pink&nbsp;Floyd" are a genre unto themselves, say so here.
+    For crossover works, or ambiguous works, use as many GENRE tags as you
+    think it takes to describe the styles used.</dd>
+
+    <dt>DATE</dt>
+
+    <dd>date or date-time of relevance to the track. The date must be in
+    ISO&nbsp;8601 format, but may be followed by a space character, then any
+    text you wish, including the same date in any other format. None of the
+    alternate formats in ISO&nbsp;8601 may be used. Only the primary format
+    in ISO&nbsp;8601 is to be used. q.v. <a href=
+    "http://www.cl.cam.ac.uk/~mgk25/iso-time.html">http://www.cl.cam.ac.uk/~mgk25/iso-time.html</a>
+    eg, DATE="1999-08-16&nbsp;(recorded)" or
+    DATE="1999-08-16&nbsp;recorded&nbsp;August&nbsp;16,&nbsp;1999"</dd>
+
+    <dt>LOCATION</dt>
+
+    <dd>location of recording, or other location of interest</dd>
+
+    <dt>COMMENT</dt>
+
+    <dd>additional comments of any nature.</dd>
+  </dl>
+
+  <h2>Examples of Tag Usage:</h2>
+
+  <p>Here is a typical example for most POP music</p>
+  <pre>
+ALBUM=Joyride
+ENSEMBLE=Roxette
+TITLE=Joyride
+</pre>
+
+  <p>Here is what you might see if you played it with ogg123:</p>
+  <pre>
+Album: Joyride
+Ensemble: Roxette
+Title: Joyride
+
+
+Bitstream is 2 channel, 44100Hz
+</pre>
+  <hr />
+
+  <p>Here is a typical example for CLASSICAL music.</p>
+  <pre>
+LABEL=Deutsche Grammophon
+COMPOSER=Gustav Mahler
+CONDUCTOR=Herbert von Karajan
+ENSEMBLE=Berliner Philharmoniker
+PERFORMER=Liza don Getti (soprano)
+PERFORMER=Joe Barr (piano)
+OPUS=8
+PART="movement 1. Allegreto"
+TITLE="Symphony no. 4"
+COMMENT=I was present when this recording was made; met my wife there.
+COMMENT=The flautist ate a green pickle with a purple egg.
+</pre>
+
+  <p>And here is what you might see if you played it with ogg123:</p>
+  <pre>
+Playing from file ogg/mystery_file_I_got_from_gnutella.ogg
+Label: Deutsche Grammophon
+Composer: Gustav Mahler
+Conductor: Herbert von Karajan
+Ensemble: Berliner Philharmoniker
+Performers:  Liza don Getti (soprano)
+             Joe Barr (piano)
+Title: Symphony no. 4 (Opus 8), movement 1. Allegreto
+Comments: I was present when this recording was made; met
+          my wife there.  The flautist ate a green pickle
+          with a purple egg.
+
+
+Bitstream is 2 channel, 44100Hz
+</pre>
+  <hr />
+
+  <p>Here is a really whacked example that uses all the tags in this
+  document.</p>
+  <pre>
+OPUS=1
+COMPOSER=Stravinsky
+ARRANGER=Ravel
+PRODUCER=Fat Fred
+LYRICIST=Puccini
+AUTHOR=Reverend Lovejoy
+CONDUCTOR=Zubin Meta
+PERFORMER=Nix Nax (piccolo)
+ENSEMBLE=Upper East German Woodwind Band
+LABEL=BIZ
+LABELNO=54001
+ISRC=132938420384
+EAN/UPN=11111111111
+TRACKNUMBER=8
+ALBUM=Tootles and Tunes
+TITLE=The Life and Times of Friar Tux
+PART=1. Minuet (allegro con molto)
+GENRE=classical (avant garde)
+DATE=1974-09-03 recorded
+LOCATION=Easthampton Cathedral, Chesterwickshire
+COPYRIGHT=Unclaimed
+COMMENT=This is the wierdest, ugliest piece of music I've ever heard.  Its the ugly duckling of the classical music world.
+</pre>
+
+  <p>And here is what it would like like from ogg123</p>
+  <pre>
+Album: Tootles and Tunes
+Track: 8
+Title: The Life and Times of Friar Tux (Opus 1), first minuet (allegro con molto)
+Composer:  Stravinksy
+Conductor: Zubin Meta
+Performer: Nix Nax (piccolo)
+Ensemble:  Upper East German Woodwind Band
+Arranger:  Ravel
+Lyricist:  Puccini
+Author:    Reverend Lovejoy
+Label:     BIZ
+Copyright: Unclaimed
+EAN/UPN: 111111111
+Genre: classical (avant garde)
+Producer: Fat Fred
+Recorded on: Sept 3, 1974
+Recorded at: Easthampton Cathedral, Chesterwickshire
+Comments:  This is the wierdest, ugliest piece of music I've ever heard.
+           Its the ugly duckling of the classical music world.  It has a
+           monotone reading throughout, of that famous sermon by
+           Reverend Lovejoy, "Life and Times of Friar Tux" 
+
+
+Bitstream is 2 channel, 44100Hz
+</pre>
+  <p class="return"><a href="http://reactor-core.org/">[Back to the Reactor
+  Core]</a></p>
+
+  <table width="100%">
+    <tr>
+      <td valign="top">
+          <p align="center"><small>Verily I say unto you, Inasmuch as ye have
+          done it unto one of the least of these my brethren, ye have done it
+          unto me. <strong>(Matthew 25:40)</strong>
+      </td>
+
+      <td valign="top">
+        <p align="center"><small><em>This document is provided for reference
+        purposes only. Statements in this document do not reflect the
+        opinions of <a href="http://reactor-core.org/">Reactor Core</a> staff
+        or the owner.  If
+        you find ought to disagree with, that is as it ought be. Train your
+        mind to test every thought, ideology, train of reasoning, and claim
+        to truth. There is no justice when even a single voice goes
+        unheard.</em> <strong>(1 Thessalonians 5:21, 1 John 4:1-3, John
+        14:26, John 16:26, Revelation 12:10, Proverbs 14:15, Proverbs
+        18:13)</strong></small></p>
+      </td>
+    </tr>
+  </table>
+
+  <p align="center"><a href="/other-end.html"><img src=
+  "/pics/site-deigloriam.png" alt="Glory to God, Ad Dei Gloriam" width="180"
+  height="30" border="0" /></a></p>
+</body>
+</html>
