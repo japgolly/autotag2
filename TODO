@@ -12,6 +12,10 @@
 
 * Support WMA
 
+* Test engine complete tagging process
+  - Update flac tag
+  - Add tag to flac file with NO current tag
+
 * Delete useless crap such as
   - useless cue files (CDImage.wav.cue)
   - useless playlists (m3u etc)
