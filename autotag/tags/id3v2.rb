@@ -4,11 +4,12 @@ module Autotag::Tags
   class ID3v2 < Base
     
     def create
+      apply_defaults(DEFAULTS)
       raise "Unsupported version: #{self[:_version].inspect}" unless self[:_version] == 4
       items= get_items_without_params
       MERGED_VALUES.each {|a,b| merge_values_with_slash! items, a, b }
       
-      padding= "\0"*512
+      padding= "\0" * self[:_padding]
       body= create_body(items)
       header= create_header(body.size + padding.size)
       header + body + padding
@@ -206,6 +207,11 @@ module Autotag::Tags
     MERGED_VALUES= {
       :track_number => :total_tracks,
       :disc => :total_discs,
+    }.deep_freeze
+    
+    DEFAULTS= {
+      :padding => 1024,
+      :version => 4,
     }.deep_freeze
   end
 end

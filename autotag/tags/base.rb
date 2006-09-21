@@ -47,6 +47,12 @@ module Autotag::Tags
     protected
     attr_reader :metadata
     
+    def apply_defaults(defaults)
+      defaults.each {|k,v|
+        self[:"_#{k}"] ||= v
+      }
+    end
+    
     def fin
       @af.fin
     end

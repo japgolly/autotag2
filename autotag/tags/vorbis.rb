@@ -4,7 +4,7 @@ module Autotag::Tags
   class Vorbis < Base
     
     def create
-      # Start
+      apply_defaults(DEFAULTS)
       x= FLAC_HEADER_ID.dup
       # Add other tags
       if self[:_other_tags]
@@ -18,8 +18,7 @@ module Autotag::Tags
       items= get_items_without_params
       x<< create_metadata_tag(items)
       # Add padding
-      padding_size= self[:_padding] || DEFAULT[:padding]
-      x<< create_tag(TAG_TYPE_PADDING,true,"\0"*padding_size)
+      x<< create_tag(TAG_TYPE_PADDING,true,"\0"*self[:_padding])
       # Return
       x
     end
@@ -32,7 +31,6 @@ module Autotag::Tags
           self[:_padding] ||= 0
           self[:_padding] += len
         when TAG_TYPE_METADATA
-          self[:_header]= true
           self[:_tool]= read_string
           item_count= read_int_le
           item_count.times do
@@ -67,7 +65,7 @@ module Autotag::Tags
     end
     
     def create_metadata_tag(items)
-      t= create_string(self[:_tool] || DEFAULT[:tool])
+      t= create_string(self[:_tool])
       t<< create_int_le(items.size)
       items.keys.sort.each {|k| t<< create_string("#{sym2tag k}=#{items[k]}")}
       create_tag(TAG_TYPE_METADATA,false,t)
@@ -152,7 +150,7 @@ module Autotag::Tags
     TAG_TYPE_METADATA= 4
     TAG_TYPE_PADDING= 1
     
-    DEFAULT= {
+    DEFAULTS= {
       :padding => 1024,
       :tool => Autotag::TITLE
     }.deep_freeze
