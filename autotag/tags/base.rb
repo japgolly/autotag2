@@ -1,3 +1,4 @@
+require 'autotag/app_info'
 require 'autotag/unicode'
 
 # The following keys are used in the metadata hash:
