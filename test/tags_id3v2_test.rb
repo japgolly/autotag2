@@ -3,14 +3,14 @@ require 'test_helper'
 class ID3v2Test < Autotag::TestCase
   
   def test_tag_detection
-    assert tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.2_header.mp3")
-    assert tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.3_header.mp3")
-    assert tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.4_header.mp3")
-    assert !tag_call(tag_class,:tag_exists?,"apev2/apev2.mp3")
+    assert tag_call(tag_class,:tag_exists?,"tags/ip3v2.2_header.mp3")
+    assert tag_call(tag_class,:tag_exists?,"tags/ip3v2.3_header.mp3")
+    assert tag_call(tag_class,:tag_exists?,"tags/ip3v2.4_header.mp3")
+    assert !tag_call(tag_class,:tag_exists?,"tags/apev2.mp3")
   end
   
   def test_read_22h
-    AudioFile.open_file("#{test_data_dir}/ip3v2/ip3v2.2_header.mp3") do |af|
+    AudioFile.open_file("#{test_data_dir}/tags/ip3v2.2_header.mp3") do |af|
       metadata= tag_class.new(af).read
       assert_hashes_equal({
         :_header => true,
@@ -35,7 +35,7 @@ class ID3v2Test < Autotag::TestCase
   end
   
   def test_read_23h
-    AudioFile.open_file("#{test_data_dir}/ip3v2/ip3v2.3_header.mp3") do |af|
+    AudioFile.open_file("#{test_data_dir}/tags/ip3v2.3_header.mp3") do |af|
       metadata= tag_class.new(af).read
       assert_hashes_equal({
         :_header => true,
@@ -61,7 +61,7 @@ class ID3v2Test < Autotag::TestCase
   end
   
   def test_read_24h
-    AudioFile.open_file("#{test_data_dir}/ip3v2/ip3v2.4_header.mp3") do |af|
+    AudioFile.open_file("#{test_data_dir}/tags/ip3v2.4_header.mp3") do |af|
       metadata= tag_class.new(af).read
       assert_hashes_equal({
         :_header => true,

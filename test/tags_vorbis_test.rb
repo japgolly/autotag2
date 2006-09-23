@@ -3,15 +3,15 @@ require 'test_helper'
 class VorbisTest < Autotag::TestCase
   
   def test_tag_detection
-    assert tag_call(tag_class,:tag_exists?,"vorbis/flac.flac")
-    assert !tag_call(tag_class,:tag_exists?,"apev2/apev2.mp3")
-    assert !tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.2_header.mp3")
-    assert !tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.3_header.mp3")
-    assert !tag_call(tag_class,:tag_exists?,"ip3v2/ip3v2.4_header.mp3")
+    assert tag_call(tag_class,:tag_exists?,"tags/flac.flac")
+    assert !tag_call(tag_class,:tag_exists?,"tags/apev2.mp3")
+    assert !tag_call(tag_class,:tag_exists?,"tags/ip3v2.2_header.mp3")
+    assert !tag_call(tag_class,:tag_exists?,"tags/ip3v2.3_header.mp3")
+    assert !tag_call(tag_class,:tag_exists?,"tags/ip3v2.4_header.mp3")
   end
   
   def test_read
-    AudioFile.open_file("#{test_data_dir}/vorbis/flac.flac") do |af|
+    AudioFile.open_file("#{test_data_dir}/tags/flac.flac") do |af|
       metadata= tag_class.new(af).read
       other_tags= metadata.delete(:_other_tags)
       assert_hashes_equal({
