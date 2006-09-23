@@ -7,6 +7,7 @@ module Autotag
 
   class TestCase < Test::Unit::TestCase
     include Autotag
+    include Autotag::Tags::Errors
     
     protected
     

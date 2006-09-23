@@ -1,6 +1,7 @@
 require 'autotag/app_info'
 require 'autotag/ruby_ext'
 require 'autotag/unicode'
+require 'autotag/tags/errors'
 
 # The following keys are used in the metadata hash:
 #   :album
@@ -20,6 +21,7 @@ require 'autotag/unicode'
 module Autotag::Tags
   class Base
     include Autotag::Unicode
+    include Autotag::Tags::Errors
     
     def initialize(audiofile)
       @af= audiofile
@@ -36,6 +38,10 @@ module Autotag::Tags
       else
         @metadata[k]= v
       end
+    end
+    
+    def create
+      raise CreateNotSupported
     end
     
     def set_metadata(m)
