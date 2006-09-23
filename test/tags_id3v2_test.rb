@@ -87,13 +87,13 @@ class ID3v2Test < Autotag::TestCase
   end
   
   def test_write22
-    assert_raises(RuntimeError) {tag_class.new(nil).set_metadata(sample_tag_content(true,2)).create}
-    assert_raises(RuntimeError) {tag_class.new(nil).set_metadata(sample_tag_content(false,2)).create}
+    assert_raises(CreateNotSupported) {tag_class.new(nil).set_metadata(sample_tag_content(true,2)).create}
+    assert_raises(CreateNotSupported) {tag_class.new(nil).set_metadata(sample_tag_content(false,2)).create}
   end
   
   def test_write23
-    assert_raises(RuntimeError) {tag_class.new(nil).set_metadata(sample_tag_content(true,3)).create}
-    assert_raises(RuntimeError) {tag_class.new(nil).set_metadata(sample_tag_content(false,3)).create}
+    assert_raises(CreateNotSupported) {tag_class.new(nil).set_metadata(sample_tag_content(true,3)).create}
+    assert_raises(CreateNotSupported) {tag_class.new(nil).set_metadata(sample_tag_content(false,3)).create}
   end
   
   def test_write24h

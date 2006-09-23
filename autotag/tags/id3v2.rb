@@ -5,7 +5,7 @@ module Autotag::Tags
     
     def create
       apply_defaults(DEFAULTS)
-      raise "Unsupported version: #{self[:_version].inspect}" unless self[:_version] == 4
+      raise CreateNotSupported, "Cannot create ID3v2.#{self[:_version].inspect} tags" unless self[:_version] == 4
       items= get_items_without_params
       MERGED_VALUES.each {|a,b| merge_values_with_slash! items, a, b }
       
@@ -153,7 +153,7 @@ module Autotag::Tags
           # UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
           x.to_s
         else
-          raise "Invalid encoding flag: '#{encoding}'"
+          raise InvalidTag, "Invalid encoding flag: '#{encoding}'"
         end
       x.gsub! %r{\x00$}, ''
       x
