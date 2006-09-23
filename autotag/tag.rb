@@ -1,27 +1,37 @@
 require 'autotag/app_info'
 require 'autotag/ruby_ext'
 require 'autotag/unicode'
-require 'autotag/tags/errors'
 
-# The following keys are used in the metadata hash:
-#   :album
-#   :album_type
-#   :artist
-#   :disc
-#   :genre
-#   :replaygain_album_gain
-#   :replaygain_album_peak
-#   :replaygain_track_gain
-#   :replaygain_track_peak
-#   :total_discs
-#   :total_tracks
-#   :track
-#   :track_number
-#   :year
-module Autotag::Tags
+module Autotag::Tag
+  
+  # This module includes a number of tag-related error classes.
+  module Errors
+    class TagError < RuntimeError; end
+    class CreateNotSupported < TagError; end
+    class InvalidTag < TagError; end
+    class TagNotFound < TagError; end
+  end
+  
+  # This class is the base class that all tag readers/writers should extend.
+  # 
+  # The following keys are used in the metadata hash:
+  #   :album
+  #   :album_type
+  #   :artist
+  #   :disc
+  #   :genre
+  #   :replaygain_album_gain
+  #   :replaygain_album_peak
+  #   :replaygain_track_gain
+  #   :replaygain_track_peak
+  #   :total_discs
+  #   :total_tracks
+  #   :track
+  #   :track_number
+  #   :year
   class Base
     include Autotag::Unicode
-    include Autotag::Tags::Errors
+    include Errors
     
     def initialize(audiofile)
       @af= audiofile
@@ -50,7 +60,7 @@ module Autotag::Tags
       self
     end
     
-    #--------------------------------------------------------------------------
+    #==========================================================================
     protected
     attr_reader :metadata
     
@@ -72,5 +82,5 @@ module Autotag::Tags
       (v.nil? || v == '') ? nil : v
     end
     
-  end
+  end # class Base
 end

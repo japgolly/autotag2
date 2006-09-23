@@ -3,11 +3,12 @@ require 'pp'
 
 module Autotag
   require 'autotag/audio_file'
+  require 'autotag/tag'
   require 'autotag/tags'
 
   class TestCase < Test::Unit::TestCase
     include Autotag
-    include Autotag::Tags::Errors
+    include Autotag::Tag::Errors
     
     protected
     
