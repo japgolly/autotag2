@@ -1,4 +1,5 @@
 require 'autotag/app_info'
+require 'autotag/ruby_ext'
 require 'autotag/unicode'
 
 # The following keys are used in the metadata hash:
