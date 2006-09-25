@@ -1,25 +1,37 @@
 require 'autotag/audio_file'
 require 'autotag/metadata_overrides'
+require 'autotag/ruby_ext'
+require 'pp' #DELME
+$KCODE= 'u'
 
+# TAG PARAMS
+# id3v1:
+#   _version
+# id3v2:
+#   _header
+#   _footer
+#   _version
+# apev2:
+#   _header
+#   _footer
+# vorbis:
+#   _tool
+#   _padding
+# lyrics3:
+#   _version
+#   _tag
 module Autotag
   class Engine
     include MetadataOverrides
     include Tags
     
-    TAGS_TO_WRITE= {}
-    TAGS_TO_WRITE[:header]= {ID3v2 => {:_version => 4}}
-    TAGS_TO_WRITE[:footer]= APEv2
-    TAGS_TO_WRITE[:all]= ([TAGS_TO_WRITE[:header]] + [TAGS_TO_WRITE[:footer]]).flatten.map{|t| t.is_a?(Hash) ? t.keys : t }.flatten.uniq
-      
     def self.run
       new.run
     end
     
     def run
       init
-  #    process_root Dir.pwd
-  #    process_root 'x:\music\2. Tag Me'
-      process_root 'test/data'
+      process_root Dir.pwd
     end
     
     #============================================================================
@@ -55,15 +67,16 @@ module Autotag
       @metadata.delete(:year) unless @metadata[:year] =~ /\d+/
       indent :title => "Processing album directory: #{dir}", :dir => dir do
         Dir.glob('?? - *.mp3').each {|filename|
-          process_mp3 filename
+          process_song filename
         }
       end
     end
     
-    def process_mp3(filename)
+    def process_song(filename)
       puts filename
+      file_updated= false
       # open file
-      AudioFile.open(filename) do |af|
+      AudioFile.open_file(filename) do |af|
         # read tags from file
         existing_tags= af.read_tags
         
@@ -83,26 +96,45 @@ module Autotag
         # compare tags
         expected_tags= {}
         TAGS_TO_WRITE[:all].each {|tag_class|
-          expected_tags[tag_class]= metadata.clone
-          expected_tags[tag_class].merge!(TAGS_TO_WRITE[:header][tag_class]) if TAGS_TO_WRITE[:header].is_a?(Hash) && TAGS_TO_WRITE[:header][tag_class]
-          expected_tags[tag_class].merge!(TAGS_TO_WRITE[:footer][tag_class]) if TAGS_TO_WRITE[:footer].is_a?(Hash) && TAGS_TO_WRITE[:footer][tag_class]
+          expected_tags[tag_class]= metadata.merge(DEFAULT_FIELDS[tag_class] || {})
         }
 
         if existing_tags == expected_tags
           puts 'Up to date'
         else
           puts 'Updating'
+          file_updated= true
           # create tmp file
-          # write header tags
-          # copy mp3
-          # write footer tags
-          # rename files
+          File.open(TEMP_FILE,'wb') do |fout|
+            # write header tags
+            create_and_write_tags af, fout, TAGS_TO_WRITE[:header], expected_tags
+            # copy mp3
+            fout<< af.read_all
+            # write footer tags
+            create_and_write_tags af, fout, TAGS_TO_WRITE[:footer], expected_tags
+          end
         end
         
       end # AudioFile.open
+      # rename files
+      replace_old_song(filename) if file_updated
     end # def process_mp3
     
     #----------------------------------------------------------------------------
+    
+    def create_and_write_tags(af,fout,tag_classes,tag_data)
+      tag_classes.each {|tag_class|
+        fout<< create_tag(af,tag_class,tag_data[tag_class])
+      }
+    end
+    
+    def create_tag(af,tag_class,content)
+      af.tag_processor(tag_class).set_metadata(content).create
+    end
+    
+    def delete_temp_file
+      File.delete(TEMP_FILE) if File.exists?(TEMP_FILE)
+    end
     
     def each_subdir(mask='*')
       dirs= Dir.glob(mask, File::FNM_DOTMATCH) - ['.','..']
@@ -114,8 +146,9 @@ module Autotag
 #      puts "\n"
       puts options[:title] if options[:title]
       @indent<< '  '
+      # TODO This should be in a seperate function which calls indent
       if options[:dir]
-        Dir.chdir(options[:dir]) {yield}
+        Dir.chdir(options[:dir]) {delete_temp_file; yield}
       else
         yield
       end
@@ -136,6 +169,21 @@ module Autotag
       Kernel.puts str
     end
     
+    def replace_old_song(filename)
+      raise 'Temp file doesnt exist. Cant replace old file.' unless File.exists?(TEMP_FILE)
+      File.delete filename
+      File.rename TEMP_FILE, filename
+    end
     
+    #============================================================================
+    TAGS_TO_WRITE= {}
+    TAGS_TO_WRITE[:header]= [ID3v2]
+    TAGS_TO_WRITE[:footer]= [APEv2]
+    TAGS_TO_WRITE[:all]= (TAGS_TO_WRITE[:header]+TAGS_TO_WRITE[:footer]).uniq
+    TAGS_TO_WRITE.deep_freeze
+    DEFAULT_FIELDS= {}
+    DEFAULT_FIELDS[ID3v2]= {:_version => 4}
+    DEFAULT_FIELDS.deep_freeze
+    TEMP_FILE= 'autotag - if autotag is not running you can delete this file.tmp'
   end
 end
