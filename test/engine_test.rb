@@ -1,19 +1,21 @@
 require 'test_helper'
 require 'autotag/engine'
 
-class Autotag::Engine
-  attr_accessor :metadata
-  attr_writer :textfile
-  def metadata_override_file_names; [@textfile] end
-  def puts(str=nil) end
-end
-
 class EngineTest < Autotag::TestCase
   
+  class MockEngine < Autotag::Engine
+    attr_accessor :metadata
+    attr_writer :textfile
+    def metadata_override_file_names; [@textfile] end
+    def puts(str=nil) end
+  end
+  
   def setup
-    @e= Autotag::Engine.new
+    @e= MockEngine.new
     @e.metadata= {}
   end
+  
+  #----------------------------------------------------------------
   
   def test_process_file_or_directory_name
     [
