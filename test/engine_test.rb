@@ -43,13 +43,15 @@ class EngineTest < Autotag::TestCase
         :artist => 'メガドン',
         :album => '灰とダイヤモンド',
         :albumtype => 'Ahh',
-        1 => '真夏の扉 (GLAY VERSION)',
-        2 => '彼女の"Modern..."',
-        4 => 'ひどくありふれたホワイトノイズをくれ',
-        5 => 'Rain (GLAY VERSION)',
-        8 => '千ノナイフガ胸ヲ刺ス',
-        10 => 'if ～灰とダイヤモンド～',
-        12 => charset,
+        :_track_overrides => {
+          '1' => '真夏の扉 (GLAY VERSION)',
+          '2' => '彼女の"Modern..."',
+          '4' => 'ひどくありふれたホワイトノイズをくれ',
+          '5' => 'Rain (GLAY VERSION)',
+          '8' => '千ノナイフガ胸ヲ刺ス',
+          '10' => 'if ～灰とダイヤモンド～',
+          '12' => charset,
+        },
       }, @e.metadata)
     }
   end

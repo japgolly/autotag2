@@ -135,7 +135,7 @@ module Autotag
       end
       
       def tag2sym(tag)
-        TAG2SYM[tag] || tag
+        TAG2SYM[tag.upcase] || tag.upcase
       end
       
       #--------------------------------------------------------------------------
@@ -155,8 +155,9 @@ module Autotag
         :track_number => 'Track',
         :year => 'Year',
       }.deep_freeze
-      TAG2SYM= SYM2TAG.invert.deep_freeze
-      
+      TAG2SYM= {}
+      SYM2TAG.each{|s,t| TAG2SYM[t.upcase]= s}
+      TAG2SYM.deep_freeze
     end
   end
 end

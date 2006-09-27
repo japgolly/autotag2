@@ -78,7 +78,7 @@ module Autotag
           tracks2.each {|f,fu,p|
             raise unless fu =~ p
             o= {:track_number => $1, :track => filename2human_text($2)}
-            o[:track_number].gsub!(/^0+(?=.)/,'')
+            remove_leading_zeros! o[:track_number]
             tracks[f]= o
           }
           with_metadata do
@@ -86,6 +86,10 @@ module Autotag
             tracks.each do |f,o|
               with_metadata do
                 @metadata.merge! o
+                if @metadata[:_track_overrides]
+                  v= @metadata[:_track_overrides][@metadata[:track_number]]
+                  @metadata[:track]= v if v
+                end
                 process_track!(f)
               end
             end

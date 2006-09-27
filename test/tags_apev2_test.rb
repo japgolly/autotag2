@@ -24,7 +24,7 @@ class APEv2Test < Autotag::TestCase
         :disc => '1',
         :total_discs => '2',
         :album_type => 'Album',
-        'Bullshit' => 'ahh',
+        'BULLSHIT' => 'ahh',
       }, metadata)
       assert_af_data af, 0, 287, 3503-287, "\xFF\xF3\x84\x64\x00", "\x00\x00\x41\x4D\x45"
     end
@@ -67,7 +67,7 @@ class APEv2Test < Autotag::TestCase
       :disc => '1',
       :total_discs => '2',
       :album_type => 'Album',
-      'Bullshit' => 'ahh',
+      'BULLSHIT' => 'ahh',
       :replaygain_album_gain => '-0.46 dB',
       :replaygain_album_peak => '0.243525',
       :replaygain_track_gain => '+1.31 dB',

@@ -12,7 +12,7 @@ module Autotag
         matches= []
         files_utf= {}
         files.each{|f| files_utf[f]= filename2utf8(f)}
-        files_utf.each{|f,f_utf8|
+        files_utf.sort.each{|f,f_utf8|
           ignore= false
           ignore_patterns.each{|p| ignore ||= !(f_utf8 !~ p) }
           match_patterns.each{|p|
@@ -46,6 +46,10 @@ module Autotag
           delete_temp_file
           yield
         }
+      end
+      
+      def remove_leading_zeros!(str)
+        str.gsub!(/^0+(?=.)/,'')
       end
       
       @@temp_filename= 'autotag - if autotag is not running you can safely delete this file.tmp'.freeze

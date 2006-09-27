@@ -3,3 +3,8 @@ hehehe
   ARTIST:  AC/DC 
 
   sadf
+  
+  ALBUMTYPE: ERROR
+ALBUM: ERROR
+01. ERROR
+  

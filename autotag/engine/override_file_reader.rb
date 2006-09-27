@@ -1,4 +1,5 @@
 require 'autotag/unicode'
+require 'autotag/engine/misc'
 
 module Autotag
   class Engine
@@ -9,6 +10,8 @@ module Autotag
     module OverrideFileReader
       include Unicode
       
+      # level= :artist # /Nevermore/autotag.txt
+      # level= :album  # /Nevermore/2003 - Enemies Of Reality/autotag.txt
       def read_overrides(level)
         override_file_names.each do |filename|
           read_unicode_file(filename).split(/[\r\n]+/).each {|l|
@@ -27,7 +30,7 @@ module Autotag
       #--------------------------------------------------------------------------
       private
       
-      def extract_field_override(line_of_text, field,str)
+      def extract_field_override(line_of_text, field, str)
         if line_of_text =~ Regexp.new("^#{str}[:：](.+)$",0,'U')
           value= unicode_trim($1)
           unless value == ''
@@ -40,9 +43,11 @@ module Autotag
       
       def extract_track_override(line_of_text)
         if line_of_text.tr('０-９','0-9') =~ /^(\d{1,3})[.．:：](.+)$/
-          track,value= $1.to_i,unicode_trim($2)
+          track,value= $1,unicode_trim($2)
           unless value == ''
-            @metadata[track]= value
+            remove_leading_zeros! track
+            @metadata[:_track_overrides] ||= {}
+            @metadata[:_track_overrides][track]= value
             return true
           end
         end

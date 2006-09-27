@@ -24,6 +24,9 @@ class FullTest < Autotag::TestCase
       }.deep_freeze
       @e= MockEngine.new
       @e.run
+      
+      #########################################################################
+      # ACDC/1970 - Why_
       album= {
           :artist => 'AC/DC',
           :album => 'Why?',
@@ -50,7 +53,34 @@ class FullTest < Autotag::TestCase
           :track => 'NADA...',
           :track_number => '12',
         }.merge(album), metadata_per_tag
-    }
+        
+      #########################################################################
+      # ACDC/1972 - へへ
+      album= {
+          :artist => 'AC-DC',
+          :album => 'へへ',
+          :year => '1972',
+          :total_tracks => '7',
+      }
+      assert_file 'ACDC/1972 - へへ/01 - Asd_ qwe.mp3', 2269, 'FE F3 84 64 01'.h, '00 03 FC 00 41'.h, {
+          :track => ':Working?!?!',
+          :track_number => '1',
+          :replaygain_track_gain => '+17.43 dB',
+          :replaygain_track_peak => '0.119293',
+        }.merge(album), metadata_per_tag
+      assert_file 'ACDC/1972 - へへ/02 - Breaking Away.mp3', 773, 'FF FA B0 0C 75'.h, '28 1B FF FF F3'.h, {
+          :track => 'よし！',
+          :track_number => '2',
+          :replaygain_track_gain => '-8.770000 dB',
+          :replaygain_track_peak => '1.130801',
+        }.merge(album), metadata_per_tag
+      assert_file 'ACDC/1972 - へへ/07 - NADA....mp3', 480, 'FF F3 24 64 0B'.h, '04 24 2B D6 0E'.h, {
+          :track => 'Nada.',
+          :track_number => '7',
+        }.merge(album), metadata_per_tag
+      
+      
+    } # engine_test_on
   end
   
   #----------------------------------------------------------------
