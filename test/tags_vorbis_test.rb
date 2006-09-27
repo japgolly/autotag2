@@ -34,11 +34,7 @@ class VorbisTest < Autotag::TestCase
         :replaygain_track_peak => '0.123417',
       }, metadata)
       assert_equal ["\x00\x00\x00\x22\x04\x80\x04\x80\x00\x00\x0E\x00\x10\x0A\x0A\xC4\x42\xF0\x00\x7E\x36\x24\xD4\x1D\xD9\xFD\x7D\xE2\x13\x49\xD4\x46\x2A\x00\x96\xB1\x78\x34"], other_tags
-      assert_equal 4146, af.size_of_header
-      assert_equal 0, af.size_of_footer
-      assert_equal 7680-4146, af.size
-      assert_equal "\xFF\xF8\x39\x18\x00", af.read_all[0..4]
-      assert_equal "\x00\x00\x00\x40\x1A", af.read_all[-5..-1]
+      assert_af_data af, 4146, 0, 7680-4146, "\xFF\xF8\x39\x18\x00", "\x00\x00\x00\x40\x1A"
     end
   end
   

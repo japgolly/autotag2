@@ -6,7 +6,7 @@ class EngineTest < Autotag::TestCase
   class MockEngine < Autotag::Engine
     attr_accessor :metadata
     attr_writer :textfile
-    def metadata_override_file_names; [@textfile] end
+    def override_file_names; [@textfile] end
     def puts(str=nil) end
   end
   
@@ -17,7 +17,7 @@ class EngineTest < Autotag::TestCase
   
   #----------------------------------------------------------------
   
-  def test_process_file_or_directory_name
+  def test_filename2human_text
     [
       ['aaa _ bbb', 'aaa / bbb'],
       ['aaa_ bbb', 'aaa: bbb'],
@@ -25,20 +25,20 @@ class EngineTest < Autotag::TestCase
       ["abc ''qwe'' hehe", 'abc "qwe" hehe'],
       ["_Part 2_ why _ why not_", '_Part 2: why / why not?'],
     ].each {|test,expected|
-      assert_equal expected, @e.send(:process_file_or_directory_name,test)
+      assert_equal expected, @e.send(:filename2human_text,test)
     }
   end
   
-  def test_read_metadata_overrides
+  def test_override_file_read
     ['utf8','utf8n','utf16le','utf16be'].each {|charset|
       @e.textfile= "#{test_data_dir}/autotag-#{charset}.txt"
       
       @e.metadata.clear
-      @e.send :read_metadata_overrides, :artist
+      @e.send :read_overrides, :artist
       assert_hashes_equal({:artist => 'メガドン'}, @e.metadata)
       
       @e.metadata.clear
-      @e.send :read_metadata_overrides, :album
+      @e.send :read_overrides, :album
       assert_hashes_equal({
         :artist => 'メガドン',
         :album => '灰とダイヤモンド',

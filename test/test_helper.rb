@@ -1,4 +1,5 @@
 require 'autotag/ruby_ext'
+require 'test/unit'
 require 'pp'
 
 module Autotag
@@ -19,10 +20,19 @@ module Autotag
         test_keys= test.keys
         assert_equal expected_keys, test_keys, "Missing: #{(expected_keys-test_keys).sort.inspect}, Has but shouldn't have: #{(test_keys-expected_keys).sort.inspect}"
         expected_keys.each {|k|
+          puts "KEY: #{k.inspect}\nEXP.: #{expected[k].inspect}\nTEST: #{test[k].inspect}" unless expected[k] == test[k]
           assert_equal expected[k], test[k]
         }
         raise 'should never reach here'
       end
+    end
+    
+    def assert_af_data(af, header_size, footer_size, audio_size, start_of_audio, end_of_audio)
+      assert_equal audio_size, af.size
+      assert_equal header_size, af.size_of_header if header_size
+      assert_equal footer_size, af.size_of_footer if footer_size
+      assert_equal start_of_audio, af.read_all[0..(start_of_audio.size-1)] if start_of_audio
+      assert_equal end_of_audio, af.read_all[(-end_of_audio.size)..-1] if end_of_audio
     end
     
     def tag_call(klass,method,source,type=:file)
@@ -37,5 +47,16 @@ module Autotag
       'test/data'
     end
     
+    def utf82filename(filename)
+      @iconv ||= Iconv.new('shift-jis','utf-8')
+      @iconv.iconv(filename)
+    end
+    
+  end
+end
+
+class String
+  def h
+    eval '"'+(self.strip.split(/ +/).map{|x| "\\x#{x}"}.join)+'"'
   end
 end

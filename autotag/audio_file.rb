@@ -2,9 +2,7 @@ require 'autotag/tags'
 
 module Autotag
   class AudioFile
-    include Tags
     attr_reader :filename, :fin, :type
-    TAGS_TO_READ= [APEv2,ID3v1,ID3v2]
     
     def self.open_file(filename)
       inst= self.new(filename,:file)
@@ -52,7 +50,7 @@ module Autotag
       tags_found= true
       while(tags_found)
         tags_found= false
-        TAGS_TO_READ.each {|tag_class|
+        Autotag::Tags.all.each {|tag_class|
           t= tag_processor(tag_class)
           if t.tag_exists?
             @tag_data[tag_class]= t.read

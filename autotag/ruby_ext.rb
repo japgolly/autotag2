@@ -2,6 +2,15 @@
 # Object
 
 class Object
+  def deep_clone
+    case self
+    when Fixnum,Bignum,Float,NilClass,FalseClass,TrueClass,Continuation,Symbol
+      self
+    else
+      respond_to?(:clone) ? clone : (respond_to?(:dup) ? dup : self)
+    end
+  end
+  
   def deep_freeze
     respond_to?(:freeze) ? freeze : self
   end
@@ -12,6 +21,10 @@ end
 # Collections
 
 class Array
+  def deep_clone
+    map{|e| e.deep_clone}
+  end
+  
   def deep_freeze
     each {|e| e.deep_freeze}
     freeze
@@ -39,12 +52,23 @@ class Hash
     r
   end
   
+  def deep_clone
+    x= {}
+    each {|k,v| x[k.deep_clone]= v.deep_clone}
+    x
+  end
+  
   def deep_freeze
     each {|k,v|
       k.deep_freeze
       v.deep_freeze
     }
     freeze
+  end
+  
+  # Default inspect doesn't sort by key
+  def inspect
+    '{' + self.keys.sort.map{|k| "#{k.inspect}=>#{self[k].inspect}"}.join(', ') + '}'
   end
 end
 
@@ -89,3 +113,13 @@ end
 
 Fixnum.send :include, BitManipulation
 Bignum.send :include, BitManipulation
+
+
+#===========================
+# Module + Class
+
+class Module
+  def get_all_subclasses_of(klass)
+    constants.sort.map{|c| module_eval c}.select{|c|c.is_a?(Class) && c.superclass == klass}
+  end
+end

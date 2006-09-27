@@ -1,5 +1,8 @@
 require 'autotag/tag'
 
+# Params:
+# * :_version
+# * :_tag
 module Autotag
   module Tags
     class Lyrics3 < Tag::Base

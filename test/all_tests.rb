@@ -5,14 +5,16 @@ module Autotag
   class UnitTests
     
     def self.suite
-      run_last= 'FullTest'
       suite= Test::Unit::TestSuite.new('Autotag')
-      class_names= Object.constants.sort
-      if class_names.include?(run_last)
-        class_names.delete run_last
-        class_names<< run_last
+      test_classes= Object.get_all_subclasses_of(TestCase)
+      
+      run_last= FullTest
+      if test_classes.include?(run_last)
+        test_classes.delete run_last
+        test_classes<< run_last
       end
-      class_names.map{|c|eval c}.select{|c|c.is_a?(Class) && c.superclass == TestCase}.each {|c|
+      
+      test_classes.each {|c|
         puts "Loading #{c}"
         suite<< c.suite
       }

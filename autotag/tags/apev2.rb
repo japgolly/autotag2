@@ -1,5 +1,7 @@
 require 'autotag/tag'
 
+# Params:
+# none
 module Autotag
   module Tags
     class APEv2 < Tag::Base

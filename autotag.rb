@@ -1,5 +1,3 @@
-module Autotag
-  Dir.glob('autotag/**/*.rb').each {|f| require f}
-end
+require 'autotag/engine'
 
 Autotag::Engine.run

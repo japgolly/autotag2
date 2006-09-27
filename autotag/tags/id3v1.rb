@@ -1,5 +1,7 @@
 require 'autotag/tag'
 
+# Params:
+# * :_version
 module Autotag
   module Tags
     class ID3v1 < Tag::Base

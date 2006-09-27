@@ -26,11 +26,7 @@ class APEv2Test < Autotag::TestCase
         :album_type => 'Album',
         'Bullshit' => 'ahh',
       }, metadata)
-      assert_equal 0, af.size_of_header
-      assert_equal 287, af.size_of_footer
-      assert_equal 3503-287, af.size
-      assert_equal "\xFF\xF3\x84\x64\x00", af.read_all[0..4]
-      assert_equal "\x00\x00\x41\x4D\x45", af.read_all[-5..-1]
+      assert_af_data af, 0, 287, 3503-287, "\xFF\xF3\x84\x64\x00", "\x00\x00\x41\x4D\x45"
     end
   end
   

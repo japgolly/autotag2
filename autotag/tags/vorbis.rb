@@ -1,5 +1,9 @@
 require 'autotag/tag'
 
+# Params:
+# * :_other_tags
+# * :_padding
+# * :_tool
 module Autotag
   module Tags
     class Vorbis < Tag::Base

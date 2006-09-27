@@ -18,11 +18,7 @@ class Lyrics3Test < Autotag::TestCase
         :_version => 1,
         :_tag => 'LYRICSBEGININD0000200EAL00052 Absolute Power Metasdal-The Definitive Collection 5CD CRC00008339F2EE9000097LYRICSEND',
       }, metadata)
-      assert_equal 0, af.size_of_header
-      assert_equal 115, af.size_of_footer
-      assert_equal 765, af.size
-      assert_equal "\xFF\xFA\xB0\x0C\x75", af.read_all[0..4]
-      assert_equal "\x28\x1B\xFF\xFF\xF3", af.read_all[-5..-1]
+      assert_af_data af, 0, 115, 765, "\xFF\xFA\xB0\x0C\x75", "\x28\x1B\xFF\xFF\xF3"
     end
   end
   
@@ -33,11 +29,7 @@ class Lyrics3Test < Autotag::TestCase
         :_version => 2,
         :_tag => 'LYRICSBEGININD0000200EAL00052 Absolute Power Metal-The Definitive Collection 5CD CRC00008339F2EE9000097LYRICS200',
       }, metadata)
-      assert_equal 0, af.size_of_header
-      assert_equal 112, af.size_of_footer
-      assert_equal 774, af.size
-      assert_equal "\xFF\xFA\xB0\x03\x0C", af.read_all[0..4]
-      assert_equal "\x2A\xA0\xFF\xFF\xF3", af.read_all[-5..-1]
+      assert_af_data af, 0, 112, 774, "\xFF\xFA\xB0\x03\x0C", "\x2A\xA0\xFF\xFF\xF3"
     end
   end
   
