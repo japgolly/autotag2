@@ -104,6 +104,15 @@ class FullTest < Autotag::TestCase
           :total_tracks => '8',
       }
       dir= 'The Woteva Band/2003 - Yes I Like It'
+      assert_file "#{dir}/03 - Endless Sacrifice.mp3", 4892, 'FF FB B2 00'.h, '00 00 47 00'.h, {
+          :track => 'Endless Sacrifice',
+          :track_number => '3',
+          :replaygain_album_gain => '-8.80 dB',
+          :replaygain_album_peak => '1.168573',
+          :replaygain_track_gain => '-3.80 dB',
+          :replaygain_track_peak => '0.672035',
+        }.merge(album), metadata_per_tag
+      assert_file_unchanged "#{dir}/07 - Another Endless Sacrifice.mp3", 5756
       assert_file_unchanged "#{dir}/08 - Endless Sacrifice.mp3", 5759
       
     } # engine_test_on

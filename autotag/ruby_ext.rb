@@ -72,7 +72,7 @@ class Hash
   
   # Default inspect doesn't sort by key
   def inspect
-    '{' + self.keys.sort.map{|k| "#{k.inspect}=>#{self[k].inspect}"}.join(', ') + '}'
+    '{' + keys.map{|k|[k.inspect,k]}.sort{|a,b|a[0]<=>b[0]}.map{|ki,k| "#{ki}=>#{self[k].inspect}"}.join(', ') + '}'
   end
 end
 

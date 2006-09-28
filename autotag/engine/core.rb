@@ -151,6 +151,7 @@ module Autotag
     def create_expected_tags(af, collection, tag_classes, header)
       tag_classes.each {|tag_class|
         m= (collection[tag_class] || @metadata.deep_clone)
+        m.delete(:_track_overrides)
         m[header ? :_header : :_footer]= true
         collection[tag_class]= af.tag_processor(tag_class).get_defaults.merge(m)
       }
