@@ -11,6 +11,17 @@ module Autotag::Tag
     class InvalidTag < TagError; end
     class TagNotFound < TagError; end
   end
+
+
+  # This module contains methods that are only meant to be called
+  # at class-level in the definition of classes that extend Tag::Base.
+  module DSL
+    def set_defaults(d)
+      class_variable_set :@@defaults, d.deep_clone.deep_freeze
+      class_eval 'def get_defaults; @@defaults; end'
+    end
+  end
+  
   
   # This class is the base class that all tag readers/writers should extend.
   # 
@@ -32,6 +43,7 @@ module Autotag::Tag
   class Base
     include Autotag::Unicode
     include Errors
+    extend DSL
     
     def initialize(audiofile)
       @af= audiofile
@@ -54,6 +66,10 @@ module Autotag::Tag
       raise CreateNotSupported
     end
     
+    def get_defaults
+      {}
+    end
+    
     def set_metadata(m)
       @metadata.clear
       @metadata.merge! m
@@ -64,10 +80,8 @@ module Autotag::Tag
     protected
     attr_reader :metadata
     
-    def apply_defaults(defaults)
-      defaults.each {|k,v|
-        self[:"_#{k}"] ||= v
-      }
+    def apply_defaults!
+      @metadata |= get_defaults
     end
     
     def fin
@@ -81,6 +95,5 @@ module Autotag::Tag
     def value_or_nil(v)
       (v.nil? || v == '') ? nil : v
     end
-    
   end # class Base
 end

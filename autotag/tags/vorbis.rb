@@ -9,7 +9,7 @@ module Autotag
     class Vorbis < Tag::Base
       
       def create
-        apply_defaults(DEFAULTS)
+        apply_defaults!
         x= FLAC_HEADER_ID.dup
         # Add other tags
         if self[:_other_tags]
@@ -155,11 +155,7 @@ module Autotag
       TAG_TYPE_METADATA= 4
       TAG_TYPE_PADDING= 1
       
-      DEFAULTS= {
-        :padding => 1024,
-        :tool => Autotag::TITLE
-      }.deep_freeze
-      
+      set_defaults :_padding => 1024, :_tool => Autotag::TITLE
     end
   end
 end

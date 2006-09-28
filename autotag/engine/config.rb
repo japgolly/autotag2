@@ -36,6 +36,15 @@ module Autotag
         x
       end
       
+      # Returns an array of metadata attributes that can be ignored when
+      # comparing existing tags to new tags (in order to determine whether
+      # or not files are up-to-date).
+      def ignorable_attributes#(tag)
+        [:_padding,:_tool]
+      end
+      
+      # Returns an array of metadata attributes that will be copied from
+      # existing tags to new tags.
       def preservable_attributes
         [:replaygain_track_gain, :replaygain_album_gain, :replaygain_track_peak, :replaygain_album_peak]
       end

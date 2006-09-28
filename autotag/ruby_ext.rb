@@ -52,6 +52,10 @@ class Hash
     r
   end
   
+  def |(h2)
+    h2.merge(self)
+  end
+  
   def deep_clone
     x= {}
     each {|k,v| x[k.deep_clone]= v.deep_clone}

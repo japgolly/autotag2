@@ -116,15 +116,22 @@ module Autotag
           }
         }
         
-        # Create new file
-        File.open(temp_filename,'wb') do |fout|
-          replace_track= true
-          # Write header tags
-          fout<< create_tags(af, tags_to_write(true), true)
-          # Copy audio
-          fout<< af.read_all
-          # Write footer tags
-          fout<< create_tags(af, tags_to_write(false), false)
+        # Create seperate metadata hashes for each tag
+        expected_tags= {}
+        create_expected_tags(af, expected_tags, tags_to_write(true), true)
+        create_expected_tags(af, expected_tags, tags_to_write(false), false)
+        
+        # Update if needed
+        unless tags_equal?(expected_tags,existing_tags)
+          File.open(temp_filename,'wb') do |fout|
+            replace_track= true
+            # Write header tags
+            fout<< create_bin_tags(af, expected_tags, tags_to_write(true))
+            # Copy audio
+            fout<< af.read_all
+            # Write footer tags
+            fout<< create_bin_tags(af, expected_tags, tags_to_write(false))
+          end
         end
         
       end # AudioFile.open
@@ -133,21 +140,38 @@ module Autotag
     
     #----------------------------------------------------------------------------
     
-    def create_tags(af, tag_classes, header)
+    def create_bin_tags(af, metadata_by_tag, tag_classes)
       x= ''
       tag_classes.each {|tag_class|
-        t= af.tag_processor(tag_class)
-        t.set_metadata(@metadata)
-        t[header ? :_header : :_footer]= true
-        x<< t.create
+        x<< af.tag_processor(tag_class).set_metadata(metadata_by_tag[tag_class]).create
       }
       x
+    end
+    
+    def create_expected_tags(af, collection, tag_classes, header)
+      tag_classes.each {|tag_class|
+        m= (collection[tag_class] || @metadata.deep_clone)
+        m[header ? :_header : :_footer]= true
+        collection[tag_class]= af.tag_processor(tag_class).get_defaults.merge(m)
+      }
     end
     
     def replace_track!(filename)
       raise 'Temp file doesnt exist. Cant replace old file.' unless File.exists?(temp_filename)
       File.delete filename
       File.rename temp_filename, filename
+    end
+    
+    def tags_to_write_all
+      @@tags_to_write_all ||= (tags_to_write(true) + tags_to_write(false)).uniq.freeze
+    end
+    
+    def tags_equal?(a,b)
+      return false unless a.keys == b.keys
+      a.each_key {|t|
+        return false unless (a[t] - ignorable_attributes) == (b[t] - ignorable_attributes)
+      }
+      true
     end
     
   end
