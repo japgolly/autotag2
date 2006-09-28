@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'test/test_helper'
 require 'autotag/engine'
 
 class EngineTest < Autotag::TestCase
