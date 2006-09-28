@@ -126,4 +126,11 @@ class Module
   def get_all_subclasses_of(klass)
     constants.sort.map{|c| module_eval c}.select{|c|c.is_a?(Class) && c.superclass == klass}
   end
+  
+  def freeze_all_constants
+    clist= constants
+    clist-= included_modules.map{|m|m.constants}.flatten
+    clist-= superclass.constants if self.class == Class
+    clist.each{|c|const_get(c).deep_freeze}
+  end
 end

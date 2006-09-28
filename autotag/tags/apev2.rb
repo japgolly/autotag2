@@ -154,10 +154,11 @@ module Autotag
         :track => 'Title',
         :track_number => 'Track',
         :year => 'Year',
-      }.deep_freeze
+      }
       TAG2SYM= {}
       SYM2TAG.each{|s,t| TAG2SYM[t.upcase]= s}
-      TAG2SYM.deep_freeze
+      
+      freeze_all_constants
     end
   end
 end

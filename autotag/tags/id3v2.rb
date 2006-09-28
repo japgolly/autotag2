@@ -190,14 +190,14 @@ module Autotag
         :track        => %w{2 TIT2 TIT2},
         :track_number => %w{2 TRCK TRCK},
         :year         => %w{2 TYER TDRC},
-      }.deep_freeze
+      }
       SYM2TAGXXX= {
         :album_type            => 'Albumtype',
         :replaygain_album_gain => 'replaygain_album_gain',
         :replaygain_album_peak => 'replaygain_album_peak',
         :replaygain_track_gain => 'replaygain_track_gain',
         :replaygain_track_peak => 'replaygain_track_peak',
-      }.deep_freeze
+      }
       TAG2SYM= []
       SYM2TAG.each{|sym,tags|
         tags.each_index{|ver|
@@ -205,15 +205,16 @@ module Autotag
           TAG2SYM[ver][tags[ver]]= sym
         }
       }
-      TAG2SYM.deep_freeze
-      TAGXXX2SYM= SYM2TAGXXX.invert.deep_freeze
-      TAGXXX= %w{TXX TXXX TXXX}.deep_freeze
+      TAG2SYM
+      TAGXXX2SYM= SYM2TAGXXX.invert
+      TAGXXX= %w{TXX TXXX TXXX}
       MERGED_VALUES= {
         :track_number => :total_tracks,
         :disc => :total_discs,
-      }.deep_freeze
+      }
       
       set_defaults :_padding => 1024, :_version => 4
+      freeze_all_constants
     end
   end
 end

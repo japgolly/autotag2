@@ -148,14 +148,15 @@ module Autotag
         :track => 'TITLE',
         :track_number => 'TRACKNUMBER',
         :year => 'DATE',
-      }.deep_freeze
-      TAG2SYM= SYM2TAG.invert.deep_freeze
+      }
+      TAG2SYM= SYM2TAG.invert
       
-      FLAC_HEADER_ID= 'fLaC'.freeze
+      FLAC_HEADER_ID= 'fLaC'
       TAG_TYPE_METADATA= 4
       TAG_TYPE_PADDING= 1
       
       set_defaults :_padding => 1024, :_tool => Autotag::TITLE
+      freeze_all_constants
     end
   end
 end
