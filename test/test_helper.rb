@@ -18,7 +18,7 @@ module Autotag
       if expected != test
         expected_keys= expected.keys
         test_keys= test.keys
-        assert_equal expected_keys, test_keys, "Missing: #{(expected_keys-test_keys).sort.inspect}, Has but shouldn't have: #{(test_keys-expected_keys).sort.inspect}"
+        assert_equal expected_keys, test_keys, "Missing: #{(expected_keys-test_keys).sorted_inspect}\nHas but shouldn't have: #{(test_keys-expected_keys).sorted_inspect}"
         expected_keys.each {|k|
           puts "KEY: #{k.inspect}\nEXP.: #{expected[k].inspect}\nTEST: #{test[k].inspect}" unless expected[k] == test[k]
           assert_equal expected[k], test[k]

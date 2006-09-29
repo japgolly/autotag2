@@ -33,6 +33,10 @@ class Array
   def rand
     empty? ? nil : self[Kernel::rand(size)]
   end
+  
+  def sorted_inspect
+    '[' + map{|k|k.inspect}.sort.join(', ') + ']'
+  end
 end
 
 class Hash
