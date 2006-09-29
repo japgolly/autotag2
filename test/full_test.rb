@@ -118,7 +118,8 @@ class FullTest < Autotag::TestCase
       #########################################################################
       # The Woteva Band/2005 - Rain
       # Tests:
-      #   * processes cd/disc directories
+      #   * processes cd/disc directories (numbered cds/discs)
+      #   * sets :total_discs correctly
       #   * detects disc_title correctly
       album= {
           :artist => 'The Woteva Band',
@@ -134,6 +135,25 @@ class FullTest < Autotag::TestCase
       assert_file_metadata "#{dir}/disc 7/03 - Baa.mp3",  {:disc => '7',:track_number => '3', :total_tracks => '3', :track => 'Baa' }.merge(album), metadata_per_tag
       assert_file_metadata "#{dir}/DISC 9/02 - Crap.mp3", {:disc => '9',:track_number => '2', :total_tracks => '2', :track => 'Crap'}.merge(album), metadata_per_tag
       assert_file_metadata "#{dir}/CD 3 - Mars/07 - Ha ha ha ha.mp3", {:disc => '3',:disc_title => 'Mars',:track_number => '7',:total_tracks => '7',:track => 'Ha ha ha ha'}.merge(album), metadata_per_tag
+      
+      #########################################################################
+      # The Woteva Band/1930 - Django
+      # Tests:
+      #   * processes cd/disc directories (lettered cds/discs)
+      #   * doesn't set :total_discs
+      album= {
+          :artist => 'The Woteva Band',
+          :album => 'Django',
+          :year => '1930',
+          :track => 'Random',
+          :track_number => '1',
+          :total_tracks => '1',
+      }
+      dir= 'The Woteva Band/1930 - Django'
+      assert_file_metadata "#{dir}/Disc A - Paris 1937/01 - Random.mp3",{:disc => 'A',:disc_title=> 'Paris 1937'}.merge(album), metadata_per_tag
+      assert_file_metadata "#{dir}/Disc B - London 1939-40/01 - Random.mp3",{:disc => 'B',:disc_title=> 'London 1939-40'}.merge(album), metadata_per_tag
+      assert_file_metadata "#{dir}/Disc C/01 - Random.mp3",{:disc => 'C'}.merge(album), metadata_per_tag
+      assert_file_metadata "#{dir}/Disc D - Paris 1946-48/01 - Random.mp3",{:disc => 'D',:disc_title=> 'Paris 1946-48'}.merge(album), metadata_per_tag
       
     } # engine_test_on
   end

@@ -83,6 +83,7 @@ module Autotag
           end
           with_metadata do
             @metadata[:total_discs]= find_highest_numeric_value(dirs.values,:disc)
+            @metadata.delete_if_nil :total_discs
             dirs.each do |d,o|
               with_metadata do
                 @metadata.merge! o
@@ -109,6 +110,7 @@ module Autotag
         tracks= map_advanced_glob_results(tracks2,:track_number) {|m| {:track_number => m[1], :track => filename2human_text(m[2])} }
         with_metadata do
           @metadata[:total_tracks]= find_highest_numeric_value(tracks.values,:track_number)
+          @metadata.delete_if_nil :total_tracks
           tracks.each do |f,o|
             with_metadata do
               @metadata.merge! o

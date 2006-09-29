@@ -74,6 +74,10 @@ class Hash
     freeze
   end
   
+  def delete_if_nil(key)
+    delete(key) if self[key].nil?
+  end
+  
   # Default inspect doesn't sort by key
   def inspect
     '{' + keys.map{|k|[k.inspect,k]}.sort{|a,b|a[0]<=>b[0]}.map{|ki,k| "#{ki}=>#{self[k].inspect}"}.join(', ') + '}'

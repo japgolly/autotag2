@@ -42,7 +42,9 @@ module Autotag
       end
       
       def find_highest_numeric_value(array_of_hashs, attr)
-        array_of_hashs.map{|o|o[attr]}.reject{|x|x !~ /^\d+$/}.map{|x|x.to_i}.sort.last.to_s
+        num_array= array_of_hashs.map{|o|o[attr]}.reject{|x|x !~ /^\d+$/}
+        return nil if num_array.empty?
+        num_array.map{|x|x.to_i}.sort.last.to_s
       end
       
       def in_dir(dir)
