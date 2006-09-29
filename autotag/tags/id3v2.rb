@@ -186,6 +186,7 @@ module Autotag
         :artist       => %w{2 TPE1 TPE1},
         :album        => %w{2 TALB TALB},
         :disc         => %w{2 TPOS TPOS},
+        :disc_title   => %w{2 nil  TSST},
         :genre        => %w{2 TCON TCON},
         :track        => %w{2 TIT2 TIT2},
         :track_number => %w{2 TRCK TRCK},
@@ -202,10 +203,9 @@ module Autotag
       SYM2TAG.each{|sym,tags|
         tags.each_index{|ver|
           TAG2SYM[ver] ||= {}
-          TAG2SYM[ver][tags[ver]]= sym
+          TAG2SYM[ver][tags[ver]]= sym if tags[ver] && tags[ver] != 'nil'
         }
       }
-      TAG2SYM
       TAGXXX2SYM= SYM2TAGXXX.invert
       TAGXXX= %w{TXX TXXX TXXX}
       MERGED_VALUES= {

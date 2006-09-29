@@ -144,6 +144,7 @@ module Autotag
         :album_type => 'Albumtype',
         :artist => 'Artist',
         :disc => 'Disc',
+        :disc_title => 'SETSUBTITLE',
         :genre => 'Genre',
         :replaygain_album_gain => 'replaygain_album_gain',
         :replaygain_album_peak => 'replaygain_album_peak',

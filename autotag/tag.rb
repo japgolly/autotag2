@@ -30,6 +30,7 @@ module Autotag::Tag
   #   :album_type
   #   :artist
   #   :disc
+  #   :disc_title
   #   :genre
   #   :replaygain_album_gain
   #   :replaygain_album_peak

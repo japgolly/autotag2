@@ -76,7 +76,11 @@ module Autotag
         # Find cd directories
         dirs2= advanced_glob(:dir, file_patterns(:cd), file_ignore_patterns(:cd))
         unless dirs2.empty?
-          dirs= map_advanced_glob_results(dirs2,:disc) {|m| {:disc => m[1]} }
+          dirs= map_advanced_glob_results(dirs2,:disc) do |m|
+            o= {:disc => m[1]}
+            o[:disc_title]= m[2] if m[2]
+            o
+          end
           with_metadata do
             @metadata[:total_discs]= find_highest_numeric_value(dirs.values,:disc)
             dirs.each do |d,o|

@@ -40,7 +40,7 @@ module Autotag
       FILE_PATTERNS= {
         :artist => [/^(.+)$/],
         :album  => [Regexp.new('^(.{4})'+sep+'(.+)$',nil,'U')],
-        :cd     => [/^(?:cd|disc) +([a-z0-9]+)$/iu],
+        :cd     => [Regexp.new('^(?:cd|disc) +([a-z0-9]+)(?:'+sep+'(.+))?$',true,'U')],
         :track  => [Regexp.new('^(.{2})'+sep+'(.+)\.(?:mp3|flac)$',true,'U')],
       }
       FILE_IGNORE_PATTERNS= [/^\./]

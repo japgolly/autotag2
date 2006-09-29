@@ -119,6 +119,7 @@ class FullTest < Autotag::TestCase
       # The Woteva Band/2005 - Rain
       # Tests:
       #   * processes cd/disc directories
+      #   * detects disc_title correctly
       album= {
           :artist => 'The Woteva Band',
           :album => 'Rain',
@@ -132,6 +133,7 @@ class FullTest < Autotag::TestCase
       assert_file_metadata "#{dir}/disc 7/02 - Crap.mp3", {:disc => '7',:track_number => '2', :total_tracks => '3', :track => 'Crap'}.merge(album), metadata_per_tag
       assert_file_metadata "#{dir}/disc 7/03 - Baa.mp3",  {:disc => '7',:track_number => '3', :total_tracks => '3', :track => 'Baa' }.merge(album), metadata_per_tag
       assert_file_metadata "#{dir}/DISC 9/02 - Crap.mp3", {:disc => '9',:track_number => '2', :total_tracks => '2', :track => 'Crap'}.merge(album), metadata_per_tag
+      assert_file_metadata "#{dir}/CD 3 - Mars/07 - Ha ha ha ha.mp3", {:disc => '3',:disc_title => 'Mars',:track_number => '7',:total_tracks => '7',:track => 'Ha ha ha ha'}.merge(album), metadata_per_tag
       
     } # engine_test_on
   end
