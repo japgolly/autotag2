@@ -1,4 +1,3 @@
-require 'test/unit/ui/console/testrunner'
 Dir.glob('test/*_test.rb').each {|f| require f}
 
 module Autotag
@@ -25,4 +24,7 @@ module Autotag
   end
 end
 
-Test::Unit::UI::Console::TestRunner.run(Autotag::UnitTests)
+if __FILE__ == $0
+  require 'test/unit/ui/console/testrunner'
+  Test::Unit::UI::Console::TestRunner.run(Autotag::UnitTests)
+end
