@@ -15,6 +15,8 @@ module Autotag
             /^(.{4}) - (.+)$/u,
             /^(.{4})\. (.+)$/u,
           ]
+        when :cd
+          [/^(?:cd|disc) ([a-z0-9]+)$/iu]
         when :track
           [
             /^(.{2}) - (.+)\.(?:mp3|flac)$/iu,
@@ -26,14 +28,7 @@ module Autotag
       
       # Returns an array of regexs of dir/file names to ignore.
       def file_ignore_patterns(type)
-        x= [/^\./]
-        case type
-        when :artist
-        when :album
-        when :track
-        else raise
-        end
-        x
+        [/^\./]
       end
       
       # Returns an array of metadata attributes that can be ignored when

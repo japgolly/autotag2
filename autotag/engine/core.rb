@@ -69,36 +69,55 @@ module Autotag
       @metadata[:year]= $1
       @metadata[:album]= filename2human_text($2)
       in_dir(dir) {
-        read_overrides(:album)
         
-        # Find tracks
-        tracks2= advanced_glob(:file, file_patterns(:track), file_ignore_patterns(:track))
-        unless tracks2.empty?
-          tracks= {}
-          tracks2.each {|f,fu,p|
-            raise unless fu =~ p
-            o= {:track_number => $1, :track => filename2human_text($2)}
-            remove_leading_zeros! o[:track_number]
-            tracks[f]= o
-          }
+        # Process tracks in this directory
+        process_dir_of_tracks
+        
+        # Find cd directories
+        dirs2= advanced_glob(:dir, file_patterns(:cd), file_ignore_patterns(:cd))
+        unless dirs2.empty?
+          dirs= map_advanced_glob_results(dirs2,:disc) {|m| {:disc => m[1]} }
           with_metadata do
-            @metadata[:total_tracks]= tracks.values.map{|o|o[:track_number]}.reject{|x|x !~ /^\d+$/}.map{|x|x.to_i}.sort.last.to_s
-            tracks.each do |f,o|
+            @metadata[:total_discs]= find_highest_numeric_value(dirs.values,:disc)
+            dirs.each do |d,o|
               with_metadata do
                 @metadata.merge! o
-                if @metadata[:_track_overrides]
-                  v= @metadata[:_track_overrides][@metadata[:track_number]]
-                  @metadata[:track]= v if v
-                end
-                process_track!(f)
-              end
-            end
+                in_dir(d) {
+                  process_dir_of_tracks
+                }
+              end # with_metadata
+            end # dirs.each
           end # with_metadata
-        end # unless tracks.empty?
-        
-        # TODO Find cd directories
-        # Find and call process_album_dir()
+        end # unless dirs.empty?
       }
+    end
+    
+    # Process a directory containing tracks.
+    # Contains: tracks.
+    # Eg: x:/music/Andromeda/2006 - Chimera
+    # Eg: x:/music/Andromeda/2006 - Chimera/CD 1
+    def process_dir_of_tracks
+      read_overrides(:album)
+      
+      # Find tracks
+      tracks2= advanced_glob(:file, file_patterns(:track), file_ignore_patterns(:track))
+      unless tracks2.empty?
+        tracks= map_advanced_glob_results(tracks2,:track_number) {|m| {:track_number => m[1], :track => filename2human_text(m[2])} }
+        with_metadata do
+          @metadata[:total_tracks]= find_highest_numeric_value(tracks.values,:track_number)
+          tracks.each do |f,o|
+            with_metadata do
+              @metadata.merge! o
+              if @metadata[:_track_overrides]
+                v= @metadata[:_track_overrides][@metadata[:track_number]]
+                @metadata[:track]= v if v
+              end
+              process_track!(f)
+            end # with_metadata
+          end # tracks.each
+        end # with_metadata
+      end # unless tracks2.empty?
+      
     end
     
     # Process a track.

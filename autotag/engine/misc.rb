@@ -41,11 +41,31 @@ module Autotag
         @iconv.iconv(filename)
       end
       
+      def find_highest_numeric_value(array_of_hashs, attr)
+        array_of_hashs.map{|o|o[attr]}.reject{|x|x !~ /^\d+$/}.map{|x|x.to_i}.sort.last.to_s
+      end
+      
       def in_dir(dir)
         Dir.chdir(dir) {
           delete_temp_file
           yield
         }
+      end
+      
+      # Turns the results of advanced_glob() to a hash like this:
+      # {
+      #   '01 - Hello.mp3' => {:track => 'Hello', :track_number => '1'},
+      #   '02 - Happy.mp3' => {:track => 'Happy', :track_number => '2'},
+      # }
+      def map_advanced_glob_results(aglob_results, remove_leading_zeros_from)
+        r= {}
+        aglob_results.each {|f,fu,p|
+          raise unless fu =~ p
+          o= yield($~)
+          remove_leading_zeros! o[remove_leading_zeros_from] if remove_leading_zeros_from
+          r[f]= o
+        }
+        r
       end
       
       def remove_leading_zeros!(str)

@@ -115,6 +115,24 @@ class FullTest < Autotag::TestCase
       assert_file_unchanged "#{dir}/07 - Another Endless Sacrifice.mp3", 5756
       assert_file_unchanged "#{dir}/08 - Endless Sacrifice.mp3", 5759
       
+      #########################################################################
+      # The Woteva Band/2005 - Rain
+      # Tests:
+      #   * processes cd/disc directories
+      album= {
+          :artist => 'The Woteva Band',
+          :album => 'Rain',
+          :year => '2005',
+          :total_discs => '9',
+      }
+      dir= 'The Woteva Band/2005 - Rain'
+      assert_file_metadata "#{dir}/cd 1/01 - Car.mp3",    {:disc => '1',:track_number => '1', :total_tracks => '1', :track => 'Car' }.merge(album), metadata_per_tag
+      assert_file_metadata "#{dir}/Disc 2/21 - Cars.mp3", {:disc => '2',:track_number => '21',:total_tracks => '21',:track => 'Cars'}.merge(album), metadata_per_tag
+      assert_file_metadata "#{dir}/CD 6/03 - Crap.mp3",   {:disc => '6',:track_number => '3', :total_tracks => '3', :track => 'Crap'}.merge(album), metadata_per_tag
+      assert_file_metadata "#{dir}/disc 7/02 - Crap.mp3", {:disc => '7',:track_number => '2', :total_tracks => '3', :track => 'Crap'}.merge(album), metadata_per_tag
+      assert_file_metadata "#{dir}/disc 7/03 - Baa.mp3",  {:disc => '7',:track_number => '3', :total_tracks => '3', :track => 'Baa' }.merge(album), metadata_per_tag
+      assert_file_metadata "#{dir}/DISC 9/02 - Crap.mp3", {:disc => '9',:track_number => '2', :total_tracks => '2', :track => 'Crap'}.merge(album), metadata_per_tag
+      
     } # engine_test_on
   end
   
@@ -126,6 +144,12 @@ class FullTest < Autotag::TestCase
   end
   
   def assert_file(file, audio_size, start_of_audio, end_of_audio, metadata_base, metadata_per_tag)
+    assert_file_metadata(file, metadata_base, metadata_per_tag) do |af|
+      assert_af_data af, nil, nil, audio_size, start_of_audio, end_of_audio
+    end
+  end
+  
+  def assert_file_metadata(file, metadata_base, metadata_per_tag)
     expected_tags= {}
     metadata_per_tag.each {|tag,data|
       expected_tags[tag]= metadata_base.merge(data)
@@ -137,8 +161,8 @@ class FullTest < Autotag::TestCase
       # check tags
       t.each_value {|m| assert !(m[:_header] && m[:_footer])}
       assert_hashes_equal expected_tags, t
-      # check data
-      assert_af_data af, nil, nil, audio_size, start_of_audio, end_of_audio
+      # yield
+      yield(af) if block_given?
     end
   end
   
