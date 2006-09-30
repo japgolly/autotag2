@@ -87,7 +87,8 @@ module Autotag
         puts "Total artists: #{artists_total}"
         puts "Total albums: #{albums_total} (#{div albums_total,artists_total} per artist)"
         puts "Total tracks: #{tracks_total} (#{div tracks_total,albums_total} per album)"
-        puts "Tracks updated/up-to-date: #{tracks_updated}/#{tracks_uptodate}"
+        puts "Total tracks updated: #{tracks_updated} (#{percent tracks_updated,tracks_total})"
+        puts "Total tracks up-to-date: #{tracks_uptodate} (#{percent tracks_uptodate,tracks_total})"
         puts "Unprocessed files: #{unprocessed_file_count}"
         
         puts
@@ -97,7 +98,14 @@ module Autotag
       
       def div(a,b)
         return 0 if b == 0
+        x= a / b
+        return x if x*b == a
         a.to_f / b.to_f
+      end
+      
+      def percent(a,b)
+        x= b == 0 ? 0 : div(a*100,b)
+        x.is_a?(Float) ? '%.1f%%' % x : "#{x}%"
       end
       
       def puts_new_section(name)
