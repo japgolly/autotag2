@@ -10,6 +10,10 @@ module Autotag
     module OverrideFileReader
       include Unicode
       
+      def override_file_names
+        OVERRIDE_FILE_NAMES
+      end
+      
       # level= :artist # /Nevermore/autotag.txt
       # level= :album  # /Nevermore/2003 - Enemies Of Reality/autotag.txt
       def read_overrides(level)
@@ -54,9 +58,9 @@ module Autotag
         false
       end
       
-      def override_file_names
-        @override_file_names ||= ['autotag.txt'].deep_freeze
-      end
+      OVERRIDE_FILE_NAMES= ['autotag.txt']
+      
+      freeze_all_constants
     
     end # module OverrideFileReader
   end # class Engine

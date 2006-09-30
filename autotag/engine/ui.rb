@@ -109,8 +109,7 @@ module Autotag
       end
       
       def remove_override_files_in_pwd_from_all_files
-        #TODO autotag.txt is hardcoded
-        remove_file_in_pwd_from_all_files 'autotag.txt'
+        @engine.override_file_names.each {|f|remove_file_in_pwd_from_all_files f}
       end
       
       def remove_file_in_pwd_from_all_files(filename)
