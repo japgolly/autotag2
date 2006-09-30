@@ -74,12 +74,6 @@ module Autotag
         artists_total= @stats.map{|i|i[:artist]}.uniq.size
         tracks_updated= @stats.select{|i|i[:result]==:update}.size
         tracks_uptodate= @stats.select{|i|i[:result]==:uptodate}.size
-        puts_new_section 'STATS'
-        puts "Total artists: #{artists_total}"
-        puts "Total albums: #{albums_total} (#{div albums_total,artists_total} per artist)"
-        puts "Total tracks: #{tracks_total} (#{div tracks_total,albums_total} per album)"
-        puts "Tracks updated/up-to-date: #{tracks_updated}/#{tracks_uptodate}"
-        puts "Unprocessed files: #{unprocessed_file_count}"
         
         if unprocessed_file_count > 0
           puts_new_section 'UNPROCESSED FILES'
@@ -88,6 +82,13 @@ module Autotag
             files.each{|f| puts "  - #{f}"}
           }
         end
+        
+        puts_new_section 'STATS'
+        puts "Total artists: #{artists_total}"
+        puts "Total albums: #{albums_total} (#{div albums_total,artists_total} per artist)"
+        puts "Total tracks: #{tracks_total} (#{div tracks_total,albums_total} per album)"
+        puts "Tracks updated/up-to-date: #{tracks_updated}/#{tracks_uptodate}"
+        puts "Unprocessed files: #{unprocessed_file_count}"
         
         puts
       end
