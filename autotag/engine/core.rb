@@ -5,6 +5,7 @@ require 'autotag/engine/misc'
 require 'autotag/engine/override_file_reader'
 require 'autotag/engine/ui'
 require 'autotag/ruby_ext'
+require 'autotag/tags'
 require 'iconv'
 
 module Autotag
@@ -121,7 +122,8 @@ module Autotag
         with_metadata do
           @metadata[:total_tracks]= find_highest_numeric_value(tracks.values,:track_number)
           @metadata.delete_if_nil :total_tracks
-          tracks.each do |f,o|
+          tracks.keys.sort{|a,b|a.upcase<=>b.upcase}.each do |f|
+            o= tracks[f]
             with_metadata do
               @metadata.merge! o
               if @metadata[:_track_overrides]
