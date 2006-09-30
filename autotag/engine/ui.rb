@@ -106,6 +106,7 @@ module Autotag
       
       def put(a)
         $stdout.write a
+        $stdout.flush
       end
       
       def remove_override_files_in_pwd_from_all_files
