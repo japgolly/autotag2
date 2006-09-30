@@ -25,3 +25,5 @@
 * Handle V/A albums
 
 * Handle remaster albums (store the original release year ??)
+
+* Add command-line args (use OptionParser/optparse)
