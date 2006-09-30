@@ -12,7 +12,7 @@ class FullTest < Autotag::TestCase
     
       # Assert we are really running on the test directory
       assert_equal tmpdir, Dir.getwd
-      @e= MockEngine.new
+      @e= new_engine_instance
       @e.instance_eval 'def process_root(*); end'
       @e.run
       assert_equal tmpdir, @e.instance_variable_get(:@root_dir)
@@ -22,7 +22,8 @@ class FullTest < Autotag::TestCase
         APEv2 => {:_footer => true},
         ID3v2 => {:_header => true, :_version => 4},
       }.deep_freeze
-      @e= MockEngine.new
+      @e= new_engine_instance
+      @e.instance_variable_get(:@ui).instance_eval 'def puts(*a) Kernel.puts(*a) end; alias :put :old_put' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
       @e.run
       
       #########################################################################
@@ -161,10 +162,6 @@ class FullTest < Autotag::TestCase
   #----------------------------------------------------------------
   private
   
-  class MockEngine < Autotag::Engine
-    def puts(str=nil) end
-  end
-  
   def assert_file(file, audio_size, start_of_audio, end_of_audio, metadata_base, metadata_per_tag)
     assert_file_metadata(file, metadata_base, metadata_per_tag) do |af|
       assert_af_data af, nil, nil, audio_size, start_of_audio, end_of_audio
@@ -218,6 +215,10 @@ class FullTest < Autotag::TestCase
       fake_time= Time.now - 3600*24*365*5
       File.utime(fake_time,fake_time,*new_files)
     }
+  end
+  
+  def new_engine_instance
+    Engine.new
   end
   
   def remove_tmpdir

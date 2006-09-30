@@ -7,7 +7,6 @@ class EngineTest < Autotag::TestCase
     attr_accessor :metadata
     attr_writer :textfile
     def override_file_names; [@textfile] end
-    def puts(str=nil) end
   end
   
   def setup

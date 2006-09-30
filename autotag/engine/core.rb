@@ -3,6 +3,7 @@ require 'autotag/engine/config'
 require 'autotag/engine/conversions'
 require 'autotag/engine/misc'
 require 'autotag/engine/override_file_reader'
+require 'autotag/engine/ui'
 require 'autotag/ruby_ext'
 require 'iconv'
 
@@ -13,23 +14,26 @@ module Autotag
     include Misc
     include OverrideFileReader
     
+    def initialize
+      @ui= UI.new(self)
+    end
+    
     def run
       init
       process_root @root_dir
       shutdown
     end
     
+    #--------------------------------------------------------------------------
     private
     
     def init
-      puts "Golly's MP3 Auto-tagger v#{Autotag::VERSION}"
-      puts "Copyright (c) 2006 David Barri. All rights reserved."
       @root_dir= Dir.pwd
-      @stats= {}
+      @ui.init
     end
     
     def shutdown
-      puts
+      @ui.shutdown
     end
     
     # Process the root directory.
@@ -37,6 +41,7 @@ module Autotag
     # Eg: x:/music
     def process_root(root_dir)
       in_dir(root_dir) {
+        on_event :root_dir_enter, root_dir
         @metadata= {}
         # Find artists
         each_matching :dir, file_patterns(:artist), file_ignore_patterns(:artist) do |d,p|
@@ -52,6 +57,7 @@ module Autotag
       raise unless filename2utf8(dir) =~ pat
       @metadata[:artist]= filename2human_text($1)
       in_dir(dir) {
+        on_event :artist_dir_enter, dir
         read_overrides(:artist)
         # Find albums
         each_matching :dir, file_patterns(:album), file_ignore_patterns(:album) do |d,p|
@@ -69,6 +75,7 @@ module Autotag
       @metadata[:year]= $1
       @metadata[:album]= filename2human_text($2)
       in_dir(dir) {
+        on_event :album_dir_enter, dir
         
         # Process tracks in this directory
         process_dir_of_tracks
@@ -84,10 +91,12 @@ module Autotag
           with_metadata do
             @metadata[:total_discs]= find_highest_numeric_value(dirs.values,:disc)
             @metadata.delete_if_nil :total_discs
-            dirs.each do |d,o|
+            dirs.keys.sort{|a,b|a.upcase<=>b.upcase}.each do |d|
+              o= dirs[d]
               with_metadata do
                 @metadata.merge! o
                 in_dir(d) {
+                  on_event :cd_dir_enter, d
                   process_dir_of_tracks
                 }
               end # with_metadata
@@ -128,6 +137,7 @@ module Autotag
     
     # Process a track.
     def process_track!(filename)
+      on_event :track_process, filename
       
       replace_track= false
       AudioFile.open_file(filename) do |af|
@@ -146,8 +156,11 @@ module Autotag
         create_expected_tags(af, expected_tags, tags_to_write(true), true)
         create_expected_tags(af, expected_tags, tags_to_write(false), false)
         
-        # Update if needed
-        unless tags_equal?(expected_tags,existing_tags)
+        # Check if track is up-to-date
+        if tags_equal?(expected_tags,existing_tags)
+          on_event :track_uptodate, filename
+        else
+          on_event :track_update, filename
           File.open(temp_filename,'wb') do |fout|
             replace_track= true
             # Write header tags
@@ -180,6 +193,10 @@ module Autotag
         m[header ? :_header : :_footer]= true
         collection[tag_class]= af.tag_processor(tag_class).get_defaults.merge(m)
       }
+    end
+    
+    def on_event(event,*args)
+      @ui.on_event(event,*args)
     end
     
     def replace_track!(filename)

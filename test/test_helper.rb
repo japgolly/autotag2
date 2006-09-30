@@ -60,3 +60,10 @@ class String
     eval '"'+(self.strip.split(/ +/).map{|x| "\\x#{x}"}.join)+'"'
   end
 end
+
+require 'autotag/engine/ui'
+class Autotag::Engine::UI
+  alias :old_put :put
+  def put(str=nil) end
+  def puts(str=nil) end
+end
