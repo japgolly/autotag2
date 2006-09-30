@@ -50,8 +50,11 @@ module Autotag
       }
       FILE_IGNORE_PATTERNS= [/^\./]
       IGNORABLE_ATTRIBUTES= [:_padding,:_tool]
-      # TODO Rename :_other_tags to :_audio_header or somethin
-      PRESERVABLE_ATTRIBUTES= [:replaygain_track_gain, :replaygain_album_gain, :replaygain_track_peak, :replaygain_album_peak, :_other_tags]
+      PRESERVABLE_ATTRIBUTES= [
+        :replaygain_track_gain, :replaygain_track_peak,
+        :replaygain_album_gain, :replaygain_album_peak,
+        :_non_metadata_tags,
+      ]
       TAGS_TO_WRITE_HEADER= {'mp3' => [ID3v2], 'flac' => [Vorbis]}
       TAGS_TO_WRITE_FOOTER= {'mp3' => [APEv2]}
       SUPPORTED_AUDIO_FORMATS= ['mp3','flac']

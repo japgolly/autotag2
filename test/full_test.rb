@@ -176,19 +176,19 @@ class FullTest < Autotag::TestCase
           :replaygain_album_peak => '4.023410',
           :replaygain_track_gain => '-13.23 dB',
           :replaygain_track_peak => '0.123417',
-          :_other_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 36 24 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
+          :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 36 24 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
         }.merge(album), flac_tags
       assert_file "#{dir}/02 - Cry Baby.flac", 3532, 'FF 0F 33 24 25'.h, 'A8 3F 04 40 1A'.h, {
           :track => 'Cry Baby',
           :track_number => '2',
-          :_other_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 55 24 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
+          :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 55 24 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
         }.merge(album), flac_tags
       assert_file "#{dir}/03 - Tagless.flac", 1100, 'FF 4F 25 AE 08'.h, 'CF BC B2 96 53'.h, {
           :track => 'Tagless',
           :track_number => '3',
-          # The leading '00' in the below hex is the key to testing that last_tag bit is cleared for :_other_tags
+          # The leading '00' in the below hex is the key to testing that last_tag bit is cleared for :_non_metadata_tags
           # It is actually '80' in the original file.
-          :_other_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 55 63 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
+          :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 55 63 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
         }.merge(album), flac_tags
       
     } # engine_test_on

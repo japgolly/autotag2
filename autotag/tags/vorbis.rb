@@ -1,7 +1,7 @@
 require 'autotag/tag'
 
 # Params:
-# * :_other_tags
+# * :_non_metadata_tags
 # * :_padding
 # * :_tool
 module Autotag
@@ -13,8 +13,8 @@ module Autotag
         x= FLAC_HEADER_ID.dup
         
         # Add other tags (clearing the last_tag bit)
-        if self[:_other_tags]
-          self[:_other_tags].each {|t|
+        if self[:_non_metadata_tags]
+          self[:_non_metadata_tags].each {|t|
             descriptor,content = read_int_no(t[0..3]),t[4..-1]
             d= read_tag_descriptor(descriptor)
             x<< create_tag(d[:type],false,content) unless d[:type] == TAG_TYPE_PADDING || d[:type] == TAG_TYPE_METADATA
@@ -47,8 +47,8 @@ module Autotag
               self[tag2sym($1)]= $2
             end
           else
-            self[:_other_tags] ||= []
-            self[:_other_tags]<< (create_int_no(descriptor) + fin.read(len))
+            self[:_non_metadata_tags] ||= []
+            self[:_non_metadata_tags]<< (create_int_no(descriptor) + fin.read(len))
           end
         }
         @af.ignore_header(fin.tell - starting_pos)

@@ -13,7 +13,7 @@ class VorbisTest < Autotag::TestCase
   def test_read
     AudioFile.open_file("#{test_data_dir}/tags/flac.flac") do |af|
       metadata= tag_class.new(af).read
-      other_tags= metadata.delete(:_other_tags)
+      other_tags= metadata.delete(:_non_metadata_tags)
       assert_hashes_equal({
         :_padding => 3720,
         :_tool => 'reference libFLAC 1.1.1 20041001',
@@ -40,7 +40,7 @@ class VorbisTest < Autotag::TestCase
   
   def test_write
     # Create
-    content= sample_tag_content.merge :_other_tags => ["\x00\x00\x00\x22\x04\x80\x04\x80\x00\x00\x0E\x00\x10\x0A\x0A\xC4\x42\xF0\x00\x7E\x36\x24\xD4\x1D\xD9\xFD\x7D\xE2\x13\x49\xD4\x46\x2A\x00\x96\xB1\x78\x34"]
+    content= sample_tag_content.merge :_non_metadata_tags => ["\x00\x00\x00\x22\x04\x80\x04\x80\x00\x00\x0E\x00\x10\x0A\x0A\xC4\x42\xF0\x00\x7E\x36\x24\xD4\x1D\xD9\xFD\x7D\xE2\x13\x49\xD4\x46\x2A\x00\x96\xB1\x78\x34"]
     content.deep_freeze
     t= tag_class.new(nil).set_metadata(content).create
     assert_kind_of String, t
