@@ -1,5 +1,8 @@
 require 'autotag/ruby_ext'
-Dir.glob('autotag/tags/*.rb').each {|f| require f}
+
+Dir.chdir("#{File.dirname __FILE__}/..") {
+  Dir.glob('autotag/tags/*.rb').each {|f| require f}
+}
 
 module Autotag
   module Tags
