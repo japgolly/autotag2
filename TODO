@@ -1,12 +1,10 @@
-* Support vorbis comments in flac files
+* Handle albumtypes and albumtype directories
 
-* Support APE/CUE
-    CDImage.ape
-    CDImage.ape.cue
+* Handle V/A albums
 
-* Support FLAC/CUE
-    CDImage.flac
-    CDImage.flac.cue
+* Handle remaster albums (store the original release year ??)
+
+* Add command-line args (use OptionParser/optparse)
 
 * Support M4A
 
@@ -15,11 +13,3 @@
 * Delete useless crap such as
   - useless cue files (CDImage.wav.cue)
   - useless playlists (m3u etc)
-
-* Handle albumtypes and albumtype directories
-
-* Handle V/A albums
-
-* Handle remaster albums (store the original release year ??)
-
-* Add command-line args (use OptionParser/optparse)
