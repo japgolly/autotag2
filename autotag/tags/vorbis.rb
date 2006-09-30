@@ -11,24 +11,28 @@ module Autotag
       def create
         apply_defaults!
         x= FLAC_HEADER_ID.dup
-        # Add other tags
+        
+        # Add other tags (clearing the last_tag bit)
         if self[:_other_tags]
           self[:_other_tags].each {|t|
             descriptor,content = read_int_no(t[0..3]),t[4..-1]
             d= read_tag_descriptor(descriptor)
-            x<< create_tag(d[:type],false,content) unless [TAG_TYPE_PADDING,TAG_TYPE_METADATA].include?(d[:type])
+            x<< create_tag(d[:type],false,content) unless d[:type] == TAG_TYPE_PADDING || d[:type] == TAG_TYPE_METADATA
           }
         end
+        
         # Add metadata
         items= get_items_without_params
         x<< create_metadata_tag(items)
+        
         # Add padding
         x<< create_tag(TAG_TYPE_PADDING,true,"\0"*self[:_padding])
-        # Return
+        
         x
       end
       
       def read
+        @af.seek_to_start
         starting_pos= fin.tell
         parse_vorbis_headers {|type,len,descriptor|
           case type
@@ -52,11 +56,10 @@ module Autotag
       end
       
       def tag_exists?
-        found= false
         parse_vorbis_headers {|type,len,descriptor|
-          found= true if type == TAG_TYPE_METADATA
+          return true
         }
-        found
+        false
       end
       
       #--------------------------------------------------------------------------

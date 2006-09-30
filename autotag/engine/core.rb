@@ -16,6 +16,7 @@ module Autotag
     
     def initialize
       @ui= UI.new(self)
+      @supported_audio_formats= supported_audio_formats.join(',').freeze
     end
     
     def run
@@ -114,7 +115,7 @@ module Autotag
       read_overrides(:album)
       
       # Find tracks
-      tracks2= advanced_glob(:file, file_patterns(:track), file_ignore_patterns(:track))
+      tracks2= advanced_glob(:file, file_patterns(:track), file_ignore_patterns(:track), @supported_audio_formats)
       unless tracks2.empty?
         tracks= map_advanced_glob_results(tracks2,:track_number) {|m| {:track_number => m[1], :track => filename2human_text(m[2])} }
         with_metadata do
@@ -138,6 +139,7 @@ module Autotag
     # Process a track.
     def process_track!(filename)
       on_event :track_process, filename
+      format= @metadata.delete(:_format)
       
       replace_track= false
       AudioFile.open_file(filename) do |af|
@@ -153,8 +155,8 @@ module Autotag
         
         # Create seperate metadata hashes for each tag
         expected_tags= {}
-        create_expected_tags(af, expected_tags, tags_to_write(true), true)
-        create_expected_tags(af, expected_tags, tags_to_write(false), false)
+        create_expected_tags(af, expected_tags, tags_to_write(format,true), true)
+        create_expected_tags(af, expected_tags, tags_to_write(format,false), false)
         
         # Check if track is up-to-date
         if tags_equal?(expected_tags,existing_tags)
@@ -164,11 +166,11 @@ module Autotag
           File.open(temp_filename,'wb') do |fout|
             replace_track= true
             # Write header tags
-            fout<< create_bin_tags(af, expected_tags, tags_to_write(true))
+            fout<< create_bin_tags(af, expected_tags, tags_to_write(format,true))
             # Copy audio
             fout<< af.read_all
             # Write footer tags
-            fout<< create_bin_tags(af, expected_tags, tags_to_write(false))
+            fout<< create_bin_tags(af, expected_tags, tags_to_write(format,false))
           end
         end
         
