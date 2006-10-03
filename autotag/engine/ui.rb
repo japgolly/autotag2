@@ -67,6 +67,7 @@ module Autotag
           @stats<< {
             :artist => @artist_id,
             :album => @album_id,
+            :size => a[1].size,
           }
           remove_file_in_pwd_from_all_files a[0]
           put "   #{@cd_dir}#{a[0]}..."
@@ -85,16 +86,30 @@ module Autotag
       end
       
       def shutdown
-        @all_files.delete_if {|k,v|v.empty?}
-        unprocessed_file_count= @all_files.values.inject(0){|sum,v| sum + v.size}
-        tracks_total= @stats.size
-        albums_total= @stats.map{|i|i[:album]}.uniq.size
-        artists_total= @stats.map{|i|i[:artist]}.uniq.size
-        tracks_updated= @stats.select{|i|i[:result]==:update}.size
-        tracks_uptodate= @stats.select{|i|i[:result]==:uptodate}.size
         total_time= Time.now-@start_time
         total_time_str= total_time>60 ? "#{total_time.to_i/60}m#{total_time.to_i%60}s" : "#{total_time}s"
         
+        @all_files.delete_if {|k,v|v.empty?}
+        unprocessed_file_count= @all_files.values.inject(0){|sum,v| sum + v.size}
+        
+        total_track_count= @stats.size
+        total_album_count= @stats.map{|i|i[:album]}.uniq.size
+        total_artist_count= @stats.map{|i|i[:artist]}.uniq.size
+        
+        updated_track_stats=  @stats.select{|i|i[:result]==:update}
+        uptodate_track_stats= @stats.select{|i|i[:result]==:uptodate}
+        updated_track_count=  updated_track_stats.size
+        uptodate_track_count= uptodate_track_stats.size
+        updated_track_size=   updated_track_stats.inject(0){|sum,v| sum + v[:size]}
+        uptodate_track_size=  uptodate_track_stats.inject(0){|sum,v| sum + v[:size]}
+        total_file_size=      updated_track_size+uptodate_track_size
+        
+        if updated_track_size>1 and total_time>2
+          speed= updated_track_size.to_f / total_time.to_f
+          speed_str= "#{div speed,1000000,2} MB/sec"
+        end
+        
+        # Display unprocessed files
         if unprocessed_file_count > 0
           puts_new_section 'UNPROCESSED FILES'
           @all_files.each {|root,files|
@@ -103,14 +118,18 @@ module Autotag
           }
         end
         
+        # Display stats
         puts_new_section 'STATS'
-        puts "Total artists: #{artists_total}"
-        puts "Total albums: #{albums_total} (#{div albums_total,artists_total} per artist)"
-        puts "Total tracks: #{tracks_total} (#{div tracks_total,albums_total} per album)"
-        puts "Total tracks updated: #{tracks_updated} (#{percent tracks_updated,tracks_total})"
-        puts "Total tracks up-to-date: #{tracks_uptodate} (#{percent tracks_uptodate,tracks_total})"
+        puts "Total artists: #{total_artist_count}"
+        puts "Total albums: #{total_album_count} (#{div total_album_count,total_artist_count} per artist)"
+        puts "Total tracks: #{total_track_count} (#{div total_track_count,total_album_count} per album)"
+        puts " Total tracks updated: #{updated_track_count} (#{percent updated_track_count,total_track_count})"
+        puts " Total tracks up-to-date: #{uptodate_track_count} (#{percent uptodate_track_count,total_track_count})"
+        puts "Size of all tracks: #{bytes total_file_size}"
+        puts " Size of updated tracks: #{bytes updated_track_size}"
+        puts " Size of up-to-date tracks: #{bytes uptodate_track_size}"
         puts "Unprocessed files: #{unprocessed_file_count}"
-        puts "Completed in: #{total_time_str}"
+        puts "Completed in: #{total_time_str}" + (speed_str ? " (#{speed_str})" : '')
         
         puts
       end
@@ -118,11 +137,15 @@ module Autotag
       #------------------------------------------------------------------------
       private
       
-      def div(a,b)
+      def bytes(b)
+        "#{b.to_i.to_s.gsub(/(\d)(?=\d{3}+$)/, '\1,')} bytes"
+      end
+      
+      def div(a,b,dec=1)
         return '0' if b == 0
-        x= a / b
-        return x.to_s if x*b == a
-        '%.1f' % (a.to_f / b.to_f)
+        x= (a / b).to_i
+        return x.to_s if x * b == a
+        "%.#{dec}f" % (a.to_f / b.to_f)
       end
       
       def percent(a,b)

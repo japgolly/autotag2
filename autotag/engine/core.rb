@@ -167,11 +167,12 @@ module Autotag
     
     # Process a track.
     def process_track!(filename)
-      on_event :track_process, filename
       format= @metadata.delete(:_format)
       
       replace_track= false
       AudioFile.open_file(filename) do |af|
+        on_event :track_process, filename, af
+      
         # read tags from file
         existing_tags= af.read_tags
         
