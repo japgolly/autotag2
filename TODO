@@ -1,10 +1,14 @@
 * Add command-line args (use OptionParser/optparse)
+  - accept multiple root dirs
+  - accept other dirs such as album, artist, album_type, cd etc
+  - dry-run
+  - force
+  - quiet
 
 * Add to UI
   - colour
   - report files missing correct replaygain data
   - report any albums with inconsistant replaygain album data
-  - display total file sizes
 
 * Handle V/A albums
 
