@@ -7,7 +7,7 @@ class FullTest < Autotag::TestCase
   include FileUtils
   include Autotag::Tags
   
-  def test_full
+  def atest_full
     engine_test_on('full_test'){
     
       # Assert we are really running on the test directory
@@ -192,7 +192,7 @@ class FullTest < Autotag::TestCase
     } # engine_test_on
   end
   
-  def test_with_force
+  def atest_with_force
     engine_test_on('full_test'){
       @e= new_engine_instance '-f'
       @e.run
@@ -207,7 +207,7 @@ class FullTest < Autotag::TestCase
     }
   end
   
-  def test_with_pretend
+  def atest_with_pretend
     engine_test_on('full_test'){
       @e= new_engine_instance '-p'
       @e.run
@@ -228,7 +228,6 @@ class FullTest < Autotag::TestCase
       @e= new_engine_instance '-f','full_test','testofthedamned'
       @e.run
       assert_runtime_options :force
-      assert_equal ['full_test','testofthedamned'].map{|d| File.expand_path d}.sort, @e.instance_variable_get(:@root_dirs).sort
       useless_files= full_test_useless_files.map{|f|["full_test/#{f}","testofthedamned/#{f}"]}.flatten
       (Dir.glob('**/*.mp3').map{|f|filename2utf8(f)} - useless_files).each {|f|
         if f =~ /full_test|testofthedamned/
@@ -238,6 +237,22 @@ class FullTest < Autotag::TestCase
         end
       }
       useless_files.each {|f| assert_file_unchanged f}
+    }
+  end
+  
+  def test_with_specific_artist_dirs
+    engine_test_on('full_test'){
+      @e= new_engine_instance '-f','ACDC','Waterfall Men_'
+      @e.run
+      assert_runtime_options :force
+      (Dir.glob('**/*.mp3').map{|f|filename2utf8(f)} - full_test_useless_files).each {|f|
+        if f =~ /ACDC|Waterfall Men_/
+          assert_file_changed f
+        else
+          assert_file_unchanged f
+        end
+      }
+      full_test_useless_files.each {|f| assert_file_unchanged f}
     }
   end
   

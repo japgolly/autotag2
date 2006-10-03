@@ -3,6 +3,12 @@ DO BEFORE v2.0
 
 * Parse command-line args
   - accept other dirs such as album, artist, album_type, cd etc
+[*] ROOT       /
+[*] ARTIST      ACDC
+[ ] ALBUMTYPE   Waterfall Men_/Albums
+[ ] ALBUM       ACDC/1970 - Why_
+[ ] ALBUM (w/t) Waterfall Men_/Albums/2006 - Flac Attack
+[ ] ALBUM (cd)  The Woteva Band/2005 - Rain/cd 1
 
 * Add to UI
   - colour

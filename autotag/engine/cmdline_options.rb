@@ -28,11 +28,9 @@ module Autotag
           }
         end.parse!(args)
         
-        if args.empty?
-          @root_dirs= [Dir.pwd]
-        else
-          @root_dirs= args.uniq
-          @root_dirs.each {|d| die! "'#{d}' is not a valid directory." unless File.directory?(d)}
+        unless args.empty?
+          @specified_dirs= args.uniq
+          @specified_dirs.each {|d| die! "'#{d}' is not a valid directory." unless File.directory?(d)}
         end
         
       end

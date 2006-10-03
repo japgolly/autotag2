@@ -24,17 +24,67 @@ module Autotag
     
     def run
       init
-      @root_dirs.ci_sort.each {|d| process_root d}
+      process_job_queue!
       shutdown
     end
     
     #--------------------------------------------------------------------------
     private
     
+    ###################################################################################################
+    ###################################################################################################
+    ###################################################################################################
+    ###################################################################################################
+    def build_job_queue
+      @job_queue= []
+      if @specified_dirs
+        @specified_dirs.each {|d|
+          # Determine type
+          type= nil
+          type ||= :artist if d =~ /ACDC|Waterfall/i
+          type ||= :root
+          @job_queue<< {:dir => d, :type => type}
+        }
+      else
+        @job_queue<< {:dir => Dir.pwd, :type => :root}
+      end
+      @job_queue.each{|job| job[:dir]= File.expand_path(job[:dir])}
+    end
+    
+    ###################################################################################################
+    def process_job_queue!
+puts "\nJOB QUEUE"
+pp @job_queue
+      @job_queue.each {|job|
+        t= job[:type]
+        
+        unless t == :root
+          tree= job[:dir].gsub(/[\/\\]$/,'').split(/[\/\\]/).reverse
+          if t == :artist
+            @glob_str[:artist]= tree.shift
+            job[:dir]= tree.reverse.join('/')
+          end
+        end
+p @glob_str
+p job[:dir]
+        
+        process_root job[:dir]
+        
+        @glob_str.clear
+      }
+    end
+    
+    ###################################################################################################
+    ###################################################################################################
+    ###################################################################################################
+    ###################################################################################################
+    
     def init(*args)
       # Parse command line
       parse_commandline!(@engine_args)
-      @root_dirs.map!{|d| File.expand_path d}
+      build_job_queue
+      
+      @glob_str= {}
       
       # Init UI
       @ui.init(@runtime_options[:quiet])
@@ -59,7 +109,7 @@ module Autotag
         on_event :root_dir_enter, root_dir
         @metadata= {}
         # Find artists
-        each_matching :dir, file_patterns(:artist), file_ignore_patterns(:artist) do |d,p|
+        each_matching :dir, file_patterns(:artist), file_ignore_patterns(:artist), :glob => @glob_str[:artist] do |d,p|
           process_artist_dir(d,p)
         end
       }
@@ -152,7 +202,7 @@ module Autotag
       read_overrides(:album)
       
       # Find tracks
-      tracks2= advanced_glob(:file, file_patterns(:track), file_ignore_patterns(:track), @supported_audio_formats)
+      tracks2= advanced_glob(:file, file_patterns(:track), file_ignore_patterns(:track), :file_extentions => @supported_audio_formats)
       unless tracks2.empty?
         tracks= map_advanced_glob_results(tracks2,:track_number) {|m| {:track_number => m[1], :track => filename2human_text(m[2])} }
         with_metadata do

@@ -5,11 +5,12 @@ module Autotag
     module Misc
       include Config
       
-      def advanced_glob(type, match_patterns, ignore_patterns, file_extentions=nil)
+      def advanced_glob(type, match_patterns, ignore_patterns, options={})
+        file_extentions= options[:file_extentions]
         files= if file_extentions
             Dir.glob("*.{#{file_extentions}}")
           else
-            Dir.glob('*', File::FNM_DOTMATCH) - ['.','..']
+            Dir.glob(options[:glob] || '*', File::FNM_DOTMATCH) - ['.','..']
           end
         case type
         when :dir then files.delete_if {|d| not File.directory?(d)}
@@ -42,8 +43,8 @@ module Autotag
         File.delete(temp_filename) if File.exists?(temp_filename)
       end
       
-      def each_matching(type, match_patterns, ignore_patterns, &block)
-        advanced_glob(type, match_patterns, ignore_patterns).each {|f,f_utf8,p,ext|
+      def each_matching(type, match_patterns, ignore_patterns, options={}, &block)
+        advanced_glob(type, match_patterns, ignore_patterns, options).each {|f,f_utf8,p,ext|
           with_metadata{ block.call f, p}
         }
       end
