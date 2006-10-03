@@ -74,7 +74,7 @@ module Autotag
         'Compilation' => ['Compilations'],
         'Demo' => ['Demos'],
         'Fan Club' => ['Fan Club CDs'],
-        'Live' => ['Live Albums'],
+        'Live Album' => ['Live Albums'],
         'Other' => ['Other'],
         'Rarities' => ['Rarities'],
         'Single' => ['Singles'],
