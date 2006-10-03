@@ -158,17 +158,18 @@ class FullTest < Autotag::TestCase
       assert_file_metadata "#{dir}/Disc D - Paris 1946-48/01 - Random.mp3",{:disc => 'D',:disc_title=> 'Paris 1946-48'}.merge(album), mp3_tags
       
       #########################################################################
-      # Waterfall Men_/2006 - Flac Attack
+      # Waterfall Men_/Albums/2006 - Flac Attack
       # Tests:
       #   * flac files tagged correctly
       #   * works with flac files and do and do not have vorbis comments already
+      #   * album type directories parsed and album types work
       album= {
           :artist => 'Waterfall Men?',
           :album => 'Flac Attack',
           :year => '2006',
           :total_tracks => '3',
       }
-      dir= 'Waterfall Men_/2006 - Flac Attack'
+      dir= 'Waterfall Men_/Albums/2006 - Flac Attack'
       assert_file "#{dir}/01 - Whatever.flac", 3534, 'FF F8 73 A3 B2'.h, '00 10 32 40 1A'.h, {
           :track => 'Whatever',
           :track_number => '1',
@@ -190,6 +191,28 @@ class FullTest < Autotag::TestCase
           # It is actually '80' in the original file.
           :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 55 63 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
         }.merge(album), flac_tags
+      
+      #########################################################################
+      # Waterfall Men_/Singles/2001 - Crazy_
+      # Tests:
+      #   * album type directories parsed and album types work
+      #   * difficult id3v2 tags are handled correctly
+      album= {
+          :artist => 'Waterfall Men?',
+          :album => 'Crazy?',
+          :year => '2001',
+          :total_tracks => '1',
+          :album_type => 'Single',
+      }
+      dir= 'Waterfall Men_/Singles/2001 - Crazy_'
+      assert_file "#{dir}/01 - Periscope.mp3", 2325, 'FF FB AA 64 03'.h, '71 C5 CF 55 72'.h, {
+          :track => 'Periscope',
+          :track_number => '1',
+          :replaygain_album_gain => '-5.30 dB',
+          :replaygain_album_peak => '1.088453',
+          :replaygain_track_gain => '-4.41 dB',
+          :replaygain_track_peak => '1.056579',
+        }.merge(album), mp3_tags
       
     } # engine_test_on
   end

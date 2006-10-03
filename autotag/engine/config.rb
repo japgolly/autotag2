@@ -5,6 +5,11 @@ module Autotag
     module Config
       include Autotag::Tags
       
+      # Returns the album type value for albums that don't have a 
+      def default_album_type
+        nil
+      end
+      
       # Returns an array of regexs to match dir/file names.
       def file_patterns(type)
         FILE_PATTERNS[type] or raise
@@ -26,6 +31,11 @@ module Autotag
       # existing tags to new tags.
       def preservable_attributes
         PRESERVABLE_ATTRIBUTES
+      end
+      
+      # Returns a map of album types. album type value => array of collection directories
+      def supported_album_types
+        SUPPORTED_ALBUM_TYPES
       end
       
       # Returns a list of file extentions of processible audio files.
@@ -58,6 +68,17 @@ module Autotag
       TAGS_TO_WRITE_HEADER= {'mp3' => [ID3v2], 'flac' => [Vorbis]}
       TAGS_TO_WRITE_FOOTER= {'mp3' => [APEv2]}
       SUPPORTED_AUDIO_FORMATS= ['mp3','flac']
+      SUPPORTED_ALBUM_TYPES= {
+        nil => ['Albums'],
+        'Bootleg' => ['Bootlegs'],
+        'Compilation' => ['Compilations'],
+        'Demo' => ['Demos'],
+        'Fan Club' => ['Fan Club CDs'],
+        'Live' => ['Live Albums'],
+        'Other' => ['Other'],
+        'Rarities' => ['Rarities'],
+        'Single' => ['Singles'],
+      }
       
       freeze_all_constants
       

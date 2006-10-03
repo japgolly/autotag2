@@ -32,16 +32,18 @@ class EngineTest < Autotag::TestCase
     ['utf8','utf8n','utf16le','utf16be'].each {|charset|
       @e.textfile= "#{test_data_dir}/autotag-#{charset}.txt"
       
+      @e.instance_eval 'alias :old_unknown_line :unknown_line; def unknown_line(*);end'
       @e.metadata.clear
       @e.send :read_overrides, :artist
       assert_hashes_equal({:artist => 'メガドン'}, @e.metadata)
       
+      @e.instance_eval 'alias :unknown_line :old_unknown_line'
       @e.metadata.clear
       @e.send :read_overrides, :album
       assert_hashes_equal({
         :artist => 'メガドン',
         :album => '灰とダイヤモンド',
-        :albumtype => 'Ahh',
+        :album_type => 'Single',
         :_track_overrides => {
           '1' => '真夏の扉 (GLAY VERSION)',
           '2' => '彼女の"Modern..."',
@@ -53,6 +55,13 @@ class EngineTest < Autotag::TestCase
         },
       }, @e.metadata)
     }
+  end
+  
+  def test_override_file_read_bad_album_type
+      @e.textfile= "#{test_data_dir}/autotag-bad_album_type.txt"
+      assert_raise RuntimeError do
+        @e.send :read_overrides, :album
+      end
   end
   
 end

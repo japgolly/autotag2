@@ -9,4 +9,4 @@
 10.if ～灰とダイヤモンド～
  12. utf8
  
-         　　    ALBUMTYPE: Ahh
+         　　    ALBUMTYPE: Single

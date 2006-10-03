@@ -1,4 +1,5 @@
 require 'autotag/unicode'
+require 'autotag/engine/config'
 require 'autotag/engine/misc'
 
 module Autotag
@@ -8,6 +9,7 @@ module Autotag
     # files allow the user to override the file or directory name
     # and manually specify certain tag fields.
     module OverrideFileReader
+      include Config
       include Unicode
       
       def override_file_names
@@ -20,13 +22,17 @@ module Autotag
         override_file_names.each do |filename|
           read_unicode_file(filename).split(/[\r\n]+/).each {|l|
             unicode_trim! l
+            next if l == ''
             i= false
             i ||= extract_field_override(l,:artist,'ARTIST')
             if level == :album
               i ||= extract_field_override(l,:album,'ALBUM')
-              i ||= extract_field_override(l,:albumtype,'ALBUMTYPE')
+              i ||= extract_field_override(l,:album_type,'ALBUMTYPE')
+              i ||= extract_field_override(l,:album_type,'ALBUM TYPE')
+              i ||= extract_field_override(l,:album_type,'ALBUM_TYPE')
               i ||= extract_track_override(l)
             end
+            unknown_line(filename,l) unless i
           } if File.exists?(filename)
         end
       end
@@ -37,10 +43,12 @@ module Autotag
       def extract_field_override(line_of_text, field, str)
         if line_of_text =~ Regexp.new("^#{str}[:：](.+)$",0,'U')
           value= unicode_trim($1)
-          unless value == ''
-            @metadata[field]= value
-            return true
+          if field == :album_type
+            value= nil if value == ''
+            raise "Invalid album type: #{value.inspect}" unless supported_album_types.has_key?(value)
           end
+          @metadata[field]= value
+          return true
         end
         false
       end
@@ -56,6 +64,10 @@ module Autotag
           end
         end
         false
+      end
+      
+      def unknown_line(filename,line)
+        raise "Invalid line in #{filename}: #{line.inspect}"
       end
       
       OVERRIDE_FILE_NAMES= ['autotag.txt']

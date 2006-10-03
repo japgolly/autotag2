@@ -16,7 +16,8 @@ module Autotag
         matches= []
         files_utf= {}
         files.each{|f| files_utf[f]= filename2utf8(f)}
-        files_utf.sort.each{|f,f_utf8|
+        files_utf.keys.ci_sort.each{|f|
+          f_utf8= files_utf[f]
           ext= nil
           if file_extentions
             f_utf8 =~ /^(.+)\.([^\.]+)$/

@@ -111,7 +111,8 @@ module Autotag
             pos += 10
             break if frame[:id] == "\0\0\0\0" || pos > size
             pos += frame[:size]
-            frame[:value]= read_string(fin.read(frame[:size]))
+            frame[:value]= fin.read(frame[:size])
+            frame[:value]= read_string(frame[:value]) if frame[:id][0] == 84 # 84 is 'T'[0]
             if frame[:id] == tagxxx
               if frame[:value] =~ /^(.+?)\0(.+)$/
                 self[tag2sym($1,true)]= $2
@@ -157,7 +158,7 @@ module Autotag
             # UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
             x.to_s
           else
-            raise InvalidTag, "Invalid encoding flag: '#{encoding}'"
+            raise InvalidTag, "Invalid encoding flag: '#{encoding}' (POS:#{fin.tell})"
           end
         x.gsub! %r{\x00$}, ''
         x

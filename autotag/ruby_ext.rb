@@ -21,6 +21,11 @@ end
 # Collections
 
 class Array
+  # Case-insensitive sort
+  def ci_sort
+    map{|v|[v.to_s.upcase,v]}.sort{|a,b|a[0]<=>b[0]}.map{|v|v[1]}
+  end
+  
   def deep_clone
     map{|e| e.deep_clone}
   end

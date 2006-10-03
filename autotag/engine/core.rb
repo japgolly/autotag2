@@ -32,6 +32,10 @@ module Autotag
     def init
       @root_dir= Dir.pwd
       @ui.init
+      @album_types_dirs_glob_string= ('{'+supported_album_types.values.flatten.join(',')+'}').freeze
+      @album_types_dir_to_value= {}
+      supported_album_types.each{|v,a|a.each{|d| @album_types_dir_to_value[d]= v }}
+      @album_types_dir_to_value.deep_freeze
     end
     
     def shutdown
@@ -60,13 +64,34 @@ module Autotag
       @metadata[:artist]= filename2human_text($1)
       in_dir(dir) {
         on_event :artist_dir_enter, dir
-        read_overrides(:artist)
+        
         # Find albums
-        each_matching :dir, file_patterns(:album), file_ignore_patterns(:album) do |d,p|
-          process_album_dir(d,p)
-        end
-        # TODO Find albumtype directories
+        process_dir_of_albums
+        
+        # Find albumtype directories
+        Dir.glob(@album_types_dirs_glob_string).ci_sort.each do |d|
+          next unless File.directory?(d)
+          in_dir(d) do
+            on_event :album_type_dir_enter, dir
+            with_metadata do
+              @metadata[:album_type]= @album_types_dir_to_value[d]
+              process_dir_of_albums
+            end # with_metadata
+          end # in_dir
+        end # Dir.glob
       }
+    end
+    
+    # Process a directory containing albums.
+    # Contains: album directories.
+    # Eg: x:/music/Dream Theater/
+    # Eg: x:/music/Dream Theater/Albums/
+    # Eg: x:/music/Dream Theater/Singles/
+    def process_dir_of_albums
+      read_overrides(:artist)
+      each_matching :dir, file_patterns(:album), file_ignore_patterns(:album) do |d,p|
+        process_album_dir(d,p)
+      end
     end
     
     # Process the album directory.
@@ -76,6 +101,8 @@ module Autotag
       raise unless filename2utf8(dir) =~ pat
       @metadata[:year]= $1
       @metadata[:album]= filename2human_text($2)
+      @metadata[:album_type]= default_album_type unless @metadata.has_key?(:album_type)
+      @metadata.delete(:album_type) if @metadata[:album_type].nil?
       in_dir(dir) {
         on_event :album_dir_enter, dir
         
@@ -93,7 +120,7 @@ module Autotag
           with_metadata do
             @metadata[:total_discs]= find_highest_numeric_value(dirs.values,:disc)
             @metadata.delete_if_nil :total_discs
-            dirs.keys.sort{|a,b|a.upcase<=>b.upcase}.each do |d|
+            dirs.keys.ci_sort.each do |d|
               o= dirs[d]
               with_metadata do
                 @metadata.merge! o
@@ -122,7 +149,7 @@ module Autotag
         with_metadata do
           @metadata[:total_tracks]= find_highest_numeric_value(tracks.values,:track_number)
           @metadata.delete_if_nil :total_tracks
-          tracks.keys.sort{|a,b|a.upcase<=>b.upcase}.each do |f|
+          tracks.keys.ci_sort.each do |f|
             o= tracks[f]
             with_metadata do
               @metadata.merge! o
