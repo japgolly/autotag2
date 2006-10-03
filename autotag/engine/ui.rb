@@ -32,8 +32,11 @@ module Autotag
           puts " Entering artist dir: #{a[0]}"
           @artist_id += 1
           remove_override_files_in_pwd_from_all_files
-          
+        
         # === ALBUM ===
+        when :album_type_dir_enter
+          remove_override_files_in_pwd_from_all_files
+          
         when :album_dir_enter
           puts "  Entering album dir: #{a[0]}"
           @album_id += 1
@@ -97,15 +100,14 @@ module Autotag
       private
       
       def div(a,b)
-        return 0 if b == 0
+        return '0' if b == 0
         x= a / b
-        return x if x*b == a
-        a.to_f / b.to_f
+        return x.to_s if x*b == a
+        '%.1f' % (a.to_f / b.to_f)
       end
       
       def percent(a,b)
-        x= b == 0 ? 0 : div(a*100,b)
-        x.is_a?(Float) ? '%.1f%%' % x : "#{x}%"
+        "#{b == 0 ? 0 : div(a*100,b)}%"
       end
       
       def puts_new_section(name)
