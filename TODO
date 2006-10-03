@@ -1,14 +1,11 @@
 * Add command-line args (use OptionParser/optparse)
 
-* Add to config
-  - file charset (currently shift-jis)
-  - patterns of files to ignore in unprocessed file list
-
 * Add to UI
   - colour
   - report files missing correct replaygain data
   - report any albums with inconsistant replaygain album data
   - display total file sizes
+  - report total time (eg "Completed in 1.432 sec")
 
 * Handle V/A albums
 

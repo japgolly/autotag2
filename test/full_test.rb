@@ -215,6 +215,11 @@ class FullTest < Autotag::TestCase
           :replaygain_track_peak => '1.056579',
         }.merge(album), mp3_tags
       
+      #########################################################################
+      # OTHER
+      ui= @e.instance_variable_get(:@ui)
+      assert_equal ['autotag.txt','Waterfall Men_/03 - bullshit.mp3'].sort, ui.instance_variable_get(:@all_files).values[0].sort
+      
     } # engine_test_on
   end
   

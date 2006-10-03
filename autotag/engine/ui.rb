@@ -25,11 +25,21 @@ module Autotag
           @root_dir= a[0]
           @root_dir_len= (@root_dir.gsub(/[\/\\]$/,'')).size + 1
           puts "\nEntering root dir: #{a[0]}"
+          # Make a list of all files in the dir tree
           @all_files[@root_dir]= Dir.glob("#{@root_dir}/**/*").select{|f|File.file?(f)}.map{|f|f[@root_dir_len..-1]}
-          # Ignore any autotag temp files
-          tmp= '/'+Misc.const_get(:TEMP_FILENAME)
+          tmp= '/'+@engine.temp_filename
           tmprange= -tmp.length..-1
-          @all_files[@root_dir].delete_if{|f|f[tmprange]==tmp}
+          @all_files[@root_dir].delete_if{|f|
+            if f[tmprange] == tmp
+              true
+            elsif @engine.override_file_names.include?(File.basename(f))
+              false
+            else
+              del= false
+              @engine.useless_file_patterns.each {|p| (del= true;break) if f =~ p}
+              del
+            end
+          }
         
         # === ARTIST ===
         when :artist_dir_enter
@@ -101,6 +111,7 @@ module Autotag
         puts
       end
       
+      #------------------------------------------------------------------------
       private
       
       def div(a,b)

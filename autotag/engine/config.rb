@@ -54,6 +54,10 @@ module Autotag
         (header ? TAGS_TO_WRITE_HEADER[format] : TAGS_TO_WRITE_FOOTER[format]) || []
       end
       
+      def useless_file_patterns
+        USELESS_FILE_PATTERNS
+      end
+      
       #--------------------------------------------------------------------------
       private
       
@@ -86,6 +90,7 @@ module Autotag
         'Single' => ['Singles'],
       }
       FILENAME_CHARSET= 'shift-jis'
+      USELESS_FILE_PATTERNS= [/\.(?:jpe?g|gif|bmp|mpe?g|avi|mov|wmv|divx|asf|xvid)$/i]
       
       freeze_all_constants
       
