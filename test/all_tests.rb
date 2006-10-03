@@ -1,10 +1,11 @@
+require 'autotag/app_info'
 Dir.glob('test/*_test.rb').each {|f| require f}
 
 module Autotag
   class UnitTests
     
     def self.suite
-      suite= Test::Unit::TestSuite.new('Autotag')
+      suite= Test::Unit::TestSuite.new(TITLE)
       test_classes= Object.get_all_subclasses_of(TestCase)
       
       run_last= FullTest
