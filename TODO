@@ -5,7 +5,6 @@
   - report files missing correct replaygain data
   - report any albums with inconsistant replaygain album data
   - display total file sizes
-  - report total time (eg "Completed in 1.432 sec")
 
 * Handle V/A albums
 

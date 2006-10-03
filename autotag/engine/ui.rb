@@ -16,6 +16,7 @@ module Autotag
         @all_files= {}
         @artist_id= 0
         @album_id= 0
+        @start_time= Time.now
       end
       
       def on_event(event,*a)
@@ -91,6 +92,8 @@ module Autotag
         artists_total= @stats.map{|i|i[:artist]}.uniq.size
         tracks_updated= @stats.select{|i|i[:result]==:update}.size
         tracks_uptodate= @stats.select{|i|i[:result]==:uptodate}.size
+        total_time= Time.now-@start_time
+        total_time_str= total_time>60 ? "#{total_time.to_i/60}m#{total_time.to_i%60}s" : "#{total_time}s"
         
         if unprocessed_file_count > 0
           puts_new_section 'UNPROCESSED FILES'
@@ -107,6 +110,7 @@ module Autotag
         puts "Total tracks updated: #{tracks_updated} (#{percent tracks_updated,tracks_total})"
         puts "Total tracks up-to-date: #{tracks_uptodate} (#{percent tracks_uptodate,tracks_total})"
         puts "Unprocessed files: #{unprocessed_file_count}"
+        puts "Completed in: #{total_time_str}"
         
         puts
       end
