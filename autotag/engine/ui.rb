@@ -28,7 +28,7 @@ module Autotag
           @all_files[@root_dir]= Dir.glob("#{@root_dir}/**/*").select{|f|File.file?(f)}.map{|f|f[@root_dir_len..-1]}
           # Ignore any autotag temp files
           tmp= '/'+Misc.temp_filename
-          tmprange= tmp.length..-1
+          tmprange= -tmp.length..-1
           @all_files[@root_dir].delete_if{|f|f[tmprange]==tmp}
         
         # === ARTIST ===
