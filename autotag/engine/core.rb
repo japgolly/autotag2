@@ -191,7 +191,6 @@ module Autotag
         if tags_equal?(expected_tags,existing_tags)
           on_event :track_uptodate, filename
         else
-          on_event :track_update, filename
           File.open(temp_filename,'wb') do |fout|
             replace_track= true
             # Write header tags
@@ -201,6 +200,7 @@ module Autotag
             # Write footer tags
             fout<< create_bin_tags(af, expected_tags, tags_to_write(format,false))
           end
+          on_event :track_updated, filename
         end
         
       end # AudioFile.open

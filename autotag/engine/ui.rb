@@ -1,4 +1,5 @@
 require 'autotag/app_info'
+require 'autotag/engine/misc'
 
 module Autotag
   class Engine
@@ -9,7 +10,7 @@ module Autotag
       end
       
       def init
-        puts "Golly's MP3 Auto-tagger v#{Autotag::VERSION}"
+        puts Autotag::TITLE_AND_VERSION
         puts "Copyright (c) 2006 David Barri. All rights reserved."
         @stats= []
         @all_files= {}
@@ -25,7 +26,10 @@ module Autotag
           @root_dir_len= (@root_dir.gsub(/[\/\\]$/,'')).size + 1
           puts "\nEntering root dir: #{a[0]}"
           @all_files[@root_dir]= Dir.glob("#{@root_dir}/**/*").select{|f|File.file?(f)}.map{|f|f[@root_dir_len..-1]}
-          
+          # Ignore any autotag temp files
+          tmp= '/'+Misc.temp_filename
+          tmprange= tmp.length..-1
+          @all_files[@root_dir].delete_if{|f|f[tmprange]==tmp}
         
         # === ARTIST ===
         when :artist_dir_enter
@@ -56,7 +60,7 @@ module Autotag
           remove_file_in_pwd_from_all_files a[0]
           put "   #{@cd_dir}#{a[0]}..."
           
-        when :track_update
+        when :track_updated
           @stats.last[:result]= :update
           puts 'updated'
           

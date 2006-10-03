@@ -1,6 +1,7 @@
 module Autotag
   class Engine
     module Misc
+      extend self
       
       def advanced_glob(type, match_patterns, ignore_patterns, file_extentions=nil)
         files= if file_extentions
