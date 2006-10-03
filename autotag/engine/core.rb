@@ -24,7 +24,7 @@ module Autotag
     
     def run
       init
-      process_root @root_dir
+      @root_dirs.ci_sort.each {|d| process_root d}
       shutdown
     end
     
@@ -34,7 +34,7 @@ module Autotag
     def init(*args)
       # Parse command line
       parse_commandline!(@engine_args)
-      @root_dir= Dir.pwd
+      @root_dirs.map!{|d| File.expand_path d}
       
       # Init UI
       @ui.init(@runtime_options[:quiet])

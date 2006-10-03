@@ -18,8 +18,7 @@ module Autotag
             @runtime_options[:force] = v
           }
           opts.on('-h', '--help', 'Displays this screen.') {
-            $stderr.puts opts
-            exit 1
+            die! opts
           }
           opts.on('-p', '--pretend', 'Only pretend to update files. No changes to any files will be made.') {|v|
             @runtime_options[:pretend] = v
@@ -29,7 +28,20 @@ module Autotag
           }
         end.parse!(args)
         
-        raise 'Dirs in ARGV isnt implemented yet.' unless args.empty?
+        if args.empty?
+          @root_dirs= [Dir.pwd]
+        else
+          @root_dirs= args.uniq
+          @root_dirs.each {|d| die! "'#{d}' is not a valid directory." unless File.directory?(d)}
+        end
+        
+      end
+      
+      private
+      
+      def die!(msg)
+        $stderr.puts msg
+        exit 1
       end
     
     end # module CommandLineOptions

@@ -16,7 +16,7 @@ class FullTest < Autotag::TestCase
       @e.instance_eval 'def process_root(*); end'
       @e.run
       assert_runtime_options
-      assert_equal tmpdir, @e.instance_variable_get(:@root_dir)
+      assert_equal [tmpdir], @e.instance_variable_get(:@root_dirs)
       
       # Start
       @e= new_engine_instance
@@ -218,6 +218,26 @@ class FullTest < Autotag::TestCase
       assert_not_equal 0, @e.ui.instance_variable_get(:@updated_track_size)
       (Dir.glob('**/*.mp3').map{|f|filename2utf8(f)} - full_test_useless_files).each {|f| assert_file_unchanged f}
       full_test_useless_files.each {|f| assert_file_unchanged f}
+    }
+  end
+  
+  def test_with_specific_root_dirs
+    engine_test_on('.'){
+      cp_r 'full_test', 'offguts', :preserve => true
+      cp_r 'full_test', 'testofthedamned', :preserve => true
+      @e= new_engine_instance '-f','full_test','testofthedamned'
+      @e.run
+      assert_runtime_options :force
+      assert_equal ['full_test','testofthedamned'].map{|d| File.expand_path d}.sort, @e.instance_variable_get(:@root_dirs).sort
+      useless_files= full_test_useless_files.map{|f|["full_test/#{f}","testofthedamned/#{f}"]}.flatten
+      (Dir.glob('**/*.mp3').map{|f|filename2utf8(f)} - useless_files).each {|f|
+        if f =~ /full_test|testofthedamned/
+          assert_file_changed f
+        else
+          assert_file_unchanged f
+        end
+      }
+      useless_files.each {|f| assert_file_unchanged f}
     }
   end
   
