@@ -1,4 +1,5 @@
 require 'autotag/audio_file'
+require 'autotag/engine/cmdline_options'
 require 'autotag/engine/config'
 require 'autotag/engine/conversions'
 require 'autotag/engine/misc'
@@ -10,14 +11,15 @@ require 'iconv'
 
 module Autotag
   class Engine
+    include CommandLineOptions
     include Config
     include Conversions
     include Misc
     include OverrideFileReader
     
-    def initialize
+    def initialize(*args)
+      @engine_args= args
       @ui= UI.new(self)
-      @supported_audio_formats= supported_audio_formats.join(',').freeze
     end
     
     def run
@@ -29,13 +31,20 @@ module Autotag
     #--------------------------------------------------------------------------
     private
     
-    def init
+    def init(*args)
+      # Parse command line
+      parse_commandline!(@engine_args)
       @root_dir= Dir.pwd
-      @ui.init
+      
+      # Init UI
+      @ui.init(@runtime_options[:quiet])
+      
+      # Init config
       @album_types_dirs_glob_string= ('{'+supported_album_types.values.flatten.join(',')+'}').freeze
       @album_types_dir_to_value= {}
       supported_album_types.each{|v,a|a.each{|d| @album_types_dir_to_value[d]= v }}
       @album_types_dir_to_value.deep_freeze
+      @supported_audio_formats= supported_audio_formats.join(',').freeze
     end
     
     def shutdown
@@ -189,7 +198,7 @@ module Autotag
         create_expected_tags(af, expected_tags, tags_to_write(format,false), false)
         
         # Check if track is up-to-date
-        if tags_equal?(expected_tags,existing_tags)
+        if !@runtime_options[:force] and tags_equal?(expected_tags,existing_tags)
           on_event :track_uptodate, filename
         else
           File.open(temp_filename,'wb') do |fout|
@@ -200,7 +209,7 @@ module Autotag
             fout<< af.read_all
             # Write footer tags
             fout<< create_bin_tags(af, expected_tags, tags_to_write(format,false))
-          end
+          end unless @runtime_options[:pretend]
           on_event :track_updated, filename
         end
         

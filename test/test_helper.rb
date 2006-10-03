@@ -52,9 +52,14 @@ module Autotag
       'test/data'
     end
     
+    def filename2utf8(filename)
+      @iconv_filename2utf8 ||= Iconv.new('utf-8',Autotag::Engine::Config.const_get(:FILENAME_CHARSET))
+      @iconv_filename2utf8.iconv(filename)
+    end
+    
     def utf82filename(filename)
-      @iconv ||= Iconv.new(Autotag::Engine::Config.const_get(:FILENAME_CHARSET),'utf-8')
-      @iconv.iconv(filename)
+      @iconv_utf82filename ||= Iconv.new(Autotag::Engine::Config.const_get(:FILENAME_CHARSET),'utf-8')
+      @iconv_utf82filename.iconv(filename)
     end
     
   end
@@ -68,7 +73,6 @@ end
 
 require 'autotag/engine/ui'
 class Autotag::Engine::UI
-  alias :old_put :put
-  def put(str=nil) end
-  def puts(str=nil) end
+  alias :old_quiet_mode :quiet_mode
+  def quiet_mode() true end
 end

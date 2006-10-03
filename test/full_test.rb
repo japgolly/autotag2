@@ -15,17 +15,14 @@ class FullTest < Autotag::TestCase
       @e= new_engine_instance
       @e.instance_eval 'def process_root(*); end'
       @e.run
+      assert_runtime_options
       assert_equal tmpdir, @e.instance_variable_get(:@root_dir)
       
       # Start
-      mp3_tags= {
-        APEv2 => {:_footer => true},
-        ID3v2 => {:_header => true, :_version => 4},
-      }.deep_freeze
-      flac_tags= {Vorbis => {:_header => true, :_tool => Autotag::TITLE}}
       @e= new_engine_instance
-      @e.instance_variable_get(:@ui).instance_eval 'def puts(*a) Kernel.puts(*a) end; alias :put :old_put' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
+      @e.instance_variable_get(:@ui).instance_eval 'alias :quiet_mode :old_quiet_mode' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
       @e.run
+      assert_runtime_options
       
       #########################################################################
       # ACDC/1970 - Why_
@@ -163,35 +160,7 @@ class FullTest < Autotag::TestCase
       #   * flac files tagged correctly
       #   * works with flac files and do and do not have vorbis comments already
       #   * album type directories parsed and album types work
-      album= {
-          :artist => 'Waterfall Men?',
-          :album => 'Flac Attack',
-          :year => '2006',
-          :total_tracks => '4',
-      }
-      dir= 'Waterfall Men_/Albums/2006 - Flac Attack'
-      assert_file "#{dir}/01 - Whatever.flac", 3534, 'FF F8 73 A3 B2'.h, '00 10 32 40 1A'.h, {
-          :track => 'Whatever',
-          :track_number => '1',
-          :replaygain_album_gain => '+12.41 dB',
-          :replaygain_album_peak => '4.023410',
-          :replaygain_track_gain => '-13.23 dB',
-          :replaygain_track_peak => '0.123417',
-          :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 36 24 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
-        }.merge(album), flac_tags
-      assert_file "#{dir}/02 - Cry Baby.flac", 3532, 'FF 0F 33 24 25'.h, 'A8 3F 04 40 1A'.h, {
-          :track => 'Cry Baby',
-          :track_number => '2',
-          :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 55 24 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
-        }.merge(album), flac_tags
-      assert_file "#{dir}/03 - Tagless.flac", 1100, 'FF 4F 25 AE 08'.h, 'CF BC B2 96 53'.h, {
-          :track => 'Tagless',
-          :track_number => '3',
-          # The leading '00' in the below hex is the key to testing that last_tag bit is cleared for :_non_metadata_tags
-          # It is actually '80' in the original file.
-          :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 55 63 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
-        }.merge(album), flac_tags
-      assert_file_unchanged "#{dir}/04 - Tagfull.flac", 2310
+      testdir_waterfall_men_albums_2006_flac_attack false
       
       #########################################################################
       # Waterfall Men_/Singles/2001 - Crazy_
@@ -217,14 +186,100 @@ class FullTest < Autotag::TestCase
       
       #########################################################################
       # OTHER
-      ui= @e.instance_variable_get(:@ui)
-      assert_equal ['autotag.txt','Waterfall Men_/03 - bullshit.mp3'].sort, ui.instance_variable_get(:@all_files).values[0].sort
+      assert_equal full_test_useless_files.sort, @e.ui.instance_variable_get(:@all_files).values[0].sort
+      full_test_useless_files.each {|f| assert_file_unchanged f}
       
     } # engine_test_on
   end
   
+  def test_with_force
+    engine_test_on('full_test'){
+      @e= new_engine_instance '-f'
+      @e.run
+      assert_runtime_options :force
+      assert_equal 0, @e.ui.instance_variable_get(:@uptodate_track_count)
+      assert_equal 0, @e.ui.instance_variable_get(:@uptodate_track_size)
+      assert_not_equal 0, @e.ui.instance_variable_get(:@updated_track_count)
+      assert_not_equal 0, @e.ui.instance_variable_get(:@updated_track_size)
+      (Dir.glob('**/*.mp3').map{|f|filename2utf8(f)} - full_test_useless_files).each {|f| assert_file_changed f}
+      full_test_useless_files.each {|f| assert_file_unchanged f}
+      testdir_waterfall_men_albums_2006_flac_attack true
+    }
+  end
+  
+  def test_with_pretend
+    engine_test_on('full_test'){
+      @e= new_engine_instance '-p'
+      @e.run
+      assert_runtime_options :pretend
+      assert_not_equal 0, @e.ui.instance_variable_get(:@uptodate_track_count)
+      assert_not_equal 0, @e.ui.instance_variable_get(:@uptodate_track_size)
+      assert_not_equal 0, @e.ui.instance_variable_get(:@updated_track_count)
+      assert_not_equal 0, @e.ui.instance_variable_get(:@updated_track_size)
+      (Dir.glob('**/*.mp3').map{|f|filename2utf8(f)} - full_test_useless_files).each {|f| assert_file_unchanged f}
+      full_test_useless_files.each {|f| assert_file_unchanged f}
+    }
+  end
+  
   #----------------------------------------------------------------
   private
+  
+  def mp3_tags
+    {
+        APEv2 => {:_footer => true},
+        ID3v2 => {:_header => true, :_version => 4},
+    }.deep_freeze
+  end
+  
+  def flac_tags
+    {Vorbis => {:_header => true, :_tool => Autotag::TITLE}}.deep_freeze
+  end
+  
+  def full_test_useless_files
+    ['autotag.txt','Waterfall Men_/03 - bullshit.mp3']
+  end
+  
+  def testdir_waterfall_men_albums_2006_flac_attack(force)
+    album= {
+        :artist => 'Waterfall Men?',
+        :album => 'Flac Attack',
+        :year => '2006',
+        :total_tracks => '4',
+    }
+    dir= 'Waterfall Men_/Albums/2006 - Flac Attack'
+    assert_file "#{dir}/01 - Whatever.flac", 3534, 'FF F8 73 A3 B2'.h, '00 10 32 40 1A'.h, {
+        :track => 'Whatever',
+        :track_number => '1',
+        :replaygain_album_gain => '+12.41 dB',
+        :replaygain_album_peak => '4.023410',
+        :replaygain_track_gain => '-13.23 dB',
+        :replaygain_track_peak => '0.123417',
+        :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 36 24 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
+      }.merge(album), flac_tags
+    assert_file "#{dir}/02 - Cry Baby.flac", 3532, 'FF 0F 33 24 25'.h, 'A8 3F 04 40 1A'.h, {
+        :track => 'Cry Baby',
+        :track_number => '2',
+        :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 55 24 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
+      }.merge(album), flac_tags
+    assert_file "#{dir}/03 - Tagless.flac", 1100, 'FF 4F 25 AE 08'.h, 'CF BC B2 96 53'.h, {
+        :track => 'Tagless',
+        :track_number => '3',
+        # The leading '00' in the below hex is the key to testing that last_tag bit is cleared for :_non_metadata_tags
+        # It is actually '80' in the original file.
+        :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 55 63 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
+      }.merge(album), flac_tags
+    if force
+      assert_file "#{dir}/04 - Tagfull.flac", 1100, 'FF 4F 25 AE 08'.h, 'CF BC B2 96 53'.h, {
+          :track => 'Tagfull',
+          :track_number => '4',
+          :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 55 63 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
+        }.merge(album), flac_tags
+    else
+      assert_file_unchanged "#{dir}/04 - Tagfull.flac", 2310
+    end
+  end
+  
+  #----------------------------------------------------------------
   
   def assert_file(file, audio_size, start_of_audio, end_of_audio, metadata_base, metadata_per_tag)
     assert_file_metadata(file, metadata_base, metadata_per_tag) do |af|
@@ -252,11 +307,23 @@ class FullTest < Autotag::TestCase
     end
   end
   
+  def assert_file_changed(filename)
+    info= File.stat(utf82filename(filename))
+    modified_sec_ago= Time.now - info.mtime
+    assert modified_sec_ago <= 3, "File was supposed to be modified but wasn't.\nFile: \"#{filename}\""
+  end
+  
   def assert_file_unchanged(filename, size=nil)
     info= File.stat(utf82filename(filename))
     modified_sec_ago= Time.now - info.mtime
-    assert modified_sec_ago > 1, "File wasn't supposed to be modified.\nFile: \"#{filename}\""
+    assert modified_sec_ago > 3, "File wasn't supposed to be modified.\nFile: \"#{filename}\""
     assert_equal size, info.size if size
+  end
+  
+  def assert_runtime_options(*opt)
+    exp= {:force=>false,:pretend=>false,:quiet=>false}
+    opt.each{|o| exp[o]= true}
+    assert_equal exp, @e.runtime_options
   end
   
   def engine_test_on(dir)
@@ -284,8 +351,11 @@ class FullTest < Autotag::TestCase
     }
   end
   
-  def new_engine_instance
-    Engine.new
+  def new_engine_instance(*args)
+    e= Engine.new(*args)
+    e.instance_eval 'def runtime_options; @runtime_options; end'
+    e.instance_eval 'def ui; @ui; end'
+    e
   end
   
   def remove_tmpdir

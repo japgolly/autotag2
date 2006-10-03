@@ -9,7 +9,8 @@ module Autotag
         @engine= engine
       end
       
-      def init
+      def init(quiet_mode)
+        @quiet_mode= quiet_mode
         puts Autotag::TITLE_AND_VERSION
         puts "Copyright (c) 2006 David Barri. All rights reserved."
         @stats= []
@@ -157,8 +158,18 @@ module Autotag
       end
       
       def put(a)
+        return if quiet_mode
         $stdout.write a
         $stdout.flush
+      end
+      
+      def puts(*a)
+        return if quiet_mode
+        $stdout.puts(*a)
+      end
+      
+      def quiet_mode
+        @quiet_mode
       end
       
       def remove_override_files_in_pwd_from_all_files

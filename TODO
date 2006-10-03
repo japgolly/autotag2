@@ -1,9 +1,9 @@
-* Add command-line args (use OptionParser/optparse)
+DO BEFORE v2.0
+==============
+
+* Parse command-line args
   - accept multiple root dirs
   - accept other dirs such as album, artist, album_type, cd etc
-  - dry-run
-  - force
-  - quiet
 
 * Add to UI
   - colour
@@ -11,6 +11,10 @@
   - report any albums with inconsistant replaygain album data
 
 * Handle V/A albums
+
+
+DO AFTER v2.0
+=============
 
 * Handle remaster albums (store the original release year ??)
 
