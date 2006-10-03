@@ -12,6 +12,7 @@ module Autotag
       end
       
       def read
+        self[:_footer]= true
         self[:_version]= read_tag_version
         raise TagNotFound unless self[:_version]
         send "read_v#{self[:_version]}"

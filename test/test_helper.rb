@@ -35,6 +35,11 @@ module Autotag
       assert_equal end_of_audio, af.read_all[(-end_of_audio.size)..-1] if end_of_audio
     end
     
+    def assert_valid_metadata(m)
+      assert !(m[:_header] && m[:_footer]), 'Tag is marked as both header and footer.'
+      assert m[:_header] || m[:_footer], 'Tag is not marked as either header or footer.'
+    end
+    
     def tag_call(klass,method,source,type=:file)
       r= nil
       AudioFile.send("open_#{type}", "#{test_data_dir}/#{source}") do |af|

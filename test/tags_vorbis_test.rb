@@ -13,8 +13,10 @@ class VorbisTest < Autotag::TestCase
   def test_read
     AudioFile.open_file("#{test_data_dir}/tags/flac.flac") do |af|
       metadata= tag_class.new(af).read
+      assert_valid_metadata(metadata)
       other_tags= metadata.delete(:_non_metadata_tags)
       assert_hashes_equal({
+        :_header => true,
         :_padding => 3720,
         :_tool => 'reference libFLAC 1.1.1 20041001',
         :artist => 'Slayer',
@@ -62,6 +64,7 @@ class VorbisTest < Autotag::TestCase
   
   def sample_tag_content
     {
+      :_header => true,
       :_padding => 1546,
       :_tool => 'woteva',
       :artist => 'まー',

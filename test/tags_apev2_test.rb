@@ -12,6 +12,7 @@ class APEv2Test < Autotag::TestCase
   def test_read
     AudioFile.open_file("#{test_data_dir}/tags/apev2.mp3") do |af|
       metadata= tag_class.new(af).read
+      assert_valid_metadata(metadata)
       assert_hashes_equal({
         :_footer => true,
         :artist => 'エープ',

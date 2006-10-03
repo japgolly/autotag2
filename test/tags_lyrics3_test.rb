@@ -14,7 +14,9 @@ class Lyrics3Test < Autotag::TestCase
   def test_read_v1
     AudioFile.open_file("#{test_data_dir}/tags/lyrics3v1.mp3") do |af|
       metadata= tag_class.new(af).read
+      assert_valid_metadata(metadata)
       assert_hashes_equal({
+        :_footer => true,
         :_version => 1,
         :_tag => 'LYRICSBEGININD0000200EAL00052 Absolute Power Metasdal-The Definitive Collection 5CD CRC00008339F2EE9000097LYRICSEND',
       }, metadata)
@@ -25,7 +27,9 @@ class Lyrics3Test < Autotag::TestCase
   def test_read_v2
     AudioFile.open_file("#{test_data_dir}/tags/lyrics3v2.mp3") do |af|
       metadata= tag_class.new(af).read
+      assert_valid_metadata(metadata)
       assert_hashes_equal({
+        :_footer => true,
         :_version => 2,
         :_tag => 'LYRICSBEGININD0000200EAL00052 Absolute Power Metal-The Definitive Collection 5CD CRC00008339F2EE9000097LYRICS200',
       }, metadata)

@@ -34,6 +34,7 @@ module Autotag
       def read
         @af.seek_to_start
         starting_pos= fin.tell
+        self[:_header]= true
         parse_vorbis_headers {|type,len,descriptor|
           case type
           when TAG_TYPE_PADDING

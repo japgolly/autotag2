@@ -12,6 +12,7 @@ class ID3v2Test < Autotag::TestCase
   def test_read_22h
     AudioFile.open_file("#{test_data_dir}/tags/ip3v2.2_header.mp3") do |af|
       metadata= tag_class.new(af).read
+      assert_valid_metadata(metadata)
       assert_hashes_equal({
         :_header => true,
         :_version => 2,
@@ -33,6 +34,7 @@ class ID3v2Test < Autotag::TestCase
   def test_read_23h
     AudioFile.open_file("#{test_data_dir}/tags/ip3v2.3_header.mp3") do |af|
       metadata= tag_class.new(af).read
+      assert_valid_metadata(metadata)
       assert_hashes_equal({
         :_header => true,
         :_version => 3,
@@ -55,6 +57,7 @@ class ID3v2Test < Autotag::TestCase
   def test_read_24h
     AudioFile.open_file("#{test_data_dir}/tags/ip3v2.4_header.mp3") do |af|
       metadata= tag_class.new(af).read
+      assert_valid_metadata(metadata)
       assert_hashes_equal({
         :_header => true,
         :_version => 4,

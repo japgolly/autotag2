@@ -22,7 +22,7 @@ class FullTest < Autotag::TestCase
         APEv2 => {:_footer => true},
         ID3v2 => {:_header => true, :_version => 4},
       }.deep_freeze
-      flac_tags= {Vorbis => {:_tool => Autotag::TITLE}}
+      flac_tags= {Vorbis => {:_header => true, :_tool => Autotag::TITLE}}
       @e= new_engine_instance
       @e.instance_variable_get(:@ui).instance_eval 'def puts(*a) Kernel.puts(*a) end; alias :put :old_put' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
       @e.run
@@ -167,7 +167,7 @@ class FullTest < Autotag::TestCase
           :artist => 'Waterfall Men?',
           :album => 'Flac Attack',
           :year => '2006',
-          :total_tracks => '3',
+          :total_tracks => '4',
       }
       dir= 'Waterfall Men_/Albums/2006 - Flac Attack'
       assert_file "#{dir}/01 - Whatever.flac", 3534, 'FF F8 73 A3 B2'.h, '00 10 32 40 1A'.h, {
@@ -191,6 +191,7 @@ class FullTest < Autotag::TestCase
           # It is actually '80' in the original file.
           :_non_metadata_tags => ['00 00 00 22 04 80 04 80 00 00 0E 00 10 0A 0A C4 42 F0 00 7E 55 63 D4 1D D9 FD 7D E2 13 49 D4 46 2A 00 96 B1 78 34'.h],
         }.merge(album), flac_tags
+      assert_file_unchanged "#{dir}/04 - Tagfull.flac", 2310
       
       #########################################################################
       # Waterfall Men_/Singles/2001 - Crazy_
@@ -237,7 +238,7 @@ class FullTest < Autotag::TestCase
       t= af.read_tags
       # check tags
       t.each_value {|m|
-        assert !(m[:_header] && m[:_footer])
+        assert_valid_metadata m
         m.delete :_padding
       }
       assert_hashes_equal expected_tags, t
