@@ -2,7 +2,6 @@ DO BEFORE v2.0
 ==============
 
 * Parse command-line args
-  - accept multiple root dirs
   - accept other dirs such as album, artist, album_type, cd etc
 
 * Add to UI
