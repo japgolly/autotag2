@@ -27,14 +27,9 @@ module Autotag
             f_utf8 =~ /^(.+)\.([^\.]+)$/
             f_utf8,ext = $1,$2
           end
-          ignore= false
-          ignore_patterns.each{|p| ignore ||= !(f_utf8 !~ p) }
-          match_patterns.each{|p|
-            if f_utf8 =~ p
-              matches<< [f,f_utf8,p,ext]
-              break
-            end
-          } unless ignore
+          if p= find_matching_pattern(f_utf8,match_patterns,ignore_patterns)
+            matches<< [f,f_utf8,p,ext]
+          end
         }
         matches
       end
@@ -58,6 +53,12 @@ module Autotag
         num_array= array_of_hashs.map{|o|o[attr]}.reject{|x|x !~ /^\d+$/}
         return nil if num_array.empty?
         num_array.map{|x|x.to_i}.sort.last.to_s
+      end
+      
+      def find_matching_pattern(str, match_patterns, ignore_patterns)
+        ignore_patterns.each{|p| return nil if str =~ p}
+        match_patterns.each{|p| return p if str =~ p}
+        nil
       end
       
       def in_dir(dir)

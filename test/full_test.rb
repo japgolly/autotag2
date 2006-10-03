@@ -7,18 +7,8 @@ class FullTest < Autotag::TestCase
   include FileUtils
   include Autotag::Tags
   
-  def atest_full
+  def test_full
     engine_test_on('full_test'){
-    
-      # Assert we are really running on the test directory
-      assert_equal tmpdir, Dir.getwd
-      @e= new_engine_instance
-      @e.instance_eval 'def process_root(*); end'
-      @e.run
-      assert_runtime_options
-      assert_equal [tmpdir], @e.instance_variable_get(:@root_dirs)
-      
-      # Start
       @e= new_engine_instance
       @e.instance_variable_get(:@ui).instance_eval 'alias :quiet_mode :old_quiet_mode' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
       @e.run
@@ -34,33 +24,7 @@ class FullTest < Autotag::TestCase
       #   * total tracks
       #   * single and double digit track nubers
       #   * double digit total_tracks
-      album= {
-          :artist => 'AC/DC',
-          :album => 'Why?',
-          :year => '1970',
-          :total_tracks => '12',
-      }
-      dir= 'ACDC/1970 - Why_'
-      assert_file "#{dir}/01 - Asd_ qwe.mp3", 6198, 'FF F3 84 64 00'.h, '00 41 4D 45'.h, {
-          :track => 'Asd: qwe',
-          :track_number => '1',
-          :replaygain_album_gain => '-11.45 dB',
-          :replaygain_album_peak => '1.209251',
-          :replaygain_track_gain => '-11.87 dB',
-          :replaygain_track_peak => '1.152004',
-        }.merge(album), mp3_tags
-      assert_file "#{dir}/02 - 全角文字もOKだよ.mp3", 7476, 'FF FB C0 04 00'.h, 'AA AA 45 AA AA'.h, {
-          :track => '全角文字もOKだよ',
-          :track_number => '2',
-        }.merge(album), mp3_tags
-      assert_file "#{dir}/04 - Me _ You... Why_.mp3", 5029, 'FF F3 84 64 31'.h, '00 00 41 4D 45'.h, {
-          :track => 'Me / You... Why?',
-          :track_number => '4',
-        }.merge(album), mp3_tags
-      assert_file "#{dir}/12 - NADA....mp3", 2333, 'FF 64 58 69 6E'.h, '04 24 2B D6 0E'.h, {
-          :track => 'NADA...',
-          :track_number => '12',
-        }.merge(album), mp3_tags
+      testdir_acdc_1970_why
       
       #########################################################################
       # ACDC/1972 - へへ
@@ -120,20 +84,7 @@ class FullTest < Autotag::TestCase
       #   * processes cd/disc directories (numbered cds/discs)
       #   * sets :total_discs correctly
       #   * detects disc_title correctly
-      album= {
-          :artist => 'The Woteva Band',
-          :album => 'Rain',
-          :year => '2005',
-          :total_discs => '9',
-      }
-      dir= 'The Woteva Band/2005 - Rain'
-      assert_file_metadata "#{dir}/cd 1/01 - Car.mp3",    {:disc => '1',:track_number => '1', :total_tracks => '1', :track => 'Car' }.merge(album), mp3_tags
-      assert_file_metadata "#{dir}/Disc 2/21 - Cars.mp3", {:disc => '2',:track_number => '21',:total_tracks => '21',:track => 'Cars'}.merge(album), mp3_tags
-      assert_file_metadata "#{dir}/CD 6/03 - Crap.mp3",   {:disc => '6',:track_number => '3', :total_tracks => '3', :track => 'Crap'}.merge(album), mp3_tags
-      assert_file_metadata "#{dir}/disc 7/02 - Crap.mp3", {:disc => '7',:track_number => '2', :total_tracks => '3', :track => 'Crap'}.merge(album), mp3_tags
-      assert_file_metadata "#{dir}/disc 7/03 - Baa.mp3",  {:disc => '7',:track_number => '3', :total_tracks => '3', :track => 'Baa' }.merge(album), mp3_tags
-      assert_file_metadata "#{dir}/DISC 9/02 - Crap.mp3", {:disc => '9',:track_number => '2', :total_tracks => '2', :track => 'Crap'}.merge(album), mp3_tags
-      assert_file_metadata "#{dir}/CD 3 - Mars/07 - Ha ha ha ha.mp3", {:disc => '3',:disc_title => 'Mars',:track_number => '7',:total_tracks => '7',:track => 'Ha ha ha ha'}.merge(album), mp3_tags
+      testdir_the_woteva_band_2005_Rain
       
       #########################################################################
       # The Woteva Band/1930 - Django
@@ -192,7 +143,7 @@ class FullTest < Autotag::TestCase
     } # engine_test_on
   end
   
-  def atest_with_force
+  def test_with_force
     engine_test_on('full_test'){
       @e= new_engine_instance '-f'
       @e.run
@@ -207,7 +158,7 @@ class FullTest < Autotag::TestCase
     }
   end
   
-  def atest_with_pretend
+  def test_with_pretend
     engine_test_on('full_test'){
       @e= new_engine_instance '-p'
       @e.run
@@ -229,7 +180,7 @@ class FullTest < Autotag::TestCase
       @e.run
       assert_runtime_options :force
       useless_files= full_test_useless_files.map{|f|["full_test/#{f}","testofthedamned/#{f}"]}.flatten
-      (Dir.glob('**/*.mp3').map{|f|filename2utf8(f)} - useless_files).each {|f|
+      (Dir.glob('**/*.{mp3,flac}').map{|f|filename2utf8(f)} - useless_files).each {|f|
         if f =~ /full_test|testofthedamned/
           assert_file_changed f
         else
@@ -240,20 +191,40 @@ class FullTest < Autotag::TestCase
     }
   end
   
-  def test_with_specific_artist_dirs
-    engine_test_on('full_test'){
-      @e= new_engine_instance '-f','ACDC','Waterfall Men_'
-      @e.run
-      assert_runtime_options :force
-      (Dir.glob('**/*.mp3').map{|f|filename2utf8(f)} - full_test_useless_files).each {|f|
-        if f =~ /ACDC|Waterfall Men_/
-          assert_file_changed f
-        else
-          assert_file_unchanged f
-        end
+  def test_with_specific_nonroot_dirs
+    subtest= lambda do |test_acdc_1970_why, test_flac_attack, which_rain_cds, *dirs|
+      engine_test_on('full_test'){
+        @e= new_engine_instance '-f', *dirs
+        @e.run
+        changed_file_regex= Regexp.new("(?:^|[\\/])(?:#{dirs.map{|d|Regexp.quote d}.join '|'})(?:[\\/]|$)",0,'U')
+        (Dir.glob('**/*.{mp3,flac}').map{|f|filename2utf8(f)} - full_test_useless_files).each {|f|
+          if f =~ changed_file_regex
+            assert_file_changed f
+          else
+            assert_file_unchanged f
+          end
+        }
+        full_test_useless_files.each {|f| assert_file_unchanged f}
+        testdir_acdc_1970_why if test_acdc_1970_why
+        testdir_waterfall_men_albums_2006_flac_attack true if test_flac_attack
+        testdir_the_woteva_band_2005_Rain(*which_rain_cds) unless which_rain_cds.nil?
       }
-      full_test_useless_files.each {|f| assert_file_unchanged f}
-    }
+    end
+    
+    # Artist
+    subtest.call true, true, nil, 'ACDC', 'Waterfall Men_'
+    # Album type
+    subtest.call false, true, nil, 'Waterfall Men_/Albums'
+    # Album
+    # TODO Add another dir to Waterfall Men_/Albums
+    # TODO Create Waterfall Men_/Singles/2004 - What/cd 1 - Why not
+    subtest.call true, false, nil, 'ACDC/1970 - Why_'
+    subtest.call false, true, nil, 'Waterfall Men_/Albums/2006 - Flac Attack'
+    subtest.call false, false, [1,7], 'The Woteva Band/2005 - Rain/cd 1', 'The Woteva Band/2005 - Rain/disc 7'
+    subtest.call false, false, [], 'The Woteva Band/2005 - Rain'
+    # Combination
+    subtest.call true, true, [6], 'ACDC/1970 - Why_', 'Waterfall Men_', 'The Woteva Band/2005 - Rain/CD 6'
+    subtest.call true, false, [], 'ACDC', 'The Woteva Band'
   end
   
   #----------------------------------------------------------------
@@ -274,6 +245,53 @@ class FullTest < Autotag::TestCase
     ['autotag.txt','Waterfall Men_/03 - bullshit.mp3']
   end
   
+  def testdir_acdc_1970_why
+    album= {
+        :artist => 'AC/DC',
+        :album => 'Why?',
+        :year => '1970',
+        :total_tracks => '12',
+    }
+    dir= 'ACDC/1970 - Why_'
+    assert_file "#{dir}/01 - Asd_ qwe.mp3", 6198, 'FF F3 84 64 00'.h, '00 41 4D 45'.h, {
+        :track => 'Asd: qwe',
+        :track_number => '1',
+        :replaygain_album_gain => '-11.45 dB',
+        :replaygain_album_peak => '1.209251',
+        :replaygain_track_gain => '-11.87 dB',
+        :replaygain_track_peak => '1.152004',
+      }.merge(album), mp3_tags
+    assert_file "#{dir}/02 - 全角文字もOKだよ.mp3", 7476, 'FF FB C0 04 00'.h, 'AA AA 45 AA AA'.h, {
+        :track => '全角文字もOKだよ',
+        :track_number => '2',
+      }.merge(album), mp3_tags
+    assert_file "#{dir}/04 - Me _ You... Why_.mp3", 5029, 'FF F3 84 64 31'.h, '00 00 41 4D 45'.h, {
+        :track => 'Me / You... Why?',
+        :track_number => '4',
+      }.merge(album), mp3_tags
+    assert_file "#{dir}/12 - NADA....mp3", 2333, 'FF 64 58 69 6E'.h, '04 24 2B D6 0E'.h, {
+        :track => 'NADA...',
+        :track_number => '12',
+      }.merge(album), mp3_tags
+  end
+  
+  def testdir_the_woteva_band_2005_Rain(*which)
+    album= {
+        :artist => 'The Woteva Band',
+        :album => 'Rain',
+        :year => '2005',
+        :total_discs => '9',
+    }
+    dir= 'The Woteva Band/2005 - Rain'
+    assert_file_metadata "#{dir}/cd 1/01 - Car.mp3",    {:disc => '1',:track_number => '1', :total_tracks => '1', :track => 'Car' }.merge(album), mp3_tags if which.empty? || which.include?(1)
+    assert_file_metadata "#{dir}/Disc 2/21 - Cars.mp3", {:disc => '2',:track_number => '21',:total_tracks => '21',:track => 'Cars'}.merge(album), mp3_tags if which.empty? || which.include?(2)
+    assert_file_metadata "#{dir}/CD 6/03 - Crap.mp3",   {:disc => '6',:track_number => '3', :total_tracks => '3', :track => 'Crap'}.merge(album), mp3_tags if which.empty? || which.include?(6)
+    assert_file_metadata "#{dir}/disc 7/02 - Crap.mp3", {:disc => '7',:track_number => '2', :total_tracks => '3', :track => 'Crap'}.merge(album), mp3_tags if which.empty? || which.include?(7)
+    assert_file_metadata "#{dir}/disc 7/03 - Baa.mp3",  {:disc => '7',:track_number => '3', :total_tracks => '3', :track => 'Baa' }.merge(album), mp3_tags if which.empty? || which.include?(7)
+    assert_file_metadata "#{dir}/DISC 9/02 - Crap.mp3", {:disc => '9',:track_number => '2', :total_tracks => '2', :track => 'Crap'}.merge(album), mp3_tags if which.empty? || which.include?(9)
+    assert_file_metadata "#{dir}/CD 3 - Mars/07 - Ha ha ha ha.mp3", {:disc => '3',:disc_title => 'Mars',:track_number => '7',:total_tracks => '7',:track => 'Ha ha ha ha'}.merge(album), mp3_tags if which.empty? || which.include?(9)
+  end
+
   def testdir_waterfall_men_albums_2006_flac_attack(force)
     album= {
         :artist => 'Waterfall Men?',

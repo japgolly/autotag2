@@ -31,60 +31,9 @@ module Autotag
     #--------------------------------------------------------------------------
     private
     
-    ###################################################################################################
-    ###################################################################################################
-    ###################################################################################################
-    ###################################################################################################
-    def build_job_queue
-      @job_queue= []
-      if @specified_dirs
-        @specified_dirs.each {|d|
-          # Determine type
-          type= nil
-          type ||= :artist if d =~ /ACDC|Waterfall/i
-          type ||= :root
-          @job_queue<< {:dir => d, :type => type}
-        }
-      else
-        @job_queue<< {:dir => Dir.pwd, :type => :root}
-      end
-      @job_queue.each{|job| job[:dir]= File.expand_path(job[:dir])}
-    end
-    
-    ###################################################################################################
-    def process_job_queue!
-puts "\nJOB QUEUE"
-pp @job_queue
-      @job_queue.each {|job|
-        t= job[:type]
-        
-        unless t == :root
-          tree= job[:dir].gsub(/[\/\\]$/,'').split(/[\/\\]/).reverse
-          if t == :artist
-            @glob_str[:artist]= tree.shift
-            job[:dir]= tree.reverse.join('/')
-          end
-        end
-p @glob_str
-p job[:dir]
-        
-        process_root job[:dir]
-        
-        @glob_str.clear
-      }
-    end
-    
-    ###################################################################################################
-    ###################################################################################################
-    ###################################################################################################
-    ###################################################################################################
-    
-    def init(*args)
+    def init
       # Parse command line
       parse_commandline!(@engine_args)
-      build_job_queue
-      
-      @glob_str= {}
       
       # Init UI
       @ui.init(@runtime_options[:quiet])
@@ -95,10 +44,80 @@ p job[:dir]
       supported_album_types.each{|v,a|a.each{|d| @album_types_dir_to_value[d]= v }}
       @album_types_dir_to_value.deep_freeze
       @supported_audio_formats= supported_audio_formats.join(',').freeze
+
+      build_job_queue
     end
     
     def shutdown
       @ui.shutdown
+    end
+    
+    def build_job_queue
+      @job_queue= []
+      unless @specified_dirs
+        @job_queue<< {:dir => Dir.pwd, :type => :root, :glob => {}}
+      else
+        @specified_dirs.each {|d|
+          dirtree= d.gsub(/[\/\\]$/,'').split(/[\/\\]/).reverse
+          glob= {}
+          type= nil
+          
+          # Check if CD dir
+          if !type && find_matching_pattern(dirtree[0], file_patterns(:cd), file_ignore_patterns(:cd))
+            match= false
+            Dir.chdir(d) do
+              # Look for tracks
+              match ||= !advanced_glob(:file, file_patterns(:track), file_ignore_patterns(:track), :file_extentions => @supported_audio_formats).empty?
+            end
+            type= :cd if match
+          end
+          
+          # Check if Album dir
+          if !type && find_matching_pattern(dirtree[0], file_patterns(:album), file_ignore_patterns(:album))
+            match= false
+            Dir.chdir(d) do
+              # Look for tracks or cd dirs
+              match ||= !advanced_glob(:dir, file_patterns(:cd), file_ignore_patterns(:cd)).empty?
+              match ||= !advanced_glob(:file, file_patterns(:track), file_ignore_patterns(:track), :file_extentions => @supported_audio_formats).empty?
+            end
+            type= :album if match
+          end
+          
+          # Check if AlbumType dir
+          if !type && @album_types_dir_to_value.has_key?(dirtree[0])
+            type= :album_type
+          end
+          
+          # Check if Artist dir
+          if !type && find_matching_pattern(dirtree[0], file_patterns(:artist), file_ignore_patterns(:artist))
+            match= false
+            Dir.chdir(d) do
+              # Look for albums or albumtype dirs
+              match ||= !Dir.glob(@album_types_dirs_glob_string).empty?
+              match ||= !advanced_glob(:dir, file_patterns(:album), file_ignore_patterns(:album)).empty?
+            end
+            type= :artist if match
+          end
+          
+          # Create job
+          glob[:cd]=         dirtree.shift if type == :cd
+          glob[:album]=      dirtree.shift if [:cd,:album].include?(type)
+          glob[:album_type]= dirtree.shift if [:cd,:album,:album_type].include?(type) && @album_types_dir_to_value.has_key?(dirtree[0])
+          glob[:artist]=     dirtree.shift if type
+          type ||= :root
+          d= dirtree.reverse.join('/')
+          @job_queue<< {:dir => d, :type => type, :glob => glob}
+        }
+      end
+      @job_queue.each{|job| job[:dir]= File.expand_path(job[:dir])}
+    end
+    
+    def process_job_queue!
+      @job_queue.each {|job|
+        @glob= job[:glob]        
+        process_root job[:dir]
+        @glob= nil
+      }
     end
     
     # Process the root directory.
@@ -109,7 +128,7 @@ p job[:dir]
         on_event :root_dir_enter, root_dir
         @metadata= {}
         # Find artists
-        each_matching :dir, file_patterns(:artist), file_ignore_patterns(:artist), :glob => @glob_str[:artist] do |d,p|
+        each_matching :dir, file_patterns(:artist), file_ignore_patterns(:artist), :glob => @glob[:artist] do |d,p|
           process_artist_dir(d,p)
         end
       }
@@ -128,7 +147,7 @@ p job[:dir]
         process_dir_of_albums
         
         # Find albumtype directories
-        Dir.glob(@album_types_dirs_glob_string).ci_sort.each do |d|
+        Dir.glob(@glob[:album_type] || @album_types_dirs_glob_string).ci_sort.each do |d|
           next unless File.directory?(d)
           in_dir(d) do
             on_event :album_type_dir_enter, dir
@@ -148,7 +167,7 @@ p job[:dir]
     # Eg: x:/music/Dream Theater/Singles/
     def process_dir_of_albums
       read_overrides(:artist)
-      each_matching :dir, file_patterns(:album), file_ignore_patterns(:album) do |d,p|
+      each_matching :dir, file_patterns(:album), file_ignore_patterns(:album), :glob => @glob[:album] do |d,p|
         process_album_dir(d,p)
       end
     end
@@ -169,15 +188,24 @@ p job[:dir]
         process_dir_of_tracks
         
         # Find cd directories
-        dirs2= advanced_glob(:dir, file_patterns(:cd), file_ignore_patterns(:cd))
+        dirs2= advanced_glob(:dir, file_patterns(:cd), file_ignore_patterns(:cd), :glob => @glob[:cd])
         unless dirs2.empty?
           dirs= map_advanced_glob_results(dirs2,:disc) do |m|
             o= {:disc => m[1]}
             o[:disc_title]= m[2] if m[2]
             o
           end
+          # Create a seperate collection called all_cd_dirs because if we are using a specific glob_str for the
+          # cd directory, then not all cd dirs will be loaded and therefore the :total_discs attribute will be
+          # incorrect.
+          all_cd_dirs= if @glob[:cd]
+              x= advanced_glob(:dir, file_patterns(:cd), file_ignore_patterns(:cd))
+              map_advanced_glob_results(x,:disc) {|m|{:disc => m[1]}}
+            else
+              dirs
+            end
           with_metadata do
-            @metadata[:total_discs]= find_highest_numeric_value(dirs.values,:disc)
+            @metadata[:total_discs]= find_highest_numeric_value(all_cd_dirs.values,:disc)
             @metadata.delete_if_nil :total_discs
             dirs.keys.ci_sort.each do |d|
               o= dirs[d]
