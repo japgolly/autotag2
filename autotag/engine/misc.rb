@@ -1,7 +1,9 @@
+require 'autotag/engine/config'
+
 module Autotag
   class Engine
     module Misc
-      extend self
+      include Config
       
       def advanced_glob(type, match_patterns, ignore_patterns, file_extentions=nil)
         files= if file_extentions
@@ -47,8 +49,7 @@ module Autotag
       end
       
       def filename2utf8(filename)
-        # TODO All filenames are considered shift-jis
-        @iconv ||= Iconv.new('utf-8','shift-jis')
+        @iconv ||= Iconv.new('utf-8',filename_charset)
         @iconv.iconv(filename)
       end
       
@@ -86,9 +87,8 @@ module Autotag
         str.gsub!(/^0+(?=.)/,'')
       end
       
-      @@temp_filename= 'autotag - if autotag is not running you can safely delete this file.tmp'.freeze
       def temp_filename
-        @@temp_filename
+        TEMP_FILENAME
       end
       
       def with_metadata
@@ -96,6 +96,8 @@ module Autotag
         yield
         @metadata= mbackup.deep_clone
       end
+      
+      TEMP_FILENAME= 'autotag - if autotag is not running you can safely delete this file.tmp'.freeze
       
     end # module Misc
   end # class Engine

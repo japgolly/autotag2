@@ -53,7 +53,7 @@ module Autotag
     end
     
     def utf82filename(filename)
-      @iconv ||= Iconv.new('shift-jis','utf-8')
+      @iconv ||= Iconv.new(Autotag::Engine::Config.const_get(:FILENAME_CHARSET),'utf-8')
       @iconv.iconv(filename)
     end
     
