@@ -10,7 +10,7 @@ class FullTest < Autotag::TestCase
   def test_full
     engine_test_on('full_test'){
       @e= new_engine_instance
-      @e.instance_variable_get(:@ui).instance_eval 'alias :quiet_mode :old_quiet_mode' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
+      @e.ui.instance_eval 'alias :quiet_mode :old_quiet_mode' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
       @e.run
       assert_runtime_options
       
@@ -137,6 +137,8 @@ class FullTest < Autotag::TestCase
       
       #########################################################################
       # OTHER
+      testdir_waterfall_men_albums_2007_wowness
+      testdir_waterfall_men_singles_1989_disco_stu true, true
       assert_equal full_test_useless_files.sort, @e.ui.instance_variable_get(:@all_files).values[0].sort
       full_test_useless_files.each {|f| assert_file_unchanged f}
       
@@ -192,9 +194,10 @@ class FullTest < Autotag::TestCase
   end
   
   def test_with_specific_nonroot_dirs
-    subtest= lambda do |test_acdc_1970_why, test_flac_attack, which_rain_cds, *dirs|
+    subtest= lambda do |test_acdc_1970_why, test_flac_attack, test_wowness, which_rain_cds, disco_stu_cds, *dirs|
       engine_test_on('full_test'){
         @e= new_engine_instance '-f', *dirs
+#        @e.ui.instance_eval 'alias :quiet_mode :old_quiet_mode' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
         @e.run
         changed_file_regex= Regexp.new("(?:^|[\\/])(?:#{dirs.map{|d|Regexp.quote d}.join '|'})(?:[\\/]|$)",0,'U')
         (Dir.glob('**/*.{mp3,flac}').map{|f|filename2utf8(f)} - full_test_useless_files).each {|f|
@@ -207,24 +210,28 @@ class FullTest < Autotag::TestCase
         full_test_useless_files.each {|f| assert_file_unchanged f}
         testdir_acdc_1970_why if test_acdc_1970_why
         testdir_waterfall_men_albums_2006_flac_attack true if test_flac_attack
+        testdir_waterfall_men_albums_2007_wowness if test_wowness
         testdir_the_woteva_band_2005_Rain(*which_rain_cds) unless which_rain_cds.nil?
+        testdir_waterfall_men_singles_1989_disco_stu(*disco_stu_cds) if disco_stu_cds
       }
     end
     
     # Artist
-    subtest.call true, true, nil, 'ACDC', 'Waterfall Men_'
+    subtest.call true, true, false, nil, nil, 'ACDC', 'Waterfall Men_'
     # Album type
-    subtest.call false, true, nil, 'Waterfall Men_/Albums'
+    subtest.call false, true, true, nil, nil, 'Waterfall Men_/Albums'
     # Album
-    # TODO Add another dir to Waterfall Men_/Albums
-    # TODO Create Waterfall Men_/Singles/2004 - What/cd 1 - Why not
-    subtest.call true, false, nil, 'ACDC/1970 - Why_'
-    subtest.call false, true, nil, 'Waterfall Men_/Albums/2006 - Flac Attack'
-    subtest.call false, false, [1,7], 'The Woteva Band/2005 - Rain/cd 1', 'The Woteva Band/2005 - Rain/disc 7'
-    subtest.call false, false, [], 'The Woteva Band/2005 - Rain'
+    subtest.call true, false, false, nil, nil, 'ACDC/1970 - Why_'
+    subtest.call false, true, false, nil, nil, 'Waterfall Men_/Albums/2006 - Flac Attack'
+    subtest.call false, false, false, [1,7], nil, 'The Woteva Band/2005 - Rain/cd 1', 'The Woteva Band/2005 - Rain/disc 7'
+    subtest.call false, false, false, [], nil, 'The Woteva Band/2005 - Rain'
+    subtest.call false, false, false, nil, [true,false], 'Waterfall Men_/Singles/1989 - Disco Stu/cd 1 - Boogie'
+    subtest.call false, false, false, nil, [false,true], 'Waterfall Men_/Singles/1989 - Disco Stu/cd 2 - Buddy'
+    subtest.call false, false, false, nil, [true,true], 'Waterfall Men_/Singles/1989 - Disco Stu'
+    subtest.call false, false, false, nil, [true,true], 'Waterfall Men_/Singles'
     # Combination
-    subtest.call true, true, [6], 'ACDC/1970 - Why_', 'Waterfall Men_', 'The Woteva Band/2005 - Rain/CD 6'
-    subtest.call true, false, [], 'ACDC', 'The Woteva Band'
+    subtest.call true, true, true, [6], [true,true], 'ACDC/1970 - Why_', 'Waterfall Men_', 'The Woteva Band/2005 - Rain/CD 6'
+    subtest.call true, false, false, [], [false,true], 'ACDC', 'The Woteva Band', 'Waterfall Men_/Singles/1989 - Disco Stu/cd 2 - Buddy'
   end
   
   #----------------------------------------------------------------
@@ -329,6 +336,51 @@ class FullTest < Autotag::TestCase
         }.merge(album), flac_tags
     else
       assert_file_unchanged "#{dir}/04 - Tagfull.flac", 2310
+    end
+  end
+  
+  def testdir_waterfall_men_albums_2007_wowness
+    album= {
+        :artist => 'Waterfall Men?',
+        :album => 'Wowness',
+        :year => '2007',
+        :total_tracks => '11',
+    }
+    dir= 'Waterfall Men_/Albums/2007 - Wowness'
+    assert_file "#{dir}/02 - Vacant Wow.mp3", 1757, 'FF FB 91 64 00'.h, 'AA 0A AA BA AA'.h, {
+        :track => 'Vacant Wow',
+        :track_number => '2',
+      }.merge(album), mp3_tags
+    assert_file "#{dir}/11 - Wow Exposed.mp3", 2544, 'FF FB 90 44 06'.h, '55 55 24 31 55'.h, {
+        :track => 'Wow Exposed',
+        :track_number => '11',
+      }.merge(album), mp3_tags
+  end
+  
+  def testdir_waterfall_men_singles_1989_disco_stu(cd1,cd2)
+    album= {
+        :artist => 'Waterfall Men?',
+        :album => 'Disco Stu',
+        :album_type => 'Single',
+        :year => '1989',
+        :total_discs => '2',
+    }
+    dir= 'Waterfall Men_/Singles/1989 - Disco Stu'
+    if cd1
+      album.merge!(:disc=>'1',:disc_title=>'Boogie',:total_tracks=>'2')
+      assert_file_metadata "#{dir}/cd 1 - Boogie/01 - Walk With Me In Hell.mp3",{:track_number=>'1',:track=>'Walk With Me In Hell'}.merge(album), mp3_tags
+      assert_file_metadata "#{dir}/cd 1 - Boogie/02 - Again We Rise.mp3",{:track_number=>'2',:track=>'Again We Rise'}.merge(album), mp3_tags
+    else
+      assert_file_unchanged "#{dir}/cd 1 - Boogie/01 - Walk With Me In Hell.mp3"
+      assert_file_unchanged "#{dir}/cd 1 - Boogie/02 - Again We Rise.mp3"
+    end
+    if cd2
+      album.merge!(:disc=>'2',:disc_title=>'Buddy',:total_tracks=>'3')
+      assert_file_metadata "#{dir}/cd 2 - Buddy/01 - Future Breed Machine.mp3",{:track_number=>'1',:track=>'Future Breed Machine'}.merge(album), mp3_tags
+      assert_file_metadata "#{dir}/cd 2 - Buddy/03 - Lonely Day.mp3",{:track_number=>'3',:track=>'Lonely Day'}.merge(album), mp3_tags
+    else
+      assert_file_unchanged "#{dir}/cd 2 - Buddy/01 - Future Breed Machine.mp3"
+      assert_file_unchanged "#{dir}/cd 2 - Buddy/03 - Lonely Day.mp3"
     end
   end
   
