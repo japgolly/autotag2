@@ -35,7 +35,7 @@ module Autotag
         x= "ID3"                            # header
         x<< [self[:_version], 0].pack('cc') # version
         x<< "\0"                            # flags
-        x<< create_int(tag_size)            # size
+        x<< create_int(tag_size,true)       # size
       end
       
       def create_body(items)
@@ -55,19 +55,23 @@ module Autotag
         v[0]= contains_unicode?(v) ? 3 : 0
         
         # Create item
-        x= id.dup                # id
-        x<< create_int(v.length) # size
-        x<< "\0\0"               # flags
-        x<< v                    # value
+        x= id.dup                     # id
+        x<< create_int(v.length,true) # size
+        x<< "\0\0"                    # flags
+        x<< v                         # value
       end
       
-      def create_int(l)
-        x= '1234'
-        x[3]= (l&127)
-        x[2]= ((l>>7)&127)
-        x[1]= ((l>>14)&127)
-        x[0]= ((l>>21)&127)
-        x
+      def create_int(i,synchsafe)
+        if synchsafe
+          x= '1234'
+          x[3]= (i&127)
+          x[2]= ((i>>7)&127)
+          x[1]= ((i>>14)&127)
+          x[0]= ((i>>21)&127)
+          x
+        else
+          [i].pack('N')
+        end
       end
       
       def merge_values_with_slash!(items,key1,key2)
@@ -97,8 +101,9 @@ module Autotag
         self[:_header]= true
         header= @af.read_and_ignore_header(10)
         self[:_version]= (header[4]==0 ? header[3] : "#{header[3]}.#{header[4]}".to_f)
+        @use_synchsafe= self[:_version] >= 4
         #TODO: Doesn't support extended headers
-        size= read_int(header[6..9])
+        size= read_int(true,header[6..9])
   
         if self[:_version] >= 3
           pos=0
@@ -106,7 +111,7 @@ module Autotag
           # Read tag
           while(1)
             frame= {:id => fin.read(4)}
-            frame[:size]= read_int
+            frame[:size]= read_int(@use_synchsafe)
             frame[:flags]= fin.read(2)
             pos += 10
             break if frame[:id] == "\0\0\0\0" || pos > size
@@ -133,9 +138,13 @@ module Autotag
         @af.ignore_header size
       end
       
-      def read_int(x=nil)
+      def read_int(synchsafe,x=nil)
         x ||= fin.read(4)
-        (x[3]&127) | ((x[2]&127) << 7) | ((x[1]&127) << 14) | ((x[0]&127) << 21)
+        if synchsafe
+          (x[3]&127) | ((x[2]&127) << 7) | ((x[1]&127) << 14) | ((x[0]&127) << 21)
+        else
+          x.unpack('N').first
+        end
       end
       
       def read_string(x)

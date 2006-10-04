@@ -122,7 +122,7 @@ class ID3v2Test < Autotag::TestCase
       :disc => '2',
       :total_discs => '2',
       :album_type => 'Single',
-      'Bullshit' => 'werysdaf',
+      'Bullshit' => 'werysdaf'*300,
       :replaygain_album_gain => '+3.41 dB',
       :replaygain_album_peak => '0.291903',
       :replaygain_track_gain => '-8.21 dB',
