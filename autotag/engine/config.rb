@@ -90,7 +90,7 @@ module Autotag
         'Single' => ['Singles'],
       }
       FILENAME_CHARSET= 'shift-jis'
-      USELESS_FILE_PATTERNS= [/\.(?:jpe?g|gif|bmp|mpe?g|avi|mov|wmv|divx|asf|xvid)$/i]
+      USELESS_FILE_PATTERNS= [/\.(?:jpe?g|gif|bmp|mpe?g|avi|mov|wmv|divx|asf|xvid|nfo)$/i]
       
       freeze_all_constants
       
