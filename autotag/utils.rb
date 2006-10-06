@@ -2,16 +2,18 @@ module Autotag
   module Utils
     extend self
     
-    # Load a library if it exists
-    def libraries_available?(*names)
-      names.each{|name|
-        begin
-          require name
-        rescue LoadError
-          return false
-        end
-      }
-      true
+    def exec_with_console_title(title)
+      old_title= nil
+      on_exit= nil
+      if get_os == :windows && libraries_available?('windows/console')
+        old_title= "\0"*255
+        Windows::Console::GetConsoleTitle.call(old_title, old_title.length-1)
+        Windows::Console::SetConsoleTitle.call("#{title}\0")
+        on_exit= lambda{ Windows::Console::SetConsoleTitle.call(old_title) }
+      end
+      yield
+    ensure
+      on_exit.call if on_exit
     end
     
     def get_os
@@ -37,6 +39,18 @@ module Autotag
         end
       end
       nil
+    end
+    
+    # Load a library if it exists
+    def libraries_available?(*names)
+      names.each{|name|
+        begin
+          require name
+        rescue LoadError
+          return false
+        end
+      }
+      true
     end
     
     private

@@ -1,3 +1,4 @@
+require 'autotag/app_info'
 require 'autotag/audio_file'
 require 'autotag/engine/cmdline_options'
 require 'autotag/engine/config'
@@ -23,9 +24,11 @@ module Autotag
     end
     
     def run
-      init
-      process_job_queue!
-      shutdown
+      Utils.exec_with_console_title(Autotag::TITLE_AND_VERSION) do
+        init
+        process_job_queue!
+        shutdown
+      end
     end
     
     #--------------------------------------------------------------------------
