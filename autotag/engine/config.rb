@@ -10,12 +10,6 @@ module Autotag
         nil
       end
       
-      # On my windows config at least, filenames need to be converted manually to utf-8.
-      # This method returns the charset of filenames.
-      def filename_charset
-        FILENAME_CHARSET
-      end
-      
       # Returns an array of regexs to match dir/file names.
       def file_patterns(type)
         FILE_PATTERNS[type] or raise
@@ -89,7 +83,6 @@ module Autotag
         'Rarities' => ['Rarities'],
         'Single' => ['Singles'],
       }
-      FILENAME_CHARSET= 'shift-jis'
       USELESS_FILE_PATTERNS= [/\.(?:jpe?g|gif|bmp|mpe?g|avi|mov|wmv|divx|asf|xvid|nfo)$/i]
       
       freeze_all_constants

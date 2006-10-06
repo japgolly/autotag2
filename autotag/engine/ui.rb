@@ -1,4 +1,6 @@
 require 'autotag/app_info'
+require 'autotag/utils'
+require 'iconv'
 
 module Autotag
   class Engine
@@ -17,6 +19,8 @@ module Autotag
         @artist_id= 0
         @album_id= 0
         @start_time= Time.now
+        @screen_charset= Utils.get_system_charset(:console_output)
+        @u2s_iconv= Iconv.new(@screen_charset, 'utf-8') if @screen_charset
       end
       
       def on_event(event,*a)
@@ -166,12 +170,14 @@ module Autotag
       
       def put(a)
         return if quiet_mode
+        a= @u2s_iconv.iconv(a) if @u2s_iconv
         $stdout.write a
         $stdout.flush
       end
       
       def puts(*a)
         return if quiet_mode
+        a= a.map{|s| @u2s_iconv.iconv s} if @u2s_iconv
         $stdout.puts(*a)
       end
       

@@ -53,13 +53,21 @@ module Autotag
     end
     
     def filename2utf8(filename)
-      @iconv_filename2utf8 ||= Iconv.new('utf-8',Autotag::Engine::Config.const_get(:FILENAME_CHARSET))
-      @iconv_filename2utf8.iconv(filename)
+      unless @filename2utf8_ready
+        filename_charset= Utils.get_system_charset(:filenames)
+        @f2u_iconv= Iconv.new('utf-8', filename_charset) if filename_charset
+        @filename2utf8_ready= true
+      end
+      @f2u_iconv ? @f2u_iconv.iconv(filename) : filename
     end
     
     def utf82filename(filename)
-      @iconv_utf82filename ||= Iconv.new(Autotag::Engine::Config.const_get(:FILENAME_CHARSET),'utf-8')
-      @iconv_utf82filename.iconv(filename)
+      unless @utf82filename_ready
+        filename_charset= Utils.get_system_charset(:filenames)
+        @u2f_iconv= Iconv.new(filename_charset,'utf-8') if filename_charset
+        @utf82filename_ready= true
+      end
+      @u2f_iconv ? @u2f_iconv.iconv(filename) : filename
     end
     
   end

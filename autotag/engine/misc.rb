@@ -1,4 +1,6 @@
 require 'autotag/engine/config'
+require 'autotag/utils'
+require 'iconv'
 
 module Autotag
   class Engine
@@ -45,8 +47,12 @@ module Autotag
       end
       
       def filename2utf8(filename)
-        @iconv ||= Iconv.new('utf-8',filename_charset)
-        @iconv.iconv(filename)
+        unless @filename2utf8_ready
+          filename_charset= Utils.get_system_charset(:filenames)
+          @f2u_iconv= Iconv.new('utf-8', filename_charset) if filename_charset
+          @filename2utf8_ready= true
+        end
+        @f2u_iconv ? @f2u_iconv.iconv(filename) : filename
       end
       
       def find_highest_numeric_value(array_of_hashs, attr)
