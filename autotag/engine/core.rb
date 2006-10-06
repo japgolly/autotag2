@@ -57,7 +57,8 @@ module Autotag
       unless @specified_dirs
         @job_queue<< {:dir => Dir.pwd, :type => :root, :glob => {}}
       else
-        @specified_dirs.each {|d|
+        @specified_dirs.uniq.each {|d|
+          d= File.expand_path(d)
           dirtree= d.gsub(/[\/\\]$/,'').split(/[\/\\]/).reverse
           glob= {}
           type= nil
@@ -105,17 +106,16 @@ module Autotag
           glob[:album_type]= dirtree.shift if [:cd,:album,:album_type].include?(type) && @album_types_dir_to_value.has_key?(dirtree[0])
           glob[:artist]=     dirtree.shift if type
           type ||= :root
-          d= dirtree.reverse.join('/')
-          @job_queue<< {:dir => d, :type => type, :glob => glob}
+          newdir= dirtree.reverse.join('/')
+          @job_queue<< {:dir => newdir, :orig_dir => d, :type => type, :glob => glob}
         }
       end
-      @job_queue.each{|job| job[:dir]= File.expand_path(job[:dir])}
     end
     
     def process_job_queue!
       @job_queue.each {|job|
         @glob= job[:glob]        
-        process_root job[:dir]
+        process_root job[:dir], (job[:orig_dir] || job[:dir])
         @glob= nil
       }
     end
@@ -123,9 +123,9 @@ module Autotag
     # Process the root directory.
     # Contains: dirs of artists.
     # Eg: x:/music
-    def process_root(root_dir)
+    def process_root(root_dir, root_dir_after_globbing)
       in_dir(root_dir) {
-        on_event :root_dir_enter, root_dir
+        on_event :root_dir_enter, root_dir, root_dir_after_globbing
         @metadata= {}
         # Find artists
         each_matching :dir, file_patterns(:artist), file_ignore_patterns(:artist), :glob => @glob[:artist] do |d,p|

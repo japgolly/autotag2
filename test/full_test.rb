@@ -8,7 +8,7 @@ class FullTest < Autotag::TestCase
   include Autotag::Tags
   
   def test_full
-    engine_test_on('full_test'){
+    engine_test_on('full_test',true){
       @e= new_engine_instance
       @e.ui.instance_eval 'alias :quiet_mode :old_quiet_mode' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
       @e.run
@@ -146,7 +146,7 @@ class FullTest < Autotag::TestCase
   end
   
   def test_with_force
-    engine_test_on('full_test'){
+    engine_test_on('full_test',true){
       @e= new_engine_instance '-f'
       @e.run
       assert_runtime_options :force
@@ -161,7 +161,7 @@ class FullTest < Autotag::TestCase
   end
   
   def test_with_pretend
-    engine_test_on('full_test'){
+    engine_test_on('full_test',true){
       @e= new_engine_instance '-p'
       @e.run
       assert_runtime_options :pretend
@@ -175,7 +175,7 @@ class FullTest < Autotag::TestCase
   end
   
   def test_with_specific_root_dirs
-    engine_test_on('.'){
+    engine_test_on('.',true){
       cp_r 'full_test', 'offguts', :preserve => true
       cp_r 'full_test', 'testofthedamned', :preserve => true
       @e= new_engine_instance '-f','full_test','testofthedamned'
@@ -195,7 +195,7 @@ class FullTest < Autotag::TestCase
   
   def test_with_specific_nonroot_dirs
     subtest= lambda do |test_acdc_1970_why, test_flac_attack, test_wowness, which_rain_cds, disco_stu_cds, *dirs|
-      engine_test_on('full_test'){
+      engine_test_on('full_test',true){
         @e= new_engine_instance '-f', *dirs
 #        @e.ui.instance_eval 'alias :quiet_mode :old_quiet_mode' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
         @e.run
@@ -234,6 +234,23 @@ class FullTest < Autotag::TestCase
     subtest.call true, false, false, [], [false,true], 'ACDC', 'The Woteva Band', 'Waterfall Men_/Singles/1989 - Disco Stu/cd 2 - Buddy'
   end
   
+  def test_useless_files_with_specific_dirs
+    engine_test_on('full_test',false){
+      @e= new_engine_instance '-p', 'ACDC', 'The Woteva Band/1930 - Django', 'Waterfall Men_'
+      @e.run
+      assert_hashes_equal({
+        File.expand_path("#{tmpdir}/ACDC") => [
+            '1972 - へへ/oops.mp3',
+            '1972 - へへ/crap/qwezxc.flac',
+            '1972 - へへ/crap/qwezxc2.flac',
+          ],
+        File.expand_path("#{tmpdir}/Waterfall Men_") => [
+            '03 - bullshit.mp3',
+          ],
+      }, @e.ui.instance_variable_get(:@all_files))
+    }
+  end
+  
   #----------------------------------------------------------------
   private
   
@@ -249,7 +266,13 @@ class FullTest < Autotag::TestCase
   end
   
   def full_test_useless_files
-    ['autotag.txt','Waterfall Men_/03 - bullshit.mp3']
+    [
+      'autotag.txt',
+      'ACDC/1972 - へへ/oops.mp3',
+      'ACDC/1972 - へへ/crap/qwezxc.flac',
+      'ACDC/1972 - へへ/crap/qwezxc2.flac',
+      'Waterfall Men_/03 - bullshit.mp3',
+    ]
   end
   
   def testdir_acdc_1970_why
@@ -431,29 +454,33 @@ class FullTest < Autotag::TestCase
     assert_equal exp, @e.runtime_options
   end
   
-  def engine_test_on(dir)
+  def engine_test_on(dir, change_file_dates)
     remove_tmpdir
-    copy_to_tmpdir "#{test_data_dir}/#{dir}"
+    copy_to_tmpdir "#{test_data_dir}/#{dir}", change_file_dates
     Dir.chdir(tmpdir) {yield}
   ensure
     remove_tmpdir
   end
   
-  def copy_to_tmpdir(dir)
-    mkdir_p tmpdir
-    Dir.chdir(dir) {
-      orig_files= Dir.glob("**/*.*")
-      new_files= orig_files.map{|f|"#{tmpdir}/#{f}"}
-      dirmap= {}
-      orig_files.map{|f| (dirmap[File.dirname(f)] ||= [])<< f}
-      dirmap.each {|dir,files|
-        mkdir_p "#{tmpdir}/#{dir}" unless dir=='.'
-        files.each {|f| cp f, "#{tmpdir}/#{f}"}
+  def copy_to_tmpdir(dir, change_file_dates)
+    if change_file_dates
+      mkdir_p tmpdir
+      Dir.chdir(dir) {
+        orig_files= Dir.glob("**/*.*")
+        new_files= orig_files.map{|f|"#{tmpdir}/#{f}"}
+        dirmap= {}
+        orig_files.map{|f| (dirmap[File.dirname(f)] ||= [])<< f}
+        dirmap.each {|dir,files|
+          mkdir_p "#{tmpdir}/#{dir}" unless dir=='.'
+          files.each {|f| cp f, "#{tmpdir}/#{f}"}
+        }
+        # I don't know why :preserve doesn't work :(
+        fake_time= Time.now - 3600*24*365*5
+        File.utime(fake_time,fake_time,*new_files)
       }
-      # I don't know why :preserve doesn't work :(
-      fake_time= Time.now - 3600*24*365*5
-      File.utime(fake_time,fake_time,*new_files)
-    }
+    else
+      cp_r "#{dir}/.", tmpdir
+    end
   end
   
   def new_engine_instance(*args)
@@ -468,8 +495,8 @@ class FullTest < Autotag::TestCase
   end
   
   def tmpdir
-    @@tmpdir ||= File.join(Dir::tmpdir, 'autotag_test_tmp_dir')
-    @@tmpdir.dup
+    @@tmpdir ||= File.join(Dir::tmpdir, 'autotag_test_tmp_dir').freeze
+    @@tmpdir
   end
   
 end

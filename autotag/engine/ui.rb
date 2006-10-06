@@ -1,5 +1,4 @@
 require 'autotag/app_info'
-require 'autotag/engine/misc'
 
 module Autotag
   class Engine
@@ -24,9 +23,11 @@ module Autotag
         case event
         # === ROOT ===
         when :root_dir_enter
-          @root_dir= a[0]
+          actual_root_dir, root_dir_after_globbing = a
+          @root_dir= root_dir_after_globbing
           @root_dir_len= (@root_dir.gsub(/[\/\\]$/,'')).size + 1
-          puts "\nEntering root dir: #{a[0]}"
+          puts "\nEntering root dir: #{f2u actual_root_dir}"
+          
           # Make a list of all files in the dir tree
           @all_files[@root_dir]= Dir.glob("#{@root_dir}/**/*").select{|f|File.file?(f)}.map{|f|f[@root_dir_len..-1]}
           tmp= '/'+@engine.temp_filename
@@ -45,7 +46,7 @@ module Autotag
         
         # === ARTIST ===
         when :artist_dir_enter
-          puts " Entering artist dir: #{a[0]}"
+          puts " Entering artist dir: #{f2u a[0]}"
           @artist_id += 1
           remove_override_files_in_pwd_from_all_files
         
@@ -54,7 +55,7 @@ module Autotag
           remove_override_files_in_pwd_from_all_files
           
         when :album_dir_enter
-          puts "  Entering album dir: #{a[0]}"
+          puts "  Entering album dir: #{f2u a[0]}"
           @album_id += 1
           @cd_dir= nil
           remove_override_files_in_pwd_from_all_files
@@ -70,8 +71,9 @@ module Autotag
             :album => @album_id,
             :size => a[1].size,
           }
+          track_filename= "#{@cd_dir}#{a[0]}"
           remove_file_in_pwd_from_all_files a[0]
-          put "   #{@cd_dir}#{a[0]}..."
+          put "   #{f2u track_filename}..."
           
         when :track_updated
           @stats.last[:result]= :update
@@ -91,6 +93,7 @@ module Autotag
         total_time_str= @total_time>60 ? "#{@total_time.to_i/60}m#{@total_time.to_i%60}s" : "#{@total_time}s"
         
         @all_files.delete_if {|k,v|v.empty?}
+        @all_files.values.each{|a|a.map!{|f|f2u f}}
         @unprocessed_file_count= @all_files.values.inject(0){|sum,v| sum + v.size}
         
         @total_track_count= @stats.size
@@ -147,6 +150,10 @@ module Autotag
         x= (a / b).to_i
         return x.to_s if x * b == a
         "%.#{dec}f" % (a.to_f / b.to_f)
+      end
+      
+      def f2u(f)
+        @engine.filename2utf8 f
       end
       
       def percent(a,b)
