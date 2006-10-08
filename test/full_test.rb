@@ -135,6 +135,25 @@ class FullTest < Autotag::TestCase
           :replaygain_track_peak => '1.056579',
         }.merge(album), mp3_tags
       
+      
+      #########################################################################
+      # Various Artists/2000 - Soundtrack to Hell
+      # Tests:
+      #   * v/a albums (stock standard)
+      #   * v/a albums (when filename doesn't match artist/title pattern but override info does)
+      album= {
+          :album_artist => 'Various Artists',
+          :album => 'Soundtrack to Hell',
+          :year => '2000',
+          :total_tracks => '6',
+          :replaygain_track_gain => '+17.43 dB',
+          :replaygain_track_peak => '0.119293',
+      }
+      dir= 'Various Artists/2000 - Soundtrack to Hell'
+      assert_file_metadata "#{dir}/01 - John - Stuff.mp3", {:track_number=>'1', :artist=>'John', :track=>'Stuff'}.merge(album), mp3_tags
+      assert_file_metadata "#{dir}/04 - The Crazy People - Big Red Apples.mp3", {:track_number=>'4', :artist=>'The Crazy People', :track=>'Big Red Apples'}.merge(album), mp3_tags
+      assert_file_metadata "#{dir}/06 - Happy.mp3", {:track_number=>'6', :artist=>'The Jam Cans', :track=>'Happy?'}.merge(album), mp3_tags
+      
       #########################################################################
       # OTHER
       testdir_waterfall_men_albums_2007_wowness

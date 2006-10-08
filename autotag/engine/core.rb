@@ -259,6 +259,19 @@ module Autotag
     def process_track!(filename)
       format= @metadata.delete(:_format)
       
+      # V/A processing
+      if @metadata[:artist] =~ va_artist_pattern
+        @metadata[:album_artist]= @metadata.delete(:artist)
+        t= @metadata.delete(:track)
+        va_filename_patterns.each {|p|
+          if t =~ p
+            @metadata[:artist],@metadata[:track] = $1,$2
+            break
+          end
+        }
+        raise "Track in various artist album missing artist information. (#{Dir.pwd}/#{filename})" unless @metadata[:track] && @metadata[:artist]
+      end
+      
       replace_track= false
       AudioFile.open_file(filename) do |af|
         on_event :track_process, filename, af

@@ -52,6 +52,14 @@ module Autotag
         USELESS_FILE_PATTERNS
       end
       
+      def va_artist_pattern
+        VA_ARTIST_PATTERN
+      end
+      
+      def va_filename_patterns
+        VA_FILENAME_PATTERNS
+      end
+      
       #--------------------------------------------------------------------------
       private
       
@@ -84,6 +92,8 @@ module Autotag
         'Single' => ['Singles'],
       }
       USELESS_FILE_PATTERNS= [/\.(?:jpe?g|gif|bmp|mpe?g|avi|mov|wmv|divx|asf|xvid|nfo)$/i]
+      VA_ARTIST_PATTERN= /^(?:various(?: artists?)?|v\/?a|v \/ a)$/i
+      VA_FILENAME_PATTERNS= [/^(.+?) - (.+)$/]
       
       freeze_all_constants
       

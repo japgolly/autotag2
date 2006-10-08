@@ -203,6 +203,7 @@ module Autotag
         :year         => %w{2 TYER TDRC},
       }
       SYM2TAGXXX= {
+        :album_artist          => 'ALBUM ARTIST',
         :album_type            => 'Albumtype',
         :replaygain_album_gain => 'replaygain_album_gain',
         :replaygain_album_peak => 'replaygain_album_peak',

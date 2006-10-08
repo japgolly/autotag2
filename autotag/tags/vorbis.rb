@@ -139,6 +139,7 @@ module Autotag
       #--------------------------------------------------------------------------
       SYM2TAG= {
         :album => 'ALBUM',
+        :album_artist => 'ALBUM ARTIST',
         :album_type => 'ALBUMTYPE',
         :artist => 'ARTIST',
         :disc => 'DISCNUMBER',

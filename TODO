@@ -1,18 +1,17 @@
 DO BEFORE v2.0
 ==============
 
-* Add to UI
-  - colour
-  - report files missing correct replaygain data
-  - report any albums with inconsistant replaygain album data
-
-* Handle V/A albums
 
 
 DO AFTER v2.0
 =============
 
 * Handle remaster albums (store the original release year ??)
+
+* Add to UI
+  - colour
+  - report files missing correct replaygain data
+  - report any albums with inconsistant replaygain album data
 
 * Support M4A
 
