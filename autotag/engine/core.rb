@@ -36,7 +36,19 @@ module Autotag
     
     def init
       # Parse command line
-      parse_commandline!(@engine_args)
+      parse_commandline!(@engine_args.dup)
+      
+      # Start debug mode
+      if @runtime_options[:debug]
+        @debug_out= case @runtime_options[:debug]
+          when :stdout then File.new(1,'w+')
+          when :stderr then File.new(2,'w+')
+          else File.new(debug_output_filename,'w')
+        end
+        debug_out{ Autotag::TITLE_AND_VERSION }
+        debug_out{ "Cmdline args: #{@engine_args.map{|a|a.inspect}.join ' '}" }
+        debug_out{ "Started #{Time.now}" }
+      end
       
       # Init UI
       @ui.init(@runtime_options[:quiet])
@@ -53,6 +65,10 @@ module Autotag
     
     def shutdown
       @ui.shutdown
+      if @debug_out
+        debug_out{ "\nFinished #{Time.now}" }
+        @debug_out.close
+      end
     end
     
     def build_job_queue
@@ -258,6 +274,7 @@ module Autotag
     # Process a track.
     def process_track!(filename)
       format= @metadata.delete(:_format)
+      debug_out{[ "\nTrack: #{File.join Dir.pwd,filename}", "Format: #{format}" ]}
       
       # V/A processing
       if @metadata[:artist] =~ va_artist_pattern
@@ -290,11 +307,15 @@ module Autotag
         expected_tags= {}
         create_expected_tags(af, expected_tags, tags_to_write(format,true), true)
         create_expected_tags(af, expected_tags, tags_to_write(format,false), false)
+        debug_out{ "Existing tags: #{existing_tags.inspect}" }
+        debug_out{ "Expected tags: #{expected_tags.inspect}" }
         
         # Check if track is up-to-date
         if !@runtime_options[:force] and tags_equal?(expected_tags,existing_tags)
+          debug_out{ "Retagging: no" }
           on_event :track_uptodate, filename
         else
+          debug_out{ "Retagging: yes" }
           File.open(temp_filename,'wb') do |fout|
             replace_track= true
             # Write header tags
@@ -328,6 +349,11 @@ module Autotag
         m[header ? :_header : :_footer]= true
         collection[tag_class]= af.tag_processor(tag_class).get_defaults.merge(m)
       }
+    end
+    
+    def debug_out
+      return unless @debug_out
+      yield.each {|l| @debug_out.puts l}
     end
     
     def on_event(event,*args)

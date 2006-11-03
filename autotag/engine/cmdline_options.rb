@@ -6,14 +6,18 @@ module Autotag
       
       def parse_commandline!(args)
         @runtime_options= {
-          :pretend => false,
+          :debug => nil,
           :force => false,
+          :pretend => false,
           :quiet => false,
         }
         
         OptionParser.new do |opts|
           opts.banner= "Usage: #{File.basename $0} [options] [dirs]"
           
+          opts.on('-DOUTPUT', '--debug=OUTPUT', {'f' => :file, '1' => :stdout, '2' => :stderr}, 'Generate detailed debug information.', 'OUTPUT can be: {file, stdout, stderr} or {f,1,2} for short.') {|v|
+            @runtime_options[:debug]= v
+          }
           opts.on('-f', '--force', 'Force updates to already up-to-date files.') {|v|
             @runtime_options[:force] = v
           }

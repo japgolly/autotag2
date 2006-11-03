@@ -5,6 +5,10 @@ module Autotag
     module Config
       include Autotag::Tags
       
+      def debug_output_filename
+        'autotag_debug.txt'
+      end
+      
       # Returns the album type value for albums that don't have a 
       def default_album_type
         nil
