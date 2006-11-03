@@ -93,6 +93,19 @@ module Autotag::Tag
       @metadata.reject{|k,v| k.to_s[0] == '_'[0]}
     end
     
+    def merge_tag_values!(collection, key1, key2, seperator, key1_default_value=nil)
+      if collection.has_key?(key2)
+        collection[key1]= "#{collection[key1] || key1_default_value}#{seperator}#{collection.delete key2}"
+      end
+    end
+    
+    # seperator must be exactly 1 character
+    def split_merged_tag_values!(key1, key2, seperator)
+      if self[key1] =~ Regexp.new("([^#{seperator}]+)#{seperator}([^#{seperator}]+)")
+        self[key1],self[key2]= $1,$2
+      end
+    end
+    
     def value_or_nil(v)
       (v.nil? || v == '') ? nil : v
     end

@@ -11,7 +11,7 @@ module Autotag
         apply_defaults!
         raise CreateNotSupported, "Cannot create ID3v2.#{self[:_version].inspect} tags" unless self[:_version] == 4
         items= get_items_without_params
-        MERGED_VALUES.each {|a,b| merge_values_with_slash! items, a, b }
+        MERGED_VALUES.each {|a,b| merge_tag_values! items, a, b, '/', 0}
         
         padding= "\0" * self[:_padding]
         body= create_body(items)
@@ -74,12 +74,6 @@ module Autotag
         end
       end
       
-      def merge_values_with_slash!(items,key1,key2)
-        if items.has_key?(key2)
-          items[key1]= "#{items[key1] || 0}/#{items.delete key2}"
-        end
-      end
-      
       def sym2tag(sym,extended_tag=false)
         unless extended_tag
           x= SYM2TAG[sym]
@@ -130,7 +124,7 @@ module Autotag
           end
           
           # Post-process
-          MERGED_VALUES.each {|a,b| split_slash_divided_values! a, b }
+          MERGED_VALUES.each {|a,b| split_merged_tag_values! a, b, '/' }
           
         end # if self[:_version] >= 3
         
@@ -171,12 +165,6 @@ module Autotag
           end
         x.gsub! %r{\x00$}, ''
         x
-      end
-      
-      def split_slash_divided_values!(key1,key2)
-        if self[key1] =~ %r{([^/]+)/([^/]+)}
-          self[key1],self[key2]= $1,$2
-        end
       end
       
       def tag2sym(tag,extended_tag=false)
