@@ -468,7 +468,7 @@ class FullTest < Autotag::TestCase
   end
   
   def assert_runtime_options(*opt)
-    exp= {:force=>false,:pretend=>false,:quiet=>false}
+    exp= {:debug=>nil,:force=>false,:pretend=>false,:quiet=>false}
     opt.each{|o| exp[o]= true}
     assert_equal exp, @e.runtime_options
   end
