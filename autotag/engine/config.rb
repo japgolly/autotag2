@@ -68,7 +68,7 @@ module Autotag
         :artist => [/^(.+)$/],
         :album  => [Regexp.new('^(.{4})'+sep+'(.+)$',nil,'U')],
         :cd     => [Regexp.new('^(?:cd|disc) +([a-z0-9]+)(?:'+sep+'(.+))?$',true,'U')],
-        :track  => [Regexp.new('^(.{2})'+sep+'(.+)$',true,'U')],
+        :track  => [Regexp.new('^(.{1,3})'+sep+'(.+)$',true,'U')],
       }
       FILE_IGNORE_PATTERNS= [/^\./]
       IGNORABLE_ATTRIBUTES= [:_padding,:_tool]
@@ -81,6 +81,10 @@ module Autotag
       TAGS_TO_WRITE_FOOTER= {'mp3' => [APEv2]}
       SUPPORTED_AUDIO_FORMATS= ['mp3','flac']
       SUPPORTED_ALBUM_TYPES= {
+      #TODO More SUPPORTED_ALBUM_TYPES
+      #Mini Albums
+      #Remix Albums
+      #Remastered
         nil => ['Albums'],
         'Bootleg' => ['Bootlegs'],
         'Compilation' => ['Compilations'],
