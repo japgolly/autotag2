@@ -69,12 +69,12 @@ module Autotag
       
       sep= '(?: +- +|\. *)'
       FILE_PATTERNS= {
-        :artist => [/^(.+)$/],
+        :artist => [/^(.+)$/u],
         :album  => [Regexp.new('^(.{4})'+sep+'(.+)$',nil,'U')],
         :cd     => [Regexp.new('^(?:cd|disc) +([a-z0-9]+)(?:'+sep+'(.+))?$',true,'U')],
         :track  => [Regexp.new('^(.{1,3})'+sep+'(.+)$',true,'U')],
       }
-      FILE_IGNORE_PATTERNS= [/^\./]
+      FILE_IGNORE_PATTERNS= [/^\./u]
       IGNORABLE_ATTRIBUTES= [:_padding,:_tool]
       PRESERVABLE_ATTRIBUTES= [
         :replaygain_track_gain, :replaygain_track_peak,
@@ -99,9 +99,9 @@ module Autotag
         'Rarities' => ['Rarities'],
         'Single' => ['Singles'],
       }
-      USELESS_FILE_PATTERNS= [/\.(?:jpe?g|gif|bmp|mpe?g|avi|mov|wmv|divx|asf|xvid|nfo)$/i]
-      VA_ARTIST_PATTERN= /^(?:various(?: artists?)?|v\/?a|v \/ a)$/i
-      VA_FILENAME_PATTERNS= [/^(.+?) - (.+)$/]
+      USELESS_FILE_PATTERNS= [/\.(?:jpe?g|gif|bmp|mpe?g|avi|mov|wmv|divx|asf|xvid|nfo)$/iu]
+      VA_ARTIST_PATTERN= /^(?:various(?: artists?)?|v\/?a|v \/ a)$/iu
+      VA_FILENAME_PATTERNS= [/^(.+?) - (.+)$/u]
       
       freeze_all_constants
       
