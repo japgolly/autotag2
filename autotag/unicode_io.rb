@@ -45,7 +45,7 @@ module Autotag
     end
     
     def delete(f)
-      raise if DeleteFileW.call(prepro_fn(f)) == 0
+      DeleteFileW.call(prepro_fn(f)) != 0
     end
     
     def directory?(f)
@@ -66,7 +66,8 @@ module Autotag
       to8($1).gsub('\\','/')
     end
     
-    def rename(from,to)
+    def rename(from,to,force=false)
+      delete(to) if force
       raise if MoveFileExW.call(prepro_fn(from), prepro_fn(to), MOVEFILE_COPY_ALLOWED) == 0
     end
     

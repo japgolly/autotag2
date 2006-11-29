@@ -9,6 +9,7 @@ class FullTest < Autotag::TestCase
   
   def test_full
     engine_test_on('full_test',true){
+      UnicodeIO::chdir('The Woteva Band/2003 - Yes I Like It') {UnicodeIO::rename '01 - Novae.mp3', '01 - Novaë.mp3', true}
       @e= new_engine_instance
       @e.ui.instance_eval 'alias :quiet_mode :old_quiet_mode' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
       @e.run
@@ -60,6 +61,7 @@ class FullTest < Autotag::TestCase
       # The Woteva Band/2003 - Yes I Like It
       # Tests:
       #   * only files needing tag updates are updated
+      #   * filenames with non-sjis chars (used to fail before UnicodeIO)
       album= {
           :artist => 'The Woteva Band',
           :album => 'Yes I Like It',
@@ -77,6 +79,11 @@ class FullTest < Autotag::TestCase
         }.merge(album), mp3_tags
       assert_file_unchanged "#{dir}/07 - Another Endless Sacrifice.mp3", 5756
       assert_file_unchanged "#{dir}/08 - Endless Sacrifice.mp3", 5759
+      assert_file "#{dir}/01 - Novaë.mp3", 4890, 'FF FB B2 00'.h, '00 00 47 00'.h, {
+          :track => 'Novaë',
+          :track_number => '1',
+          :replaygain_album_peak => '3.168573',
+        }.merge(album), mp3_tags
       
       #########################################################################
       # The Woteva Band/2005 - Rain
@@ -511,6 +518,12 @@ class FullTest < Autotag::TestCase
   
   def remove_tmpdir
     rm_rf tmpdir
+    if File.exists?(tmpdir)
+      UnicodeIO.chdir(tmpdir) do
+        UnicodeIO.glob(-1).each {|f| UnicodeIO.delete(f) if UnicodeIO.file?(f)}
+      end
+      rm_rf tmpdir
+    end
   end
   
   def tmpdir
