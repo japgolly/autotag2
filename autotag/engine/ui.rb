@@ -165,14 +165,14 @@ module Autotag
       
       def put(a)
         return if quiet_mode
-        a= @u2s_iconv.iconv(a) if @u2s_iconv
+        a= safe_convert_u2s(a) if @u2s_iconv
         $stdout.write a
         $stdout.flush
       end
       
       def puts(*a)
         return if quiet_mode
-        a= a.map{|s| @u2s_iconv.iconv s} if @u2s_iconv
+        a= a.map{|s| safe_convert_u2s(s)} if @u2s_iconv
         $stdout.puts(*a)
         $stdout.flush
       end
@@ -187,6 +187,12 @@ module Autotag
       
       def remove_file_in_pwd_from_all_files(filename)
         @all_files[@root_dir].delete "#{UnicodeIO.pwd}/#{filename}"[@root_dir_len..-1]
+      end
+      
+      def safe_convert_u2s(str)
+        @u2s_iconv.iconv(str)
+      rescue Iconv::IllegalSequence
+        str.gsub /[^ -~]/, '?'
       end
       
     end # class UI
