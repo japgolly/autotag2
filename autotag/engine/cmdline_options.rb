@@ -1,5 +1,6 @@
 require 'optparse'
 require 'autotag/unicode_io'
+require 'autotag/utils'
 
 module Autotag
   class Engine
@@ -12,6 +13,9 @@ module Autotag
           :pretend => false,
           :quiet => false,
         }
+        
+        charset= Utils.get_system_charset(:console)
+        args= Iconv.iconv('utf-8',charset,*args) if charset
         
         OptionParser.new do |opts|
           opts.banner= "Usage: #{File.basename $0} [options] [dirs]"

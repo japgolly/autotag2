@@ -28,8 +28,9 @@ module Autotag
     def get_system_charset(type)
       if get_os == :windows and libraries_available?('windows/console','windows/national')
         cp= case type
+          when :console        then Windows::Console::GetConsoleCP.call
           when :console_output then Windows::Console::GetConsoleOutputCP.call
-          when :filenames then Windows::National::GetACP.call
+          when :filenames      then Windows::National::GetACP.call
           else raise
           end
         if cp > 0
