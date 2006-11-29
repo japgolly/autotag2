@@ -201,6 +201,7 @@ module Autotag
       @metadata[:album]= filename2human_text($2)
       @metadata[:album_type]= default_album_type unless @metadata.has_key?(:album_type)
       @metadata.delete(:album_type) if @metadata[:album_type].nil?
+      @metadata.delete(:year) if @metadata[:year] =~ null_year_pattern
       in_dir(dir) {
         on_event :album_dir_enter, dir
         

@@ -31,6 +31,11 @@ module Autotag
         IGNORABLE_ATTRIBUTES
       end
       
+      # Returns a pattern that matches year values when the actual year is unknown.
+      def null_year_pattern
+        NULL_YEAR_PATTERN
+      end
+      
       # Returns an array of metadata attributes that will be copied from
       # existing tags to new tags.
       def preservable_attributes
@@ -88,7 +93,6 @@ module Autotag
       #TODO More SUPPORTED_ALBUM_TYPES
       #Mini Albums
       #Remix Albums
-      #Remastered
         nil => ['Albums'],
         'Bootleg' => ['Bootlegs'],
         'Compilation' => ['Compilations'],
@@ -97,11 +101,13 @@ module Autotag
         'Live Album' => ['Live Albums'],
         'Other' => ['Other'],
         'Rarities' => ['Rarities'],
+        'Remastered' => ['Remastered'],
         'Single' => ['Singles'],
       }
       USELESS_FILE_PATTERNS= [/\.(?:jpe?g|gif|bmp|mpe?g|avi|mov|wmv|divx|asf|xvid|nfo)$/iu]
       VA_ARTIST_PATTERN= /^(?:various(?: artists?)?|v\/?a|v \/ a)$/iu
       VA_FILENAME_PATTERNS= [/^(.+?) - (.+)$/u]
+      NULL_YEAR_PATTERN= /^[a-z]{4}$/iu
       
       freeze_all_constants
       
