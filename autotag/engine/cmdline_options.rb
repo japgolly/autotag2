@@ -1,4 +1,5 @@
 require 'optparse'
+require 'autotag/unicode_io'
 
 module Autotag
   class Engine
@@ -34,7 +35,7 @@ module Autotag
         
         unless args.empty?
           @specified_dirs= args.uniq
-          @specified_dirs.each {|d| die! "'#{d}' is not a valid directory." unless File.directory?(d)}
+          @specified_dirs.each {|d| die! "'#{d}' is not a valid directory." unless UnicodeIO.directory?(d)}
         end
         
       end

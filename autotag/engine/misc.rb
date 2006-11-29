@@ -1,4 +1,5 @@
 require 'autotag/engine/config'
+require 'autotag/unicode_io'
 require 'autotag/utils'
 require 'iconv'
 
@@ -10,27 +11,26 @@ module Autotag
       def advanced_glob(type, match_patterns, ignore_patterns, options={})
         file_extentions= options[:file_extentions]
         files= if file_extentions
-            Dir.glob("*.{#{file_extentions}}")
+            UnicodeIO.glob(0,nil,"*.{#{file_extentions}}")
           else
-            Dir.glob(options[:glob] || '*', File::FNM_DOTMATCH) - ['.','..']
+            UnicodeIO.glob(0,nil,options[:glob],File::FNM_DOTMATCH)
           end
         case type
-        when :dir then files.delete_if {|d| not File.directory?(d)}
-        when :file then files.delete_if {|d| not File.file?(d)}
+        when :dir then files.delete_if {|d| not UnicodeIO.directory?(d)}
+        when :file then files.delete_if {|d| not UnicodeIO.file?(d)}
         else raise
         end
         matches= []
-        files_utf= {}
-        files.each{|f| files_utf[f]= filename2utf8(f)}
-        files_utf.keys.ci_sort.each{|f|
-          f_utf8= files_utf[f]
+        files.ci_sort.each{|f|
           ext= nil
           if file_extentions
-            f_utf8 =~ /^(.+)\.([^\.]+)$/
-            f_utf8,ext = $1,$2
+            f =~ /^(.+)\.([^\.]+)$/u
+            base,ext = $1,$2
+          else
+            base= f
           end
-          if p= find_matching_pattern(f_utf8,match_patterns,ignore_patterns)
-            matches<< [f,f_utf8,p,ext]
+          if p= find_matching_pattern(f,match_patterns,ignore_patterns)
+            matches<< [f,base,p,ext]
           end
         }
         matches
@@ -46,15 +46,6 @@ module Autotag
         }
       end
       
-      def filename2utf8(filename)
-        unless @filename2utf8_ready
-          filename_charset= Utils.get_system_charset(:filenames)
-          @f2u_iconv= Iconv.new('utf-8', filename_charset) if filename_charset
-          @filename2utf8_ready= true
-        end
-        @f2u_iconv ? @f2u_iconv.iconv(filename) : filename
-      end
-      
       def find_highest_numeric_value(array_of_hashs, attr)
         num_array= array_of_hashs.map{|o|o[attr]}.reject{|x|x !~ /^\d+$/}
         return nil if num_array.empty?
@@ -68,7 +59,7 @@ module Autotag
       end
       
       def in_dir(dir)
-        Dir.chdir(dir) {
+        UnicodeIO.chdir(dir) {
           delete_temp_file
           yield
         }

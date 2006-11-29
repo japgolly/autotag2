@@ -151,8 +151,8 @@ module Autotag
         :replaygain_album_peak => 'replaygain_album_peak',
         :replaygain_track_gain => 'replaygain_track_gain',
         :replaygain_track_peak => 'replaygain_track_peak',
-        :total_discs => 'Totaldiscs',
-        :total_tracks => 'Totaltracks',
+        :total_discs => 'Totaldiscs',#TODO merge me?
+        :total_tracks => 'Totaltracks',#TODO merge me?
         :track => 'Title',
         :track_number => 'Track',
         :year => 'Year',

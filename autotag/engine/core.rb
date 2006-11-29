@@ -8,6 +8,7 @@ require 'autotag/engine/override_file_reader'
 require 'autotag/engine/ui'
 require 'autotag/ruby_ext'
 require 'autotag/tags'
+require 'autotag/unicode_io'
 require 'iconv'
 
 module Autotag
@@ -74,7 +75,7 @@ module Autotag
     def build_job_queue
       @job_queue= []
       unless @specified_dirs
-        @job_queue<< {:dir => Dir.pwd, :type => :root, :glob => {}}
+        @job_queue<< {:dir => UnicodeIO.pwd, :type => :root, :glob => {}}
       else
         @specified_dirs.uniq.each {|d|
           d= File.expand_path(d)
@@ -85,7 +86,7 @@ module Autotag
           # Check if CD dir
           if !type && find_matching_pattern(dirtree[0], file_patterns(:cd), file_ignore_patterns(:cd))
             match= false
-            Dir.chdir(d) do
+            UnicodeIO.chdir(d) do
               # Look for tracks
               match ||= !advanced_glob(:file, file_patterns(:track), file_ignore_patterns(:track), :file_extentions => @supported_audio_formats).empty?
             end
@@ -95,7 +96,7 @@ module Autotag
           # Check if Album dir
           if !type && find_matching_pattern(dirtree[0], file_patterns(:album), file_ignore_patterns(:album))
             match= false
-            Dir.chdir(d) do
+            UnicodeIO.chdir(d) do
               # Look for tracks or cd dirs
               match ||= !advanced_glob(:dir, file_patterns(:cd), file_ignore_patterns(:cd)).empty?
               match ||= !advanced_glob(:file, file_patterns(:track), file_ignore_patterns(:track), :file_extentions => @supported_audio_formats).empty?
@@ -111,9 +112,9 @@ module Autotag
           # Check if Artist dir
           if !type && find_matching_pattern(dirtree[0], file_patterns(:artist), file_ignore_patterns(:artist))
             match= false
-            Dir.chdir(d) do
+            UnicodeIO.chdir(d) do
               # Look for albums or albumtype dirs
-              match ||= !Dir.glob(@album_types_dirs_glob_string).empty?
+              match ||= !UnicodeIO.glob(0,nil,@album_types_dirs_glob_string).empty?
               match ||= !advanced_glob(:dir, file_patterns(:album), file_ignore_patterns(:album)).empty?
             end
             type= :artist if match
@@ -157,7 +158,7 @@ module Autotag
     # Contains: dirs of albums.
     # Eg: x:/music/Andromeda
     def process_artist_dir(dir,pat)
-      raise unless filename2utf8(dir) =~ pat
+      raise unless dir =~ pat
       @metadata[:artist]= filename2human_text($1)
       in_dir(dir) {
         on_event :artist_dir_enter, dir
@@ -166,8 +167,8 @@ module Autotag
         process_dir_of_albums
         
         # Find albumtype directories
-        Dir.glob(@glob[:album_type] || @album_types_dirs_glob_string).ci_sort.each do |d|
-          next unless File.directory?(d)
+        UnicodeIO.glob(0,nil,@glob[:album_type] || @album_types_dirs_glob_string).ci_sort.each do |d|
+          next unless UnicodeIO.directory?(d)
           in_dir(d) do
             on_event :album_type_dir_enter, dir
             with_metadata do
@@ -175,7 +176,7 @@ module Autotag
               process_dir_of_albums
             end # with_metadata
           end # in_dir
-        end # Dir.glob
+        end # UnicodeIO.glob
       }
     end
     
@@ -195,7 +196,7 @@ module Autotag
     # Contains: tracks, dirs of cds.
     # Eg: x:/music/Andromeda/2006 - Chimera
     def process_album_dir(dir,pat)
-      raise unless filename2utf8(dir) =~ pat
+      raise unless dir =~ pat
       @metadata[:year]= $1
       @metadata[:album]= filename2human_text($2)
       @metadata[:album_type]= default_album_type unless @metadata.has_key?(:album_type)
@@ -274,7 +275,7 @@ module Autotag
     # Process a track.
     def process_track!(filename)
       format= @metadata.delete(:_format)
-      debug_out{[ "\nTrack: #{File.join Dir.pwd,filename}", "Format: #{format}" ]}
+      debug_out{[ "\nTrack: #{File.join UnicodeIO.pwd,filename}", "Format: #{format}" ]}
       
       # V/A processing
       if @metadata[:artist] =~ va_artist_pattern
@@ -286,7 +287,7 @@ module Autotag
             break
           end
         }
-        raise "Track in various artist album missing artist information. (#{Dir.pwd}/#{filename})" unless @metadata[:track] && @metadata[:artist]
+        raise "Track in various artist album missing artist information. (#{UnicodeIO.pwd}/#{filename})" unless @metadata[:track] && @metadata[:artist]
       end
       
       replace_track= false
@@ -316,7 +317,7 @@ module Autotag
           on_event :track_uptodate, filename
         else
           debug_out{ "Retagging: yes" }
-          File.open(temp_filename,'wb') do |fout|
+          UnicodeIO::UFile.open(temp_filename,'wb') do |fout|
             replace_track= true
             # Write header tags
             fout<< create_bin_tags(af, expected_tags, tags_to_write(format,true))
@@ -362,8 +363,8 @@ module Autotag
     
     def replace_track!(filename)
       raise 'Temp file doesnt exist. Cant replace old file.' unless File.exists?(temp_filename)
-      File.delete filename
-      File.rename temp_filename, filename
+      UnicodeIO.delete filename
+      UnicodeIO.rename temp_filename, filename
     end
     
     def tags_to_write_all

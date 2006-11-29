@@ -1,4 +1,5 @@
 require 'autotag/tags'
+require 'autotag/unicode_io'
 
 module Autotag
   class AudioFile
@@ -88,7 +89,7 @@ module Autotag
       case @type= type
       when :file
         @filename= source
-        @fin= File.open(source,'rb')
+        @fin= UnicodeIO::UFile.open(source,'rb')
         @total_size= fin.stat.size
       when :string
         require 'stringio'

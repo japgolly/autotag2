@@ -259,9 +259,9 @@ class FullTest < Autotag::TestCase
       @e.run
       assert_hashes_equal({
         File.expand_path("#{tmpdir}/ACDC") => [
-            '1972 - へへ/oops.mp3',
             '1972 - へへ/crap/qwezxc.flac',
             '1972 - へへ/crap/qwezxc2.flac',
+            '1972 - へへ/oops.mp3',
           ],
         File.expand_path("#{tmpdir}/Waterfall Men_") => [
             '03 - bullshit.mp3',
@@ -440,7 +440,7 @@ class FullTest < Autotag::TestCase
       expected_tags[tag]= metadata_base.merge(data)
     }
     # open file
-    AudioFile.open_file(utf82filename(file)) do |af|
+    AudioFile.open_file(file) do |af|
       # read tags
       t= af.read_tags
       # check tags
@@ -485,7 +485,7 @@ class FullTest < Autotag::TestCase
     if change_file_dates
       mkdir_p tmpdir
       Dir.chdir(dir) {
-        orig_files= Dir.glob("**/*.*")
+        orig_files= Dir.glob('**/*.*')
         new_files= orig_files.map{|f|"#{tmpdir}/#{f}"}
         dirmap= {}
         orig_files.map{|f| (dirmap[File.dirname(f)] ||= [])<< f}
@@ -514,7 +514,7 @@ class FullTest < Autotag::TestCase
   end
   
   def tmpdir
-    @@tmpdir ||= File.join(Dir::tmpdir, 'autotag_test_tmp_dir').freeze
+    @@tmpdir ||= File.join(Dir.tmpdir, 'autotag_test_tmp_dir').freeze
     @@tmpdir
   end
   

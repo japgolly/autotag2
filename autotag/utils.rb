@@ -17,7 +17,7 @@ module Autotag
     end
     
     def get_os
-      if ENV['OS'].upcase =~ /WIN/
+      if ENV['OS'] =~ /win/i
         :windows
       else
         nil

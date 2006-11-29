@@ -32,6 +32,13 @@ module Autotag
       end
     end
     
+    def to8(str)
+      convert_utf16(str)
+    end
+    def to16(str)
+      (@@converters[:_to_u16le] ||= Iconv.new('utf-16le','utf-8')).iconv(str)
+    end
+    
     def unicode_trim(str)
       str.gsub(REGEX_TRIM,'')
     end
