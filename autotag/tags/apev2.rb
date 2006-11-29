@@ -8,6 +8,7 @@ module Autotag
       
       def create
         items= get_items_without_params
+        MERGED_VALUES.each {|a,b| merge_tag_values! items, a, b, '/', 0}
         tag_body= create_body(items)
         tag_header= create_header(items.size, tag_body.size, true)
         tag_footer= create_footer(items.size, tag_body.size, true)
@@ -17,6 +18,7 @@ module Autotag
       def read
         bof_read if bof_tag_exists?
         eof_read if eof_tag_exists?
+        MERGED_VALUES.each {|a,b| split_merged_tag_values! a, b, '/' }
         metadata
       end
       
@@ -151,14 +153,18 @@ module Autotag
         :replaygain_album_peak => 'replaygain_album_peak',
         :replaygain_track_gain => 'replaygain_track_gain',
         :replaygain_track_peak => 'replaygain_track_peak',
-        :total_discs => 'Totaldiscs',#TODO merge me?
-        :total_tracks => 'Totaltracks',#TODO merge me?
+        :total_discs => 'Totaldiscs',
+        :total_tracks => 'Totaltracks',
         :track => 'Title',
         :track_number => 'Track',
         :year => 'Year',
       }
       TAG2SYM= {}
       SYM2TAG.each{|s,t| TAG2SYM[t.upcase]= s}
+      MERGED_VALUES= {
+        :track_number => :total_tracks,
+        :disc => :total_discs,
+      }
       
       freeze_all_constants
     end
