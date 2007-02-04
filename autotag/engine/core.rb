@@ -276,6 +276,7 @@ module Autotag
     # Process a track.
     def process_track!(filename)
       format= @metadata.delete(:_format)
+      format= format.downcase if Autotag::Utils::get_os == :windows
       debug_out{[ "\nTrack: #{File.join UnicodeIO.pwd,filename}", "Format: #{format}" ]}
       
       # V/A processing

@@ -306,7 +306,7 @@ class FullTest < Autotag::TestCase
         :artist => 'AC/DC',
         :album => 'Why?',
         :year => '1970',
-        :total_tracks => '12',
+        :total_tracks => '99',
     }
     dir= 'ACDC/1970 - Why_'
     assert_file "#{dir}/01 - Asd_ qwe.mp3", 6198, 'FF F3 84 64 00'.h, '00 41 4D 45'.h, {
@@ -325,10 +325,20 @@ class FullTest < Autotag::TestCase
         :track => 'Me / You... Why?',
         :track_number => '4',
       }.merge(album), mp3_tags
-    assert_file "#{dir}/12 - NADA....mp3", 2333, 'FF 64 58 69 6E'.h, '04 24 2B D6 0E'.h, {
+    assert_file "#{dir}/99 - NADA....mp3", 2333, 'FF 64 58 69 6E'.h, '04 24 2B D6 0E'.h, {
         :track => 'NADA...',
-        :track_number => '12',
+        :track_number => '99',
       }.merge(album), mp3_tags
+    # File extentions should be case-insensitive on windows and case-sensitive on everything else
+    if Autotag::Utils::get_os == :windows
+      assert_file_metadata "#{dir}/50 - Windows only 1.Mp3",{:track_number=>'50',:track=>'Windows only 1'}.merge(album), mp3_tags
+      assert_file_metadata "#{dir}/51 - Windows only 2.mP3",{:track_number=>'51',:track=>'Windows only 2'}.merge(album), mp3_tags
+      assert_file_metadata "#{dir}/52 - Windows only 3.MP3",{:track_number=>'52',:track=>'Windows only 3'}.merge(album), mp3_tags
+    else
+      assert_file_unchanged "#{dir}/50 - Windows only 1.mP3", 2333
+      assert_file_unchanged "#{dir}/51 - Windows only 2.Mp3", 2333
+      assert_file_unchanged "#{dir}/52 - Windows only 3.MP3", 2333
+    end
   end
   
   def testdir_the_woteva_band_2005_Rain(*which)

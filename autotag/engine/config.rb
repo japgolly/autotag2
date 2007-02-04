@@ -109,6 +109,15 @@ module Autotag
       VA_FILENAME_PATTERNS= [/^(.+?) - (.+)$/u]
       NULL_YEAR_PATTERN= /^[a-z]{4}$/iu
       
+      # File extentions should be case-insensitive on Windows
+      if Autotag::Utils::get_os == :windows
+        asd= lambda{|h| n= {}; h.each{|k,v|n[k.downcase]=v}; h.clear; h.merge! n}
+        asd.call TAGS_TO_WRITE_HEADER
+        asd.call TAGS_TO_WRITE_FOOTER
+        SUPPORTED_AUDIO_FORMATS.each_index{|i|SUPPORTED_AUDIO_FORMATS[i].downcase!}
+        p SUPPORTED_AUDIO_FORMATS
+      end
+      
       freeze_all_constants
       
     end # module Config

@@ -85,7 +85,7 @@ module Autotag
       asd= lambda {|f|
         matches= f.scan(/\{.+?\}/u)
         if matches.empty?
-          file_match_patterns<< f
+          file_match_patterns<< f.downcase
         else
           m= matches[0]
           m[1..-2].split(',').each {|v|
@@ -99,7 +99,7 @@ module Autotag
 
       state[:files].select{|f|
         match= false
-        f= f.sub(/^.*\//,'')
+        f= f.downcase.sub(/^.*\//,'')
         file_match_patterns.each{|p|
           match ||= ::File.fnmatch?(p,f,flags)
         }
