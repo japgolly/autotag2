@@ -115,7 +115,6 @@ module Autotag
         asd.call TAGS_TO_WRITE_HEADER
         asd.call TAGS_TO_WRITE_FOOTER
         SUPPORTED_AUDIO_FORMATS.each_index{|i|SUPPORTED_AUDIO_FORMATS[i].downcase!}
-        p SUPPORTED_AUDIO_FORMATS
       end
       
       freeze_all_constants
