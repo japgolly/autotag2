@@ -13,7 +13,7 @@ module Autotag
       def init(quiet_mode)
         @quiet_mode= quiet_mode
         puts Autotag::TITLE_AND_VERSION
-        puts "Copyright (c) 2006 David Barri. All rights reserved."
+        puts Autotag::COPYRIGHT
         @stats= []
         @all_files= {}
         @artist_id= 0

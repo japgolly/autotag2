@@ -47,7 +47,11 @@ module Autotag
       private
       
       def die!(msg)
-        $stderr.puts msg
+        outstr= $stdout
+        outstr.puts Autotag::TITLE_AND_VERSION
+        outstr.puts Autotag::COPYRIGHT
+        outstr.puts "\n"
+        outstr.puts msg
         exit 1
       end
     
