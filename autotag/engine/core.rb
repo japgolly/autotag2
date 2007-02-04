@@ -213,7 +213,7 @@ module Autotag
         unless dirs2.empty?
           dirs= map_advanced_glob_results(dirs2,:disc) do |m|
             o= {:disc => m[1]}
-            o[:disc_title]= m[2] if m[2]
+            o[:disc_title]= filename2human_text(m[2]) if m[2]
             o
           end
           # Create a seperate collection called all_cd_dirs because if we are using a specific glob_str for the

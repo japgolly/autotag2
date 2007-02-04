@@ -251,7 +251,7 @@ class FullTest < Autotag::TestCase
     subtest.call false, true, false, nil, nil, 'Waterfall Men_/Albums/2006 - Flac Attack'
     subtest.call false, false, false, [1,7], nil, 'The Woteva Band/2005 - Rain/cd 1', 'The Woteva Band/2005 - Rain/disc 7'
     subtest.call false, false, false, [], nil, 'The Woteva Band/2005 - Rain'
-    subtest.call false, false, false, nil, [true,false], 'Waterfall Men_/Singles/1989 - Disco Stu/cd 1 - Boogie'
+    subtest.call false, false, false, nil, [true,false], 'Waterfall Men_/Singles/1989 - Disco Stu/cd 1 - Title_ Boogie'
     subtest.call false, false, false, nil, [false,true], 'Waterfall Men_/Singles/1989 - Disco Stu/cd 2 - Buddy'
     subtest.call false, false, false, nil, [true,true], 'Waterfall Men_/Singles/1989 - Disco Stu'
     subtest.call false, false, false, nil, [true,true], 'Waterfall Men_/Singles'
@@ -416,12 +416,12 @@ class FullTest < Autotag::TestCase
     }
     dir= 'Waterfall Men_/Singles/1989 - Disco Stu'
     if cd1
-      album.merge!(:disc=>'1',:disc_title=>'Boogie',:total_tracks=>'2')
-      assert_file_metadata "#{dir}/cd 1 - Boogie/01 - Walk With Me In Hell.mp3",{:track_number=>'1',:track=>'Walk With Me In Hell'}.merge(album), mp3_tags
-      assert_file_metadata "#{dir}/cd 1 - Boogie/02 - Again We Rise.mp3",{:track_number=>'2',:track=>'Again We Rise'}.merge(album), mp3_tags
+      album.merge!(:disc=>'1',:disc_title=>'Title: Boogie',:total_tracks=>'2')
+      assert_file_metadata "#{dir}/cd 1 - Title_ Boogie/01 - Walk With Me In Hell.mp3",{:track_number=>'1',:track=>'Walk With Me In Hell'}.merge(album), mp3_tags
+      assert_file_metadata "#{dir}/cd 1 - Title_ Boogie/02 - Again We Rise.mp3",{:track_number=>'2',:track=>'Again We Rise'}.merge(album), mp3_tags
     else
-      assert_file_unchanged "#{dir}/cd 1 - Boogie/01 - Walk With Me In Hell.mp3"
-      assert_file_unchanged "#{dir}/cd 1 - Boogie/02 - Again We Rise.mp3"
+      assert_file_unchanged "#{dir}/cd 1 - Title_ Boogie/01 - Walk With Me In Hell.mp3"
+      assert_file_unchanged "#{dir}/cd 1 - Title_ Boogie/02 - Again We Rise.mp3"
     end
     if cd2
       album.merge!(:disc=>'2',:disc_title=>'Buddy',:total_tracks=>'3')
