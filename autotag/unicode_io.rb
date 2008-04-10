@@ -99,7 +99,7 @@ module Autotag
 
       state[:files].select{|f|
         match= false
-        f= f.downcase.sub(/^.*\//,'')
+        f= tolerant_utf8_to_filename(f).downcase.sub(/^.*\//,'')
         file_match_patterns.each{|p|
           match ||= ::File.fnmatch?(p,f,flags)
         }
@@ -110,6 +110,27 @@ module Autotag
   
     private
     
+    def tolerant_utf8_to_filename(filename)
+      unless @tolerant_utf8_to_filename
+        filename_charset= Utils.get_system_charset(:filenames)
+        @tu2f_iconv= Iconv.new(filename_charset,'utf-8') if filename_charset
+        @tolerant_utf8_to_filename= true
+      end
+      
+      return filename unless @tu2f_iconv
+        
+      result= ''
+      begin
+        result<< @tu2f_iconv.iconv(filename)
+      rescue Iconv::IllegalSequence => e
+        result<< e.success
+        ch, filename = e.failed.split(//, 2)
+        result<< '?'
+        retry
+      end
+      result
+    end
+      
     def prepro_fn(f)
       to16(f.gsub('/','\\') + 0.chr)
     end
