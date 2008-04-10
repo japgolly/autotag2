@@ -94,6 +94,7 @@ module Autotag
       #Mini Albums
       #Remix Albums
         nil => ['Albums'],
+        'Bonus' => ['Bonus CDs', 'Bonus Discs'],
         'Bootleg' => ['Bootlegs'],
         'Compilation' => ['Compilations'],
         'Demo' => ['Demos'],
