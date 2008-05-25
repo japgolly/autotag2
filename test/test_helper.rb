@@ -11,6 +11,10 @@ module Autotag
     include Autotag
     include Autotag::Tag::Errors
     
+    unless $0 =~ /test\/all_tests.rb$/
+      def test_do_nothing; end
+    end
+    
     protected
     
     def assert_hashes_equal(expected,test)
@@ -20,7 +24,7 @@ module Autotag
         test_keys= test.keys
         assert_equal expected_keys, test_keys, "Missing: #{(expected_keys-test_keys).sorted_inspect}\nHas but shouldn't have: #{(test_keys-expected_keys).sorted_inspect}"
         expected_keys.each {|k|
-          puts "KEY: #{k.inspect}\nEXP.: #{expected[k].inspect}\nTEST: #{test[k].inspect}" unless expected[k] == test[k]
+          puts "KEY: #{k.inspect}\nEXPECTED: #{expected[k].inspect}\nACTUAL  : #{test[k].inspect}" unless expected[k] == test[k]
           assert_equal expected[k], test[k]
         }
         raise 'should never reach here'
@@ -68,6 +72,10 @@ module Autotag
         @utf82filename_ready= true
       end
       @u2f_iconv ? @u2f_iconv.iconv(filename) : filename
+    end
+    
+    def get_file_contents(filename)
+      File.open(filename,'rb') {|io| io.read}
     end
     
   end

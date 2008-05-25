@@ -7,6 +7,10 @@ module Autotag
   module Tags
     class ID3v2 < Tag::Base
       
+      def self.has_albumart_support?
+        true
+      end
+      
       def create
         apply_defaults!
         raise CreateNotSupported, "Cannot create ID3v2.#{self[:_version].inspect} tags" unless self[:_version] == 4
@@ -40,25 +44,67 @@ module Autotag
       
       def create_body(items)
         x= ''
-        items.keys.sort.each {|k| x<< create_item(k,items[k])}
+        items.keys.sort.each {|k|
+          v= items[k]
+          if k == :albumart
+            # Process album art separately
+            v.each{|picture_type,data|
+              x<< create_albumart_frame(picture_type,data)
+            }
+          else
+            # Process normal item
+            x<< create_item(k,v)
+          end
+        }
         x
       end
       
       def create_item(k,v)
-        # Prepare
+        # Get ID
         id= sym2tag(k)
         unless id
           v= "#{sym2tag k, true}\0#{v}"
           id= tagxxx
         end
-        v= "_#{v}\0"
-        v[0]= contains_unicode?(v) ? 3 : 0
+        
+        # Convert value
+        v= build_text_value(v)
         
         # Create item
-        x= id.dup                     # id
-        x<< create_int(v.length,true) # size
-        x<< "\0\0"                    # flags
-        x<< v                         # value
+        build_frame(id, v)
+      end
+      
+      def build_text_value(value)
+        v= "_#{value}\0"
+        v[0]= contains_unicode?(v) ? 3 : 0
+        v
+      end
+      
+      def build_frame(id, value)
+        x= id.dup                         # id
+        x<< create_int(value.length,true) # size
+        x<< "\0\0"                        # flags
+        x<< value                         # value
+      end
+      
+      def create_albumart_frame(picture_type,data)
+        raise "Albumart not supported with ID3v2.#{[:_version]}, only v2.4." unless self[:_version] == 4
+        
+        # mime type
+        v= build_text_value data[:mimetype]
+        
+        # picture type
+        raise unless PICTURE_TYPES.has_key?(picture_type)
+        v<< PICTURE_TYPES[picture_type]
+        
+        # description
+        v<< "\0"
+        
+        # image
+        v<< data[:image]
+        
+        # build frame
+        build_frame('APIC', v)
       end
       
       def create_int(i,synchsafe)
@@ -111,16 +157,11 @@ module Autotag
             break if frame[:id] == "\0\0\0\0" || pos > size
             pos += frame[:size]
             frame[:value]= fin.read(frame[:size])
-            frame[:value]= read_string(frame[:value]) if frame[:id][0] == 84 # 84 is 'T'[0]
-            if frame[:id] == tagxxx
-              if frame[:value] =~ /^(.+?)\0(.+)$/
-                self[tag2sym($1,true)]= $2
-              else
-                self[frame[:id]]= frame[:value]
-              end
+            if frame[:id] == "APIC"
+              read_albumart_frame(frame)
             else
-              self[tag2sym(frame[:id])]= frame[:value]
-            end
+              read_text_frame(frame)
+            end            
           end
           
           # Post-process
@@ -132,12 +173,57 @@ module Autotag
         @af.ignore_header size
       end
       
+      def read_albumart_frame(frame)
+        # Extract attributes
+        v= frame[:value]
+        encoding,v = read_first(v)
+        mimetype,v = read_until_zero(v)
+        picture_type,v = read_first(v)
+        desc,v = read_until_zero(v)
+
+        # Process and store
+        picture_type_sym= PICTURE_TYPES_INV[picture_type] || picture_type
+        mimetype= read_string(encoding+mimetype)
+        desc= read_string(encoding+desc)
+        aa= (self[:albumart]||= {})
+        aa[picture_type_sym]= {
+          :mimetype => mimetype,
+          :image => v,
+        }
+      end
+      
+      def read_text_frame(frame)
+        frame[:value]= read_string(frame[:value]) if frame[:id][0] == 84 # 84 is 'T'[0]
+        if frame[:id] == tagxxx
+          if frame[:value] =~ /^(.+?)\0(.+)$/
+            self[tag2sym($1,true)]= $2
+          else
+            self[frame[:id]]= frame[:value]
+          end
+        else
+          self[tag2sym(frame[:id])]= frame[:value]
+        end
+      end
+      
       def read_int(synchsafe,x=nil)
         x ||= fin.read(4)
         if synchsafe
           (x[3]&127) | ((x[2]&127) << 7) | ((x[1]&127) << 14) | ((x[0]&127) << 21)
         else
           x.unpack('N').first
+        end
+      end
+      
+      def read_first(v)
+        [v[0..0], v[1..-1]]
+      end
+      
+      def read_until_zero(v)
+        i= v.index("\0")
+        if i>=0
+          [v[0..i],v[(i+1)..-1]]
+        else
+          [v,'']
         end
       end
       
@@ -211,6 +297,13 @@ module Autotag
         :track_number => :total_tracks,
         :disc => :total_discs,
       }
+      PICTURE_TYPES= {
+        :front_cover => 3.chr,
+        :back_cover  => 4.chr,
+        :cd          => 6.chr,
+      }
+      PICTURE_TYPES_INV= {}
+      PICTURE_TYPES.each{|k,v| PICTURE_TYPES_INV[v]= k}
       
       set_defaults :_padding => 1024, :_version => 4
       freeze_all_constants

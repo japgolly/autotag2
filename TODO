@@ -1,10 +1,6 @@
-DO BEFORE v2.0
-==============
+* Try album art with multiple cds 
 
-
-
-DO AFTER v2.0
-=============
+* Check that it works under cygwin 
 
 * Handle remaster albums (store the original release year ??)
 

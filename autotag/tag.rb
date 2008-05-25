@@ -63,6 +63,10 @@ module Autotag::Tag
       end
     end
     
+    def self.has_albumart_support?
+      false
+    end
+    
     def create
       raise CreateNotSupported
     end

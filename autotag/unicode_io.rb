@@ -209,6 +209,7 @@ module Autotag
         r= ''
         while size>0
           bytes_read= '0000'
+          raise if size > 200000000 # 200MB limit - anything higher means we have a bug
           buf= 0.chr * size
           raise unless ReadFile(@handle, buf, size, bytes_read, 0)
           bytes_read= bytes_read.unpack('L')[0]

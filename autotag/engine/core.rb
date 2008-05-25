@@ -1,5 +1,6 @@
 require 'autotag/app_info'
 require 'autotag/audio_file'
+require 'autotag/engine/albumart'
 require 'autotag/engine/cmdline_options'
 require 'autotag/engine/config'
 require 'autotag/engine/conversions'
@@ -18,6 +19,7 @@ module Autotag
     include Conversions
     include Misc
     include OverrideFileReader
+    include AlbumArt
     
     def initialize(*args)
       @engine_args= args
@@ -202,8 +204,12 @@ module Autotag
       @metadata[:album_type]= default_album_type unless @metadata.has_key?(:album_type)
       @metadata.delete(:album_type) if @metadata[:album_type].nil?
       @metadata.delete(:year) if @metadata[:year] =~ null_year_pattern
+      @metadata.delete(:albumart)
       in_dir(dir) {
         on_event :album_dir_enter, dir
+        
+        # Load album art
+        load_all_albumart
         
         # Process tracks in this directory
         process_dir_of_tracks
@@ -351,6 +357,7 @@ module Autotag
         m.delete(:_track_overrides)
         m[header ? :_header : :_footer]= true
         collection[tag_class]= af.tag_processor(tag_class).get_defaults.merge(m)
+        collection[tag_class].delete(:albumart) unless tag_class.has_albumart_support?
       }
     end
     

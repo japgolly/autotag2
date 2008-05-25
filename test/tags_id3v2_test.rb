@@ -77,6 +77,39 @@ class ID3v2Test < Autotag::TestCase
     end
   end
   
+  def test_read_24h_with_itunes_albumart
+    AudioFile.open_file("#{test_data_dir}/tags/ip3v2.4_header_with_itunes_albumart.mp3") do |af|
+      metadata= tag_class.new(af).read
+      aa_metadata= metadata.delete(:albumart)
+      assert_valid_metadata(metadata)
+      assert_hashes_equal({
+        :_header => true,
+        :_version => 4,
+        :artist => '聖飢魔II',
+        :track => '虚空の迷宮 ～type β～',
+        :album => 'News',
+        :year => '1997',
+        :track_number => '8',
+        :total_tracks => '10',
+        :replaygain_album_gain => '-9.27 dB',
+        :replaygain_album_peak => '1.313912',
+        :replaygain_track_gain => '-9.30 dB',
+        :replaygain_track_peak => '1.313912',
+      }, metadata)
+      assert_af_data af, 7961, 0, 3103, "\xFF\xFB\x90\x44\x00\x00", "\xCE\x23\xA8\x42\x46"
+  
+      # Test album art image
+      expected_img= get_file_contents("#{test_data_dir}/tags/ip3v2.4_header_with_itunes_albumart.jpg")
+      actual_img= aa_metadata[:front_cover].delete :image
+      assert_equal expected_img.length, actual_img.length
+      assert_equal expected_img, actual_img
+      
+      # Test album art metadata
+      expected= {:front_cover => {:mimetype => 'image/jpeg'}}
+      assert_hashes_equal(expected, aa_metadata)
+    end
+  end
+
   def test_write22
     assert_raises(CreateNotSupported) {tag_class.new(nil).set_metadata(sample_tag_content(true,2)).create}
     assert_raises(CreateNotSupported) {tag_class.new(nil).set_metadata(sample_tag_content(false,2)).create}

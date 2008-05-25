@@ -8,6 +8,7 @@ module Autotag
       
       def create
         items= get_items_without_params
+        items.delete :albumart # albumart not supported yet
         MERGED_VALUES.each {|a,b| merge_tag_values! items, a, b, '/', 0}
         tag_body= create_body(items)
         tag_header= create_header(items.size, tag_body.size, true)
