@@ -1,3 +1,4 @@
+= 2.1.0 - 25-May-2008
 * 20080525 - Added support for album art in ID3v2 tags.
 * 20080411 - Fixed a bug that was causing unicode filenames to be ignored.
 
