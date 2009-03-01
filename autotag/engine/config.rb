@@ -106,8 +106,8 @@ module Autotag
         'Single' => ['Singles'],
       }
       USELESS_FILE_PATTERNS= [/\.(?:jpe?g|gif|bmp|mpe?g|avi|mov|wmv|divx|asf|xvid|nfo)$/iu]
-      VA_ARTIST_PATTERN= /^(?:various(?: artists?)?|v\/?a|v \/ a)$/iu
-      VA_FILENAME_PATTERNS= [/^(.+?) - (.+)$/u]
+      VA_ARTIST_PATTERN= %r!^(?:various(?: artists?)?|v/?a|v / a)$!iu
+      VA_FILENAME_PATTERNS= [%r!^(.+?)[ 　](?://|--)[ 　](.+)$!u, /^(.+?)[ 　]-[ 　](.+)$/u]
       NULL_YEAR_PATTERN= /^[a-z]{4}$/iu
       
       # File extentions should be case-insensitive on Windows
