@@ -154,12 +154,35 @@ class FullTest < Autotag::TestCase
           :total_tracks => '6',
           :replaygain_track_gain => '+17.43 dB',
           :replaygain_track_peak => '0.119293',
+          :album_type => 'Compilation',
       }
       dir= 'VA/2000 - Best Of Me'
       assert_file_metadata "#{dir}/01 - John - 2 -- Stuff.mp3", {:track_number=>'1', :artist=>'Stuff', :track=>'John - 2'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/04 - The Crazy People - Big Red Apples.mp3", {:track_number=>'4', :artist=>'Big Red Apples', :track=>'The Crazy People'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/06 - Happy.mp3", {:track_number=>'6', :artist=>'The Jam Cans', :track=>'Happy?'}.merge(album), mp3_tags
-      
+
+      #########################################################################
+      # VA/Soundtracks/2009 - Soundtrack to Hell
+      # Tests:
+      #   * v/a albums albumtypes
+      #   * v/a albums (when filename doesn't match artist/title pattern but override info does)
+      #   * v/a hardcoded artist tag
+      #   * v/a name splitting: -- takes precedence over - in artist/track separation
+      #   * v/a name splitting: // takes precedence over - in artist/track separation
+      album= {
+          :album_artist => 'Various Artists',
+          :album => 'Soundtrack to Hell',
+          :year => '2009',
+          :total_tracks => '3',
+          :replaygain_track_gain => '+17.43 dB',
+          :replaygain_track_peak => '0.119293',
+          :album_type => 'Soundtrack',
+      }
+      dir= 'VA/Soundtracks/2009 - Soundtrack to Hell'
+      assert_file_metadata "#{dir}/001. Ze Title -- Artist - 2.mp3", {:track_number=>'1', :artist=>'Artist - 2', :track=>'Ze Title'}.merge(album), mp3_tags
+      assert_file_metadata "#{dir}/002. The Crazy People - Big Red Apples.mp3", {:track_number=>'2', :artist=>'Big Red Apples', :track=>'The Crazy People'}.merge(album), mp3_tags
+      assert_file_metadata "#{dir}/003. Really.mp3", {:track_number=>'3', :artist=>'Dudes', :track=>'No - Really?'}.merge(album), mp3_tags
+
       #########################################################################
       # OTHER
       testdir_waterfall_men_albums_2007_wowness

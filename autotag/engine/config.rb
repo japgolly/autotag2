@@ -108,6 +108,7 @@ module Autotag
         'Rarities' => ['Rarities'],
         'Remastered' => ['Remastered'],
         'Single' => ['Singles'],
+        'Soundtrack' => ['Soundtracks'],
       }
       USELESS_FILE_PATTERNS= [/\.(?:jpe?g|gif|bmp|mpe?g|avi|mov|wmv|divx|asf|xvid|nfo)$/iu]
       VA_ARTIST_PATTERN= %r!^(?:various(?: artists?)?|v/?a|v / a)$!iu
