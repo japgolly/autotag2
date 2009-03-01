@@ -54,7 +54,7 @@ module Autotag
       end
       
       def extract_track_override(line_of_text)
-        if line_of_text.tr('０-９','0-9') =~ /^(\d{1,3})[.．:：](.+)$/
+        if line_of_text.tr('０-９','0-9') =~ /^(\d{1,3})[ 　\t]*?[.．:：-](.+)$/
           track,value= $1,unicode_trim($2)
           unless value == ''
             remove_leading_zeros! track
