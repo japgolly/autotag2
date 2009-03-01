@@ -287,7 +287,8 @@ module Autotag
       
       # V/A processing
       if @metadata[:artist] =~ va_artist_pattern
-        @metadata[:album_artist]= @metadata.delete(:artist)
+        @metadata.delete(:artist)
+        @metadata[:album_artist]= va_artist_tag
         t= @metadata.delete(:track)
         va_filename_patterns.each {|p|
           if t =~ p

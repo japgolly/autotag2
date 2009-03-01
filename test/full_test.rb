@@ -153,7 +153,7 @@ class FullTest < Autotag::TestCase
           :replaygain_track_gain => '+17.43 dB',
           :replaygain_track_peak => '0.119293',
       }
-      dir= 'Various Artists/2000 - Soundtrack to Hell'
+      dir= 'VA/2000 - Soundtrack to Hell'
       assert_file_metadata "#{dir}/01 - John - 2 -- Stuff.mp3", {:track_number=>'1', :artist=>'Stuff', :track=>'John - 2'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/04 - The Crazy People - Big Red Apples.mp3", {:track_number=>'4', :artist=>'Big Red Apples', :track=>'The Crazy People'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/06 - Happy.mp3", {:track_number=>'6', :artist=>'The Jam Cans', :track=>'Happy?'}.merge(album), mp3_tags

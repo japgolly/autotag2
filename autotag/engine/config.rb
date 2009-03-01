@@ -68,6 +68,10 @@ module Autotag
       def va_filename_patterns
         VA_FILENAME_PATTERNS
       end
+
+      def va_artist_tag
+        VA_ARTIST_TAG
+      end
       
       #--------------------------------------------------------------------------
       private
@@ -108,6 +112,7 @@ module Autotag
       USELESS_FILE_PATTERNS= [/\.(?:jpe?g|gif|bmp|mpe?g|avi|mov|wmv|divx|asf|xvid|nfo)$/iu]
       VA_ARTIST_PATTERN= %r!^(?:various(?: artists?)?|v/?a|v / a)$!iu
       VA_FILENAME_PATTERNS= [%r!^(.+?)[ 　](?://|--)[ 　](.+)$!u, /^(.+?)[ 　]-[ 　](.+)$/u]
+      VA_ARTIST_TAG= 'Various Artists'
       NULL_YEAR_PATTERN= /^[a-z]{4}$/iu
       
       # File extentions should be case-insensitive on Windows
