@@ -141,19 +141,21 @@ class FullTest < Autotag::TestCase
       
       
       #########################################################################
-      # Various Artists/2000 - Soundtrack to Hell
+      # VA/2000 - Best Of Me
       # Tests:
       #   * v/a albums (stock standard)
       #   * v/a albums (when filename doesn't match artist/title pattern but override info does)
+      #   * v/a hardcoded artist tag
+      #   * v/a name splitting: -- takes precedence over - in artist/track separation
       album= {
           :album_artist => 'Various Artists',
-          :album => 'Soundtrack to Hell',
+          :album => 'Best Of Me',
           :year => '2000',
           :total_tracks => '6',
           :replaygain_track_gain => '+17.43 dB',
           :replaygain_track_peak => '0.119293',
       }
-      dir= 'VA/2000 - Soundtrack to Hell'
+      dir= 'VA/2000 - Best Of Me'
       assert_file_metadata "#{dir}/01 - John - 2 -- Stuff.mp3", {:track_number=>'1', :artist=>'Stuff', :track=>'John - 2'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/04 - The Crazy People - Big Red Apples.mp3", {:track_number=>'4', :artist=>'Big Red Apples', :track=>'The Crazy People'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/06 - Happy.mp3", {:track_number=>'6', :artist=>'The Jam Cans', :track=>'Happy?'}.merge(album), mp3_tags
