@@ -291,7 +291,7 @@ module Autotag
         t= @metadata.delete(:track)
         va_filename_patterns.each {|p|
           if t =~ p
-            @metadata[:artist],@metadata[:track] = $1,$2
+            @metadata[:track],@metadata[:artist] = $1,$2
             break
           end
         }
