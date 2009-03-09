@@ -1,3 +1,12 @@
+= 2.1.1 - 09-Mar-2009
+* 20090309 - Fixed a bug that prevented the windows console title from being set properly.
+* 20090309 - Artist is no longer mandatory for VA tracks.
+* 20090301 - Added soundtracks as an albumtype.
+* 20090301 - All V/A tags now have a hardcoded artist. (defined in config.rb)
+* 20090301 - In V/A albums, title comes before artist.
+* 20090301 - In V/A albums, -- and // have higher priorities as a seperator than -
+* 20090301 - In autotag/index files, there can now be whitespace after the track number.
+
 = 2.1.0 - 25-May-2008
 * 20080525 - Added support for album art in ID3v2 tags.
 * 20080411 - Fixed a bug that was causing unicode filenames to be ignored.
