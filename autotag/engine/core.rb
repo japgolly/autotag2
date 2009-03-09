@@ -289,14 +289,12 @@ module Autotag
       if @metadata[:artist] =~ va_artist_pattern
         @metadata.delete(:artist)
         @metadata[:album_artist]= va_artist_tag
-        t= @metadata.delete(:track)
         va_filename_patterns.each {|p|
-          if t =~ p
+          if @metadata[:track] =~ p
             @metadata[:track],@metadata[:artist] = $1,$2
             break
           end
         }
-        raise "Track in various artist album missing artist information. (#{UnicodeIO.pwd}/#{filename})" unless @metadata[:track] && @metadata[:artist]
       end
       
       replace_track= false

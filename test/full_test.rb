@@ -169,11 +169,12 @@ class FullTest < Autotag::TestCase
       #   * v/a hardcoded artist tag
       #   * v/a name splitting: -- takes precedence over - in artist/track separation
       #   * v/a name splitting: // takes precedence over - in artist/track separation
+      #   * v/a track with no artist
       album= {
           :album_artist => 'Various Artists',
           :album => 'Soundtrack to Hell',
           :year => '2009',
-          :total_tracks => '3',
+          :total_tracks => '7',
           :replaygain_track_gain => '+17.43 dB',
           :replaygain_track_peak => '0.119293',
           :album_type => 'Soundtrack',
@@ -182,6 +183,8 @@ class FullTest < Autotag::TestCase
       assert_file_metadata "#{dir}/001. Ze Title -- Artist - 2.mp3", {:track_number=>'1', :artist=>'Artist - 2', :track=>'Ze Title'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/002. The Crazy People - Big Red Apples.mp3", {:track_number=>'2', :artist=>'Big Red Apples', :track=>'The Crazy People'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/003. Really.mp3", {:track_number=>'3', :artist=>'Dudes', :track=>'No - Really?'}.merge(album), mp3_tags
+      assert_file_metadata "#{dir}/007. No artist.mp3", {:track_number=>'7', :track=>'No artist'}.merge(album), mp3_tags # No artist
+
 
       #########################################################################
       # OTHER
