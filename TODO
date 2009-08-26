@@ -16,3 +16,5 @@
 * Delete useless crap such as
   - useless cue files (CDImage.wav.cue)
   - useless playlists (m3u etc)
+
+* Debug should display size and checksum of images instead of actual image
