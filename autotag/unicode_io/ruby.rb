@@ -5,26 +5,13 @@ module Autotag
     include Autotag::Unicode
     extend self
     
-    def chdir(dir,&block)
-      Dir.chdir(dir,&block)
-    end
+    def chdir(dir,&block) Dir.chdir(dir,&block) end
+    def delete(f) File.delete(f) end
+    def directory?(f) File.directory?(f) end
+    def file?(f) File.file?(f) end
+    def pwd; Dir.pwd end
     
-    def delete(f)
-      File.delete(f)
-    end
-    
-    def directory?(f)
-      File.directory?(f)
-    end
-    def file?(f)
-      File.file?(f)
-    end
-    
-    def pwd
-      Dir.pwd
-    end
-    
-    def rename(from,to,force=false)
+    def rename(from, to, force=false)
       delete(to) if force
       File.rename(from, to)
     end
@@ -57,7 +44,7 @@ module Autotag
 
       state[:files].select{|f|
         match= false
-        f= tolerant_utf8_to_filename(f).downcase.sub(/^.*\//,'')
+        f= f.downcase.sub(/^.*\//,'')
         file_match_patterns.each{|p|
           match ||= ::File.fnmatch?(p,f,flags)
         }
@@ -67,30 +54,6 @@ module Autotag
     end
   
     private
-    
-    def tolerant_utf8_to_filename(filename)
-      unless @tolerant_utf8_to_filename
-        filename_charset= Utils.get_system_charset(:filenames)
-        @tu2f_iconv= Iconv.new(filename_charset,'utf-8') if filename_charset
-        @tolerant_utf8_to_filename= true
-      end
-      
-      return filename unless @tu2f_iconv
-        
-      result= ''
-      begin
-        result<< @tu2f_iconv.iconv(filename)
-      rescue Iconv::IllegalSequence => e
-        result<< e.success
-        ch, filename = e.failed.split(//, 2)
-        result<< '?'
-        retry
-      end
-      result
-    end
-      
-    # TODO del this
-    def prepro_fn(f) f end
     
     def glob_(recurse_levels,dir,state,full_dir,recurse_dot_dirs)
       raise unless recurse_levels.is_a?Fixnum
@@ -104,21 +67,25 @@ module Autotag
             full_dir= dir.dup
           end
         end
-        buf= '0'*1024
-        h= FindFirstFileW.call(to16("*\0"), buf)
-        unless h == -1
-          pat= Regexp.new('^.{44}((?:..)+?)\0\0',Regexp::MULTILINE,'N')
-          begin
-            buf =~ pat
-            f= to8($1)
+        Dir['*'].each {|f|
+
+#        buf= '0'*1024
+#        h= FindFirstFileW.call(to16("*\0"), buf)
+#        unless h == -1
+#          pat= Regexp.new('^.{44}((?:..)+?)\0\0',Regexp::MULTILINE,'N')
+#          begin
+#            buf =~ pat
+#            f= to8($1)
             unless f=='.' || f=='..'
               state[:files]<< (full_dir ? "#{full_dir}/" : '') + f
-              glob_(recurse_levels,f,state,full_dir ? full_dir.dup : nil,recurse_dot_dirs) if allow_recurse && (buf[0..3].unpack('L')[0] & FILE_ATTRIBUTE_DIRECTORY) != 0 && (recurse_dot_dirs or f[0]!=46)
+              bluth= File.directory?(f) # TODO rename bluth
+              glob_(recurse_levels,f,state,full_dir ? full_dir.dup : nil,recurse_dot_dirs) if allow_recurse && bluth && (recurse_dot_dirs or f[0]!=46)
             end
-            buf= '0'*1024
-          end while FindNextFileW.call(h,buf) != 0
-          raise if FindClose.call(h) == 0
-        end
+#            buf= '0'*1024
+#          end while FindNextFileW.call(h,buf) != 0
+#          raise if FindClose.call(h) == 0
+#        end
+        }
       end # chdir
       state[:depth] -= 1
     end
