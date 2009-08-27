@@ -1,5 +1,3 @@
-puts '************ ruby ver *****************'
-
 module Autotag
   module UnicodeIO
     include Autotag::Unicode
