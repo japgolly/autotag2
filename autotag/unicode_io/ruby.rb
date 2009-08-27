@@ -95,86 +95,32 @@ module Autotag
       extend Unicode
       
       def self.open(filename,mode)
-        fn16= UnicodeIO.send(:prepro_fn,filename)
-        h= case mode
-        when :read, 'rb'
-          CreateFileW.call(fn16, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)
-        when :write, 'wb'
-          CreateFileW.call(fn16, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0)
-        end
-        raise "Open file operation failed. File='#{filename}'" if h == -1
-        f= new(h)
+        f= new(File.open(filename,mode))
         if block_given?
-          yield f
-          f.close
+          begin
+            yield f
+          ensure
+            f.close
+          end
           nil
         else
           f
         end
       end
       
-      def << (buf)
-        b= '0000'
-        raise unless WriteFile.call(@handle, buf, buf.size, b, 0)
-      end
-      
-      def close
-        CloseHandle @handle
-        @handle= nil
-      end
-      
-      def getc
-        read(1)[0]
-      end
-      
-      def read(size)
-        r= ''
-        while size>0
-          bytes_read= '0000'
-          raise if size > 200000000 # 200MB limit - anything higher means we have a bug
-          buf= 0.chr * size
-          raise unless ReadFile(@handle, buf, size, bytes_read, 0)
-          bytes_read= bytes_read.unpack('L')[0]
-          if bytes_read == 0
-            return r
-          else
-            r<< buf[0..(bytes_read-1)]
-            size -= bytes_read
-          end
-        end
-        r
-      end
-      
-      def seek(amount,whence=IO::SEEK_SET)
-        method= case whence
-          when IO::SEEK_END then 2
-          when IO::SEEK_CUR then 1
-          when IO::SEEK_SET then 0
-          else raise
-        end        
-        raise if SetFilePointer.call(@handle, amount, 0, method) == 0xFFFFFFFF
-      end
-      
-      def size
-        h= '0000'
-        l= GetFileSize(@handle,h)
-        raise if l == INVALID_FILE_SIZE
-        #h= h.unpack('L')[0]
-        l# | (h << 32)
-      end
-      
-      def stat
-        self
-      end
-      
-      def tell
-        SetFilePointer.call(@handle, 0, 0, 1)
-      end
+      def <<(buf) @f<< buf end
+      def close; @f.close end
+      def getc; @f.getc end
+      def read(size) @f.read(size) end
+      def seek(amount,whence=IO::SEEK_SET) @f.seek(amount,whence) end
+      def size; @f.stat.size end
+      def stat; @f.stat end
+      def tell; @f.tell end
       
       private
       
-      def initialize(handle)
-        @handle= handle
+      def initialize(f)
+        @f= f
       end
     end # class UFile
     
