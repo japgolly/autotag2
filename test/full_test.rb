@@ -360,8 +360,8 @@ class FullTest < Autotag::TestCase
       assert_file_metadata "#{dir}/51 - Windows only 2.mP3",{:track_number=>'51',:track=>'Windows only 2'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/52 - Windows only 3.MP3",{:track_number=>'52',:track=>'Windows only 3'}.merge(album), mp3_tags
     else
-      assert_file_unchanged "#{dir}/50 - Windows only 1.mP3", 2333
-      assert_file_unchanged "#{dir}/51 - Windows only 2.Mp3", 2333
+      assert_file_unchanged "#{dir}/50 - Windows only 1.Mp3", 2333
+      assert_file_unchanged "#{dir}/51 - Windows only 2.mP3", 2333
       assert_file_unchanged "#{dir}/52 - Windows only 3.MP3", 2333
     end
   end
