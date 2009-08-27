@@ -9,7 +9,6 @@ Rake::TestTask.new do |t|
   t.verbose= true
 end
 
-
 task :ci_test do
   require 'rubygems'
   gem 'ci_reporter'
@@ -18,3 +17,6 @@ task :ci_test do
   Rake::Task["test"].execute
 end
 
+task :stats do
+  ruby 'code_stats.rb'
+end
