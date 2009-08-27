@@ -27,6 +27,13 @@ module Autotag
       else :unknown
       end
     end
+
+    def case_insensitive_filenames?
+      get_os == :windows or get_os == :cygwin
+    end
+    def case_sensitive_filenames?
+      !case_insensitive_filenames?
+    end
     
     # Returns the charset for a system property
     def get_system_charset(type)

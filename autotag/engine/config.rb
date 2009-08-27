@@ -118,7 +118,7 @@ module Autotag
       NULL_YEAR_PATTERN= /^[a-z]{4}$/iu
       
       # File extentions should be case-insensitive on Windows
-      if Autotag::Utils::get_os == :windows
+      if Autotag::Utils::case_insensitive_filenames?
         asd= lambda{|h| n= {}; h.each{|k,v|n[k.downcase]=v}; h.clear; h.merge! n}
         asd.call TAGS_TO_WRITE_HEADER
         asd.call TAGS_TO_WRITE_FOOTER

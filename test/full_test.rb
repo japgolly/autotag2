@@ -355,7 +355,7 @@ class FullTest < Autotag::TestCase
         :track_number => '99',
       }.merge(album), mp3_tags
     # File extentions should be case-insensitive on windows and case-sensitive on everything else
-    if Autotag::Utils::get_os == :windows
+    if Autotag::Utils::case_insensitive_filenames?
       assert_file_metadata "#{dir}/50 - Windows only 1.Mp3",{:track_number=>'50',:track=>'Windows only 1'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/51 - Windows only 2.mP3",{:track_number=>'51',:track=>'Windows only 2'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/52 - Windows only 3.MP3",{:track_number=>'52',:track=>'Windows only 3'}.merge(album), mp3_tags
