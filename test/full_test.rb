@@ -289,15 +289,20 @@ class FullTest < Autotag::TestCase
     engine_test_on('full_test',false){
       @e= new_engine_instance '-p', 'ACDC', 'The Woteva Band/1930 - Django', 'Waterfall Men_'
       @e.run
+      acdc_useless_files= []
+      acdc_useless_files+= [
+        '1970 - Why_/50 - Windows only 1.Mp3',
+        '1970 - Why_/51 - Windows only 2.mP3',
+        '1970 - Why_/52 - Windows only 3.MP3',
+      ] if Autotag::Utils::case_sensitive_filenames?
+      acdc_useless_files+= [
+        '1972 - へへ/crap/qwezxc.flac',
+        '1972 - へへ/crap/qwezxc2.flac',
+        '1972 - へへ/oops.mp3',
+      ]
       assert_hashes_equal({
-        File.expand_path("#{tmpdir}/ACDC") => [
-            '1972 - へへ/crap/qwezxc.flac',
-            '1972 - へへ/crap/qwezxc2.flac',
-            '1972 - へへ/oops.mp3',
-          ],
-        File.expand_path("#{tmpdir}/Waterfall Men_") => [
-            '03 - bullshit.mp3',
-          ],
+        File.expand_path("#{tmpdir}/ACDC") => acdc_useless_files,
+        File.expand_path("#{tmpdir}/Waterfall Men_") => ['03 - bullshit.mp3'],
       }, @e.ui.instance_variable_get(:@all_files))
     }
   end
@@ -317,13 +322,19 @@ class FullTest < Autotag::TestCase
   end
   
   def full_test_useless_files
-    [
+    x= [
       'autotag.txt',
       'ACDC/1972 - へへ/oops.mp3',
       'ACDC/1972 - へへ/crap/qwezxc.flac',
       'ACDC/1972 - へへ/crap/qwezxc2.flac',
       'Waterfall Men_/03 - bullshit.mp3',
     ]
+    x+= [
+      'ACDC/1970 - Why_/50 - Windows only 1.Mp3',
+      'ACDC/1970 - Why_/51 - Windows only 2.mP3',
+      'ACDC/1970 - Why_/52 - Windows only 3.MP3',
+    ] if Autotag::Utils::case_sensitive_filenames?
+    x
   end
   
   def testdir_acdc_1970_why

@@ -28,7 +28,7 @@ module Autotag
       asd= lambda {|f|
         matches= f.scan(/\{.+?\}/u)
         if matches.empty?
-          file_match_patterns<< f.downcase
+          file_match_patterns<< downcase_maybe(f)
         else
           m= matches[0]
           m[1..-2].split(',').each {|v|
@@ -42,7 +42,7 @@ module Autotag
 
       state[:files].select{|f|
         match= false
-        f= f.downcase.sub(/^.*\//,'')
+        f= downcase_maybe(f).sub(/^.*\//,'')
         file_match_patterns.each{|p|
           match ||= ::File.fnmatch?(p,f,flags)
         }
@@ -52,6 +52,10 @@ module Autotag
     end
   
     private
+
+    def downcase_maybe(x)
+      Autotag::Utils::case_sensitive_filenames? ? x : x.downcase
+    end
     
     def glob_(recurse_levels,dir,state,full_dir,recurse_dot_dirs)
       raise unless recurse_levels.is_a?Fixnum

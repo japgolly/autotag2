@@ -5,7 +5,9 @@ class MiscTest < Autotag::TestCase
   include Autotag::UnicodeIO
   
   def test_unicodeio_glob
-    assert_equal ["CHANGELOG", "code_stats.rb", "autotag", "autotag.rb"].sort, glob(0,nil,"{a,c}*").sort
+    ac_files= ["code_stats.rb", "autotag", "autotag.rb"]
+    ac_files<< "CHANGELOG" if Autotag::Utils::case_insensitive_filenames?
+    assert_equal ac_files.sort, glob(0,nil,"{a,c}*").sort
     assert_equal ["autotag.rb", "code_stats.rb"], glob(0,nil,'*.rb')
     assert_equal ["autotag/engine.rb", "test/engine_test.rb"], glob(1,nil,'e*.rb')
     assert_equal ["autotag/engine.rb"], glob(0,'autotag','e*.rb')
