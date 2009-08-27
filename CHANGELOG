@@ -1,3 +1,6 @@
+* 20090827 - Made it work with Cygwin and Linux.
+* 20090826 - Added remix albums as an album type.
+
 = 2.1.1 - 09-Mar-2009
 * 20090309 - Fixed a bug that prevented the windows console title from being set properly.
 * 20090309 - Artist is no longer mandatory for VA tracks.
