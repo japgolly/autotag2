@@ -70,23 +70,11 @@ module Autotag
           end
         end
         Dir['*'].each {|f|
-
-#        buf= '0'*1024
-#        h= FindFirstFileW.call(to16("*\0"), buf)
-#        unless h == -1
-#          pat= Regexp.new('^.{44}((?:..)+?)\0\0',Regexp::MULTILINE,'N')
-#          begin
-#            buf =~ pat
-#            f= to8($1)
             unless f=='.' || f=='..'
               state[:files]<< (full_dir ? "#{full_dir}/" : '') + f
               bluth= File.directory?(f) # TODO rename bluth
               glob_(recurse_levels,f,state,full_dir ? full_dir.dup : nil,recurse_dot_dirs) if allow_recurse && bluth && (recurse_dot_dirs or f[0]!=46)
             end
-#            buf= '0'*1024
-#          end while FindNextFileW.call(h,buf) != 0
-#          raise if FindClose.call(h) == 0
-#        end
         }
       end # chdir
       state[:depth] -= 1
