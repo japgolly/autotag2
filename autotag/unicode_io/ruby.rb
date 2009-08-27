@@ -4,7 +4,7 @@ module Autotag
     extend self
     
     def chdir(dir,&block) Dir.chdir(dir,&block) end
-    def delete(f) File.delete(f) end
+    def delete(f) File.delete(f) if File.exists?(f) end
     def directory?(f) File.directory?(f) end
     def file?(f) File.file?(f) end
     def pwd; Dir.pwd end
