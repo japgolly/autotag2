@@ -20,10 +20,11 @@ module Autotag
     end
     
     def get_os
-      if ENV['OS'] =~ /win/i
-        :windows
-      else
-        nil
+      case RUBY_PLATFORM
+      when /mswin/  then :windows
+      when /cygwin/ then :cygwin
+      when /linux/  then :linix
+      else :unknown
       end
     end
     
