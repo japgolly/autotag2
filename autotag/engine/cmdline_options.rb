@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'optparse'
 require 'autotag/unicode_io'
 require 'autotag/utils'

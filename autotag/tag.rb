@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'autotag/app_info'
 require 'autotag/ruby_ext'
 require 'autotag/unicode'

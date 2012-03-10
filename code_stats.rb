@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'autotag/app_info'
 puts "Stats for #{Autotag::TITLE_AND_VERSION}\n\n"
 

@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'autotag/ruby_ext'
 require 'test/unit'
 require 'pp'

@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'Win32API'
 require 'windows/handle'
 require 'windows/directory'

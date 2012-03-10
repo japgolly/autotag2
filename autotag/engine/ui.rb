@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'autotag/app_info'
 require 'autotag/utils'
 require 'iconv'

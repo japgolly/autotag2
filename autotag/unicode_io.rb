@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'iconv'
 require 'autotag/unicode'
 require 'autotag/utils'

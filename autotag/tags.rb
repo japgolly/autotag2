@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'autotag/ruby_ext'
 
 Dir.chdir("#{File.dirname __FILE__}/..") {

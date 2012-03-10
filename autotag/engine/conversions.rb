@@ -1,3 +1,4 @@
+# encoding: utf-8
 module Autotag
   class Engine
     module Conversions

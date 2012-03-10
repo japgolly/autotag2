@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'autotag/unicode'
 require 'autotag/engine/config'
 require 'autotag/engine/misc'

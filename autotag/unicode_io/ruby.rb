@@ -1,3 +1,4 @@
+# encoding: utf-8
 module Autotag
   module UnicodeIO
     include Autotag::Unicode
