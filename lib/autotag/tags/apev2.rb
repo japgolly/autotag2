@@ -1,4 +1,4 @@
-# encoding: utf-8
+# encoding: binary
 require 'autotag/tag'
 
 # Params:
@@ -61,10 +61,10 @@ module Autotag
       end
 
       def create_item(k,v)
-        x= create_int(v.length) # len
-        x<< create_int(0)       # flags
-        x<< "#{sym2tag(k)}\0"   # key
-        x<< v                   # value
+        x= create_int(v.bytes.count) # len
+        x<< create_int(0)            # flags
+        x<< "#{sym2tag(k)}\0"        # key
+        x<< v.to_bin                 # value
       end
 
       def create_int(i)
@@ -121,7 +121,7 @@ module Autotag
           len= read_int
           flags= read_int
           key= read_string
-          value= fin.read(len)
+          value= fin.read(len).force_encoding('utf-8')
           self[tag2sym(key)]= value
         end
       end
@@ -132,7 +132,9 @@ module Autotag
 
       def read_string
         x= ''
-        while (ch= fin.getc) != 0
+        while ch= fin.getc
+          ch= ch.bytes.first if ch
+          break if ch.nil? or ch == 0
           x<< ch
         end
         x

@@ -38,8 +38,8 @@ class APEv2Test < Autotag::TestCase
     t= tag_class.new(nil).set_metadata(content).create
     assert_kind_of String, t
     # Check flags
-    assert_equal "\0\0\0\xA0", t[20..23]
-    assert_equal "\0\0\0\x80", t[-12..-9]
+    assert_equal "\0\0\0\xA0".to_bin, t[20..23]
+    assert_equal "\0\0\0\x80".to_bin, t[-12..-9]
     # Attempt to read back
     bullshit= 'qwelkjasdopiu34kjv98nrtbqrv0inv3q04'
     AudioFile.open_string(bullshit+t) do |af|
