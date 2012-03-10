@@ -1,0 +1,37 @@
+GIT
+  remote: git://github.com/japgolly/turn.git
+  revision: 97c758a92c4fed588331373de065a535a89f5587
+  specs:
+    turn (0.9.3)
+      ansi
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    ansi (1.4.2)
+    awesome_print (1.0.2)
+    ffi (1.0.11)
+    guard (1.0.1)
+      ffi (>= 0.5.0)
+      thor (~> 0.14.6)
+    guard-minitest (0.5.0)
+      guard (>= 0.4)
+    minitest (2.11.3)
+    multi_json (1.1.0)
+    rake (0.9.2.2)
+    simplecov (0.6.1)
+      multi_json (~> 1.0)
+      simplecov-html (~> 0.5.3)
+    simplecov-html (0.5.3)
+    thor (0.14.6)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  awesome_print
+  guard-minitest (>= 0.5.0)
+  minitest
+  rake
+  simplecov
+  turn!
