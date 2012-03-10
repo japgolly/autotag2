@@ -4,7 +4,7 @@ require 'autotag/unicode_io'
 
 class MiscTest < Autotag::TestCase
   include Autotag::UnicodeIO
-  
+
   def test_unicodeio_glob
     ac_files= ["code_stats.rb", "autotag", "autotag.rb"]
     ac_files<< "CHANGELOG" if Autotag::Utils::case_insensitive_filenames?
@@ -17,12 +17,12 @@ class MiscTest < Autotag::TestCase
     assert_equal ["test/misc_test.rb"], glob(1,nil,'mi*.rb')
     assert_equal ["autotag/engine/misc.rb", "test/misc_test.rb"], glob(2,nil,'mi*.rb')
   end
-  
+
   def test_unicodeio_file_dir_bools
     assert file?('autotag.rb')
     assert !directory?('autotag.rb')
     assert !file?('autotag')
     assert directory?('autotag')
   end
-  
+
 end

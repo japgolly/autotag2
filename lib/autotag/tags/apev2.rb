@@ -6,7 +6,7 @@ require 'autotag/tag'
 module Autotag
   module Tags
     class APEv2 < Tag::Base
-      
+
       def create
         items= get_items_without_params
         items.delete :albumart # albumart not supported yet
@@ -16,29 +16,29 @@ module Autotag
         tag_footer= create_footer(items.size, tag_body.size, true)
         tag_header + tag_body + tag_footer
       end
-  
+
       def read
         bof_read if bof_tag_exists?
         eof_read if eof_tag_exists?
         MERGED_VALUES.each {|a,b| split_merged_tag_values! a, b, '/' }
         metadata
       end
-      
+
       def tag_exists?
         bof_tag_exists? || eof_tag_exists?
       end
-      
+
       #--------------------------------------------------------------------------
       private
-      
+
       def create_header(item_count, body_size, has_footer)
         create_header_or_footer(item_count, body_size, true, has_footer, true)
       end
-      
+
       def create_footer(item_count, body_size, has_header)
         create_header_or_footer(item_count, body_size, has_header, true, false)
       end
-      
+
       def create_header_or_footer(item_count, body_size, has_header, has_footer, create_header)
         tag_size_minus_header= body_size + (has_footer ? 32 : 0)
         flags= 0
@@ -53,30 +53,30 @@ module Autotag
         x<< create_int(0)
         x<< create_int(0)
       end
-      
+
       def create_body(items)
         x= ''
         items.keys.sort.each {|k| x<< create_item(k,items[k])}
         x
       end
-      
+
       def create_item(k,v)
         x= create_int(v.length) # len
         x<< create_int(0)       # flags
         x<< "#{sym2tag(k)}\0"   # key
         x<< v                   # value
       end
-      
+
       def create_int(i)
         [i].pack('L')
       end
-      
+
       def sym2tag(sym)
         SYM2TAG[sym] || sym.to_s
       end
-      
+
       #--------------------------------------------------------------------------
-      
+
       def bof_tag_exists?
         @af.seek_to_start 32
         fin.read(8) == 'APETAGEX' && read_int == 2000
@@ -85,7 +85,7 @@ module Autotag
         @af.seek_to_end 32
         fin.read(8) == 'APETAGEX' && read_int == 2000
       end
-      
+
       def bof_read
         @af.seek_to_start 32
         info= read_tag_info(fin.read(32))
@@ -104,7 +104,7 @@ module Autotag
         read_tag_content(info)
         self[:_footer]= true
       end
-      
+
       def read_tag_info(data)
         flags= read_int(data[20..23])
         {
@@ -115,7 +115,7 @@ module Autotag
           :read_only => flags[0]==1,
         }
       end
-      
+
       def read_tag_content(info)
         info[:items].times do
           len= read_int
@@ -125,11 +125,11 @@ module Autotag
           self[tag2sym(key)]= value
         end
       end
-      
+
       def read_int(x=nil)
         (x || fin.read(4)).unpack('L').first
       end
-  
+
       def read_string
         x= ''
         while (ch= fin.getc) != 0
@@ -137,11 +137,11 @@ module Autotag
         end
         x
       end
-      
+
       def tag2sym(tag)
         TAG2SYM[tag.upcase] || tag.upcase
       end
-      
+
       #--------------------------------------------------------------------------
       SYM2TAG= {
         :album => 'Album',
@@ -167,7 +167,7 @@ module Autotag
         :track_number => :total_tracks,
         :disc => :total_discs,
       }
-      
+
       freeze_all_constants
     end
   end

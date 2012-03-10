@@ -11,7 +11,7 @@ class Object
       respond_to?(:clone) ? clone : (respond_to?(:dup) ? dup : self)
     end
   end
-  
+
   def deep_freeze
     respond_to?(:freeze) ? freeze : self
   end
@@ -26,20 +26,20 @@ class Array
   def ci_sort
     map{|v|[v.to_s.upcase,v]}.sort{|a,b|a[0]<=>b[0]}.map{|v|v[1]}
   end
-  
+
   def deep_clone
     map{|e| e.deep_clone}
   end
-  
+
   def deep_freeze
     each {|e| e.deep_freeze}
     freeze
   end
-  
+
   def rand
     empty? ? nil : self[Kernel::rand(size)]
   end
-  
+
   def sorted_inspect
     '[' + map{|k|k.inspect}.sort.join(', ') + ']'
   end
@@ -51,7 +51,7 @@ class Hash
     keys.each {|k| c+=1 if has_key?(k)}
     raise "Only one of the following keys may be used: '#{keys.join(', ')}'" if c>1
   end
-  
+
   def -(v)
     r= clone
     case v
@@ -61,17 +61,17 @@ class Hash
     end.each {|k| r.delete k}
     r
   end
-  
+
   def |(h2)
     h2.merge(self)
   end
-  
+
   def deep_clone
     x= {}
     each {|k,v| x[k.deep_clone]= v.deep_clone}
     x
   end
-  
+
   def deep_freeze
     each {|k,v|
       k.deep_freeze
@@ -79,11 +79,11 @@ class Hash
     }
     freeze
   end
-  
+
   def delete_if_nil(key)
     delete(key) if self[key].nil?
   end
-  
+
   # Default inspect doesn't sort by key
   def inspect
     '{' + keys.map{|k|[k.inspect,k]}.sort{|a,b|a[0]<=>b[0]}.map{|ki,k| "#{ki}=>#{self[k].inspect}"}.join(', ') + '}'
@@ -140,7 +140,7 @@ class Module
   def get_all_subclasses_of(klass)
     constants.sort.map{|c| module_eval c}.select{|c|c.is_a?(Class) && c.superclass == klass}
   end
-  
+
   def freeze_all_constants
     clist= constants
     clist-= included_modules.map{|m|m.constants}.flatten

@@ -3,18 +3,18 @@ module Autotag
   module UnicodeIO
     include Autotag::Unicode
     extend self
-    
+
     def chdir(dir,&block) Dir.chdir(dir,&block) end
     def delete(f) File.delete(f) if File.exists?(f) end
     def directory?(f) File.directory?(f) end
     def file?(f) File.file?(f) end
     def pwd; Dir.pwd end
-    
+
     def rename(from, to, force=false)
       delete(to) if force
       File.rename(from, to)
     end
-    
+
     def glob(recurse_levels, dir=nil, file_match_pattern=nil, flags=0)
       dir= nil if dir == '.'
       file_match_pattern ||= '*'
@@ -25,7 +25,7 @@ module Autotag
       recurse_dot_dirs= (flags & File::FNM_DOTMATCH) != 0
       glob_(recurse_levels,dir,state,nil,recurse_dot_dirs)
       file_match_patterns= []
-      
+
       asd= lambda {|f|
         matches= f.scan(/\{.+?\}/u)
         if matches.empty?
@@ -47,17 +47,17 @@ module Autotag
         file_match_patterns.each{|p|
           match ||= ::File.fnmatch?(p,f,flags)
         }
-        
+
         match
       }.sort
     end
-  
+
     private
 
     def downcase_maybe(x)
       Autotag::Utils::case_sensitive_filenames? ? x : x.downcase
     end
-    
+
     def glob_(recurse_levels,dir,state,full_dir,recurse_dot_dirs)
       raise unless recurse_levels.is_a?Fixnum
       state[:depth] += 1
@@ -80,11 +80,11 @@ module Autotag
       end # chdir
       state[:depth] -= 1
     end
-    
+
     public
     class UFile
       extend Unicode
-      
+
       def self.open(filename,mode)
         f= new(File.open(filename,mode))
         if block_given?
@@ -98,7 +98,7 @@ module Autotag
           f
         end
       end
-      
+
       def <<(buf) @f<< buf end
       def close; @f.close end
       def getc; @f.getc end
@@ -107,13 +107,13 @@ module Autotag
       def size; @f.stat.size end
       def stat; @f.stat end
       def tell; @f.tell end
-      
+
       private
-      
+
       def initialize(f)
         @f= f
       end
     end # class UFile
-    
+
   end
 end

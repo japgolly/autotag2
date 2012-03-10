@@ -6,12 +6,12 @@ require 'autotag/tag'
 module Autotag
   module Tags
     class ID3v1 < Tag::Base
-      
+
       def tag_exists?
         @af.seek_to_end 128
         fin.read(3) == 'TAG'
       end
-      
+
       def read
         @tag= @af.read_and_ignore_footer(128)
         self[:_version]= (@tag[125] == 0 ? 1 : 0)
@@ -28,14 +28,14 @@ module Autotag
         end
         metadata
       end
-      
+
       #--------------------------------------------------------------------------
       private
-      
+
       def read_value(from,to)
         value_or_nil @tag[from..to].gsub(%r{[ \0]*$},'')
       end
-      
+
     end
   end
 end

@@ -12,11 +12,11 @@ module Autotag
     module OverrideFileReader
       include Config
       include Unicode
-      
+
       def override_file_names
         OVERRIDE_FILE_NAMES
       end
-      
+
       # level= :artist # /Nevermore/autotag.txt
       # level= :album  # /Nevermore/2003 - Enemies Of Reality/autotag.txt
       def read_overrides(level)
@@ -37,10 +37,10 @@ module Autotag
           } if File.exists?(filename)
         end
       end
-      
+
       #--------------------------------------------------------------------------
       private
-      
+
       def extract_field_override(line_of_text, field, str)
         if line_of_text =~ Regexp.new("^#{str}[:：](.+)$",0,'U')
           value= unicode_trim($1)
@@ -53,7 +53,7 @@ module Autotag
         end
         false
       end
-      
+
       def extract_track_override(line_of_text)
         if line_of_text.tr('０-９','0-9') =~ /^(\d{1,3})[ 　\t]*?[.．:：-](.+)$/
           track,value= $1,unicode_trim($2)
@@ -66,15 +66,15 @@ module Autotag
         end
         false
       end
-      
+
       def unknown_line(filename,line)
         raise "Invalid line in #{filename}: #{line.inspect}"
       end
-      
+
       OVERRIDE_FILE_NAMES= ['autotag.txt']
-      
+
       freeze_all_constants
-    
+
     end # module OverrideFileReader
   end # class Engine
 end # module Autotag

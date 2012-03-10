@@ -2,7 +2,7 @@
 require_relative 'test_helper'
 
 class VorbisTest < Autotag::TestCase
-  
+
   def test_tag_detection
     assert tag_call(tag_class,:tag_exists?,"tags/flac.flac")
     assert !tag_call(tag_class,:tag_exists?,"tags/apev2.mp3")
@@ -10,7 +10,7 @@ class VorbisTest < Autotag::TestCase
     assert !tag_call(tag_class,:tag_exists?,"tags/ip3v2.3_header.mp3")
     assert !tag_call(tag_class,:tag_exists?,"tags/ip3v2.4_header.mp3")
   end
-  
+
   def test_read
     AudioFile.open_file("#{test_data_dir}/tags/flac.flac") do |af|
       metadata= tag_class.new(af).read
@@ -40,7 +40,7 @@ class VorbisTest < Autotag::TestCase
       assert_af_data af, 4146, 0, 7680-4146, "\xFF\xF8\x39\x18\x00", "\x00\x00\x00\x40\x1A"
     end
   end
-  
+
   def test_write
     # Create
     content= sample_tag_content.merge :_non_metadata_tags => ["\x00\x00\x00\x22\x04\x80\x04\x80\x00\x00\x0E\x00\x10\x0A\x0A\xC4\x42\xF0\x00\x7E\x36\x24\xD4\x1D\xD9\xFD\x7D\xE2\x13\x49\xD4\x46\x2A\x00\x96\xB1\x78\x34"]
@@ -59,10 +59,10 @@ class VorbisTest < Autotag::TestCase
       assert_equal bullshit, af.read_all
     end
   end
-  
+
   #----------------------------------------------------------------------------
   private
-  
+
   def sample_tag_content
     {
       :_header => true,
@@ -85,7 +85,7 @@ class VorbisTest < Autotag::TestCase
       :replaygain_track_peak => '0.043487',
     }.deep_freeze
   end
-  
+
   def tag_class
     Tags::Vorbis
   end

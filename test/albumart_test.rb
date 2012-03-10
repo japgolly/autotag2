@@ -4,7 +4,7 @@ require 'integration_test_support'
 
 class AlbumArtTest < Autotag::TestCase
   include Autotag::IntegrationTestSupport
-  
+
   def test_adding_to_existing_tags
     engine_test_on('albumart_test', true) {
       dir= 'Protest The Hero/2008 - Fortress'
@@ -46,16 +46,16 @@ class AlbumArtTest < Autotag::TestCase
       assert_equal 3, @e.ui.instance_variable_get(:@updated_track_count)
     }
   end
-  
-  
+
+
   #----------------------------------------------------------------
   private
-  
+
   def mp3_tags(albumart)
     {
       APEv2 => {:_footer => true},
       ID3v2 => {:_header => true, :_version => 4, :albumart => albumart},
     }
   end
-  
+
 end

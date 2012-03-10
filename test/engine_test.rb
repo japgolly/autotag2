@@ -3,20 +3,20 @@ require_relative 'test_helper'
 require 'autotag/engine'
 
 class EngineTest < Autotag::TestCase
-  
+
   class MockEngine < Autotag::Engine
     attr_accessor :metadata
     attr_writer :textfile
     def override_file_names; [@textfile] end
   end
-  
+
   def setup
     @e= MockEngine.new
     @e.metadata= {}
   end
-  
+
   #----------------------------------------------------------------
-  
+
   def test_filename2human_text
     [
       ['aaa _ bbb', 'aaa / bbb'],
@@ -28,16 +28,16 @@ class EngineTest < Autotag::TestCase
       assert_equal expected, @e.send(:filename2human_text,test)
     }
   end
-  
+
   def test_override_file_read
     ['utf8','utf8n','utf16le','utf16be'].each {|charset|
       @e.textfile= "#{test_data_dir}/autotag-#{charset}.txt"
-      
+
       @e.instance_eval 'alias :old_unknown_line :unknown_line; def unknown_line(*);end'
       @e.metadata.clear
       @e.send :read_overrides, :artist
       assert_hashes_equal({:artist => 'メガドン'}, @e.metadata)
-      
+
       @e.instance_eval 'alias :unknown_line :old_unknown_line'
       @e.metadata.clear
       @e.send :read_overrides, :album
@@ -57,12 +57,12 @@ class EngineTest < Autotag::TestCase
       }, @e.metadata)
     }
   end
-  
+
   def test_override_file_read_bad_album_type
       @e.textfile= "#{test_data_dir}/autotag-bad_album_type.txt"
       assert_raise RuntimeError do
         @e.send :read_overrides, :album
       end
   end
-  
+
 end

@@ -4,7 +4,7 @@ require 'integration_test_support'
 
 class FullTest < Autotag::TestCase
   include Autotag::IntegrationTestSupport
-  
+
   def test_full
     engine_test_on('full_test',true){
       UnicodeIO::chdir('The Woteva Band/2003 - Yes I Like It') {UnicodeIO::rename '01 - Novae.mp3', '01 - Novaë.mp3', true}
@@ -12,7 +12,7 @@ class FullTest < Autotag::TestCase
       @e.ui.instance_eval 'alias :quiet_mode :old_quiet_mode' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
       @e.run
       assert_runtime_options
-      
+
       #########################################################################
       # ACDC/1970 - Why_
       # Tests:
@@ -24,7 +24,7 @@ class FullTest < Autotag::TestCase
       #   * single and double digit track nubers
       #   * double digit total_tracks
       testdir_acdc_1970_why
-      
+
       #########################################################################
       # ACDC/1972 - へへ
       # Tests:
@@ -54,7 +54,7 @@ class FullTest < Autotag::TestCase
           :track => 'Nada.',
           :track_number => '7',
         }.merge(album), mp3_tags
-      
+
       #########################################################################
       # The Woteva Band/2003 - Yes I Like It
       # Tests:
@@ -82,7 +82,7 @@ class FullTest < Autotag::TestCase
           :track_number => '1',
           :replaygain_album_peak => '3.168573',
         }.merge(album), mp3_tags
-      
+
       #########################################################################
       # The Woteva Band/2005 - Rain
       # Tests:
@@ -90,7 +90,7 @@ class FullTest < Autotag::TestCase
       #   * sets :total_discs correctly
       #   * detects disc_title correctly
       testdir_the_woteva_band_2005_Rain
-      
+
       #########################################################################
       # The Woteva Band/1930 - Django
       # Tests:
@@ -109,7 +109,7 @@ class FullTest < Autotag::TestCase
       assert_file_metadata "#{dir}/Disc B - London 1939-40/01 - Random.mp3",{:disc => 'B',:disc_title=> 'London 1939-40'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/Disc C/01 - Random.mp3",{:disc => 'C'}.merge(album), mp3_tags
       assert_file_metadata "#{dir}/Disc D - Paris 1946-48/01 - Random.mp3",{:disc => 'D',:disc_title=> 'Paris 1946-48'}.merge(album), mp3_tags
-      
+
       #########################################################################
       # Waterfall Men_/Albums/2006 - Flac Attack
       # Tests:
@@ -117,7 +117,7 @@ class FullTest < Autotag::TestCase
       #   * works with flac files and do and do not have vorbis comments already
       #   * album type directories parsed and album types work
       testdir_waterfall_men_albums_2006_flac_attack false
-      
+
       #########################################################################
       # Waterfall Men_/Singles/2001 - Crazy_
       # Tests:
@@ -139,8 +139,8 @@ class FullTest < Autotag::TestCase
           :replaygain_track_gain => '-4.41 dB',
           :replaygain_track_peak => '1.056579',
         }.merge(album), mp3_tags
-      
-      
+
+
       #########################################################################
       # VA/2000 - Best Of Me
       # Tests:
@@ -193,10 +193,10 @@ class FullTest < Autotag::TestCase
       testdir_waterfall_men_singles_1989_disco_stu true, true
       assert_equal full_test_useless_files.sort, @e.ui.instance_variable_get(:@all_files).values[0].sort
       full_test_useless_files.each {|f| assert_file_unchanged f}
-      
+
     } # engine_test_on
   end
-  
+
   def test_with_force
     engine_test_on('full_test',true){
       @e= new_engine_instance '-f'
@@ -211,7 +211,7 @@ class FullTest < Autotag::TestCase
       testdir_waterfall_men_albums_2006_flac_attack true
     }
   end
-  
+
   def test_with_pretend
     engine_test_on('full_test',true){
       @e= new_engine_instance '-p'
@@ -225,7 +225,7 @@ class FullTest < Autotag::TestCase
       full_test_useless_files.each {|f| assert_file_unchanged f}
     }
   end
-  
+
   def test_with_specific_root_dirs
     engine_test_on('.',true){
       cp_r 'full_test', 'offguts', :preserve => true
@@ -244,7 +244,7 @@ class FullTest < Autotag::TestCase
       useless_files.each {|f| assert_file_unchanged f}
     }
   end
-  
+
   def test_with_specific_nonroot_dirs
     subtest= lambda do |test_acdc_1970_why, test_flac_attack, test_wowness, which_rain_cds, disco_stu_cds, *dirs|
       engine_test_on('full_test',true){
@@ -267,7 +267,7 @@ class FullTest < Autotag::TestCase
         testdir_waterfall_men_singles_1989_disco_stu(*disco_stu_cds) if disco_stu_cds
       }
     end
-    
+
     # Artist
     subtest.call true, true, false, nil, nil, 'ACDC', 'Waterfall Men_'
     # Album type
@@ -285,7 +285,7 @@ class FullTest < Autotag::TestCase
     subtest.call true, true, true, [6], [true,true], 'ACDC/1970 - Why_', 'Waterfall Men_', 'The Woteva Band/2005 - Rain/CD 6'
     subtest.call true, false, false, [], [false,true], 'ACDC', 'The Woteva Band', 'Waterfall Men_/Singles/1989 - Disco Stu/cd 2 - Buddy'
   end
-  
+
   def test_useless_files_with_specific_dirs
     engine_test_on('full_test',false){
       @e= new_engine_instance '-p', 'ACDC', 'The Woteva Band/1930 - Django', 'Waterfall Men_'
@@ -307,21 +307,21 @@ class FullTest < Autotag::TestCase
       }, @e.ui.instance_variable_get(:@all_files))
     }
   end
-  
+
   #----------------------------------------------------------------
   private
-  
+
   def mp3_tags
     {
         APEv2 => {:_footer => true},
         ID3v2 => {:_header => true, :_version => 4},
     }.deep_freeze
   end
-  
+
   def flac_tags
     {Vorbis => {:_header => true, :_tool => Autotag::TITLE}}.deep_freeze
   end
-  
+
   def full_test_useless_files
     x= [
       'autotag.txt',
@@ -337,7 +337,7 @@ class FullTest < Autotag::TestCase
     ] if Autotag::Utils::case_sensitive_filenames?
     x
   end
-  
+
   def testdir_acdc_1970_why
     album= {
         :artist => 'AC/DC',
@@ -377,7 +377,7 @@ class FullTest < Autotag::TestCase
       assert_file_unchanged "#{dir}/52 - Windows only 3.MP3", 2333
     end
   end
-  
+
   def testdir_the_woteva_band_2005_Rain(*which)
     album= {
         :artist => 'The Woteva Band',
@@ -434,7 +434,7 @@ class FullTest < Autotag::TestCase
       assert_file_unchanged "#{dir}/04 - Tagfull.flac", 2310
     end
   end
-  
+
   def testdir_waterfall_men_albums_2007_wowness
     album= {
         :artist => 'Waterfall Men?',
@@ -452,7 +452,7 @@ class FullTest < Autotag::TestCase
         :track_number => '11',
       }.merge(album), mp3_tags
   end
-  
+
   def testdir_waterfall_men_singles_1989_disco_stu(cd1,cd2)
     album= {
         :artist => 'Waterfall Men?',
@@ -479,5 +479,5 @@ class FullTest < Autotag::TestCase
       assert_file_unchanged "#{dir}/cd 2 - Buddy/03 - Lonely Day.mp3"
     end
   end
-  
+
 end

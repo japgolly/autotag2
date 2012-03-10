@@ -21,12 +21,12 @@ module Autotag
     include Misc
     include OverrideFileReader
     include AlbumArt
-    
+
     def initialize(*args)
       @engine_args= args
       @ui= UI.new(self)
     end
-    
+
     def run
       Utils.exec_with_console_title(Autotag::TITLE_AND_VERSION) do
         init
@@ -34,14 +34,14 @@ module Autotag
         shutdown
       end
     end
-    
+
     #--------------------------------------------------------------------------
     private
-    
+
     def init
       # Parse command line
       parse_commandline!(@engine_args.dup)
-      
+
       # Start debug mode
       if @runtime_options[:debug]
         @debug_out= case @runtime_options[:debug]
@@ -53,10 +53,10 @@ module Autotag
         debug_out{ "Cmdline args: #{@engine_args.map{|a|a.inspect}.join ' '}" }
         debug_out{ "Started #{Time.now}" }
       end
-      
+
       # Init UI
       @ui.init(@runtime_options[:quiet])
-      
+
       # Init config
       @album_types_dirs_glob_string= ('{'+supported_album_types.values.flatten.join(',')+'}').freeze
       @album_types_dir_to_value= {}
@@ -66,7 +66,7 @@ module Autotag
 
       build_job_queue
     end
-    
+
     def shutdown
       @ui.shutdown
       if @debug_out
@@ -74,7 +74,7 @@ module Autotag
         @debug_out.close
       end
     end
-    
+
     def build_job_queue
       @job_queue= []
       unless @specified_dirs
@@ -85,7 +85,7 @@ module Autotag
           dirtree= d.gsub(/[\/\\]$/,'').split(/[\/\\]/).reverse
           glob= {}
           type= nil
-          
+
           # Check if CD dir
           if !type && find_matching_pattern(dirtree[0], file_patterns(:cd), file_ignore_patterns(:cd))
             match= false
@@ -95,7 +95,7 @@ module Autotag
             end
             type= :cd if match
           end
-          
+
           # Check if Album dir
           if !type && find_matching_pattern(dirtree[0], file_patterns(:album), file_ignore_patterns(:album))
             match= false
@@ -106,12 +106,12 @@ module Autotag
             end
             type= :album if match
           end
-          
+
           # Check if AlbumType dir
           if !type && @album_types_dir_to_value.has_key?(dirtree[0])
             type= :album_type
           end
-          
+
           # Check if Artist dir
           if !type && find_matching_pattern(dirtree[0], file_patterns(:artist), file_ignore_patterns(:artist))
             match= false
@@ -122,7 +122,7 @@ module Autotag
             end
             type= :artist if match
           end
-          
+
           # Create job
           glob[:cd]=         dirtree.shift if type == :cd
           glob[:album]=      dirtree.shift if [:cd,:album].include?(type)
@@ -134,15 +134,15 @@ module Autotag
         }
       end
     end
-    
+
     def process_job_queue!
       @job_queue.each {|job|
-        @glob= job[:glob]        
+        @glob= job[:glob]
         process_root job[:dir], (job[:orig_dir] || job[:dir])
         @glob= nil
       }
     end
-    
+
     # Process the root directory.
     # Contains: dirs of artists.
     # Eg: x:/music
@@ -156,7 +156,7 @@ module Autotag
         end
       }
     end
-    
+
     # Process the artist directory.
     # Contains: dirs of albums.
     # Eg: x:/music/Andromeda
@@ -165,10 +165,10 @@ module Autotag
       @metadata[:artist]= filename2human_text($1)
       in_dir(dir) {
         on_event :artist_dir_enter, dir
-        
+
         # Find albums
         process_dir_of_albums
-        
+
         # Find albumtype directories
         UnicodeIO.glob(0,nil,@glob[:album_type] || @album_types_dirs_glob_string).ci_sort.each do |d|
           next unless UnicodeIO.directory?(d)
@@ -182,7 +182,7 @@ module Autotag
         end # UnicodeIO.glob
       }
     end
-    
+
     # Process a directory containing albums.
     # Contains: album directories.
     # Eg: x:/music/Dream Theater/
@@ -194,7 +194,7 @@ module Autotag
         process_album_dir(d,p)
       end
     end
-    
+
     # Process the album directory.
     # Contains: tracks, dirs of cds.
     # Eg: x:/music/Andromeda/2006 - Chimera
@@ -208,13 +208,13 @@ module Autotag
       @metadata.delete(:albumart)
       in_dir(dir) {
         on_event :album_dir_enter, dir
-        
+
         # Load album art
         load_all_albumart
-        
+
         # Process tracks in this directory
         process_dir_of_tracks
-        
+
         # Find cd directories
         dirs2= advanced_glob(:dir, file_patterns(:cd), file_ignore_patterns(:cd), :glob => @glob[:cd])
         unless dirs2.empty?
@@ -249,14 +249,14 @@ module Autotag
         end # unless dirs.empty?
       }
     end
-    
+
     # Process a directory containing tracks.
     # Contains: tracks.
     # Eg: x:/music/Andromeda/2006 - Chimera
     # Eg: x:/music/Andromeda/2006 - Chimera/CD 1
     def process_dir_of_tracks
       read_overrides(:album)
-      
+
       # Find tracks
       tracks2= advanced_glob(:file, file_patterns(:track), file_ignore_patterns(:track), :file_extentions => @supported_audio_formats)
       unless tracks2.empty?
@@ -277,15 +277,15 @@ module Autotag
           end # tracks.each
         end # with_metadata
       end # unless tracks2.empty?
-      
+
     end
-    
+
     # Process a track.
     def process_track!(filename)
       format= @metadata.delete(:_format)
       format= format.downcase if Autotag::Utils::case_insensitive_filenames?
       debug_out{[ "\nTrack: #{File.join UnicodeIO.pwd,filename}", "Format: #{format}" ]}
-      
+
       # V/A processing
       if @metadata[:artist] =~ va_artist_pattern
         @metadata.delete(:artist)
@@ -297,28 +297,28 @@ module Autotag
           end
         }
       end
-      
+
       replace_track= false
       AudioFile.open_file(filename) do |af|
         on_event :track_process, filename, af
-      
+
         # read tags from file
         existing_tags= af.read_tags
-        
+
         # Copy preservable attributes
         existing_tags.each_value {|tag|
           preservable_attributes.each {|a|
             @metadata[a] ||= tag[a] if tag[a]
           }
         }
-        
+
         # Create seperate metadata hashes for each tag
         expected_tags= {}
         create_expected_tags(af, expected_tags, tags_to_write(format,true), true)
         create_expected_tags(af, expected_tags, tags_to_write(format,false), false)
         debug_out{ "Existing tags: #{existing_tags.inspect}" }
         debug_out{ "Expected tags: #{expected_tags.inspect}" }
-        
+
         # Check if track is up-to-date
         if !@runtime_options[:force] and tags_equal?(expected_tags,existing_tags)
           debug_out{ "Retagging: no" }
@@ -336,13 +336,13 @@ module Autotag
           end unless @runtime_options[:pretend]
           on_event :track_updated, filename
         end
-        
+
       end # AudioFile.open
       replace_track!(filename) if replace_track
     end
-    
+
     #----------------------------------------------------------------------------
-    
+
     def create_bin_tags(af, metadata_by_tag, tag_classes)
       x= ''
       tag_classes.each {|tag_class|
@@ -350,7 +350,7 @@ module Autotag
       }
       x
     end
-    
+
     def create_expected_tags(af, collection, tag_classes, header)
       tag_classes.each {|tag_class|
         m= (collection[tag_class] || @metadata.deep_clone)
@@ -360,26 +360,26 @@ module Autotag
         collection[tag_class].delete(:albumart) unless tag_class.has_albumart_support?
       }
     end
-    
+
     def debug_out
       return unless @debug_out
       yield.each {|l| @debug_out.puts l}
     end
-    
+
     def on_event(event,*args)
       @ui.on_event(event,*args)
     end
-    
+
     def replace_track!(filename)
       raise 'Temp file doesnt exist. Cant replace old file.' unless File.exists?(temp_filename)
       UnicodeIO.delete filename
       UnicodeIO.rename temp_filename, filename
     end
-    
+
     def tags_to_write_all
       @@tags_to_write_all ||= (tags_to_write(true) + tags_to_write(false)).uniq.freeze
     end
-    
+
     def tags_equal?(a,b)
       return false unless a.keys == b.keys
       a.each_key {|t|
@@ -387,6 +387,6 @@ module Autotag
       }
       true
     end
-    
+
   end
 end

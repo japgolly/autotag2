@@ -4,7 +4,7 @@ require 'iconv'
 module Autotag
   module Utils
     extend self
-    
+
     def exec_with_console_title(title)
       old_title= nil
       on_exit= nil
@@ -19,7 +19,7 @@ module Autotag
     ensure
       on_exit.call if on_exit
     end
-    
+
     def get_os
       case RUBY_PLATFORM
       when /mswin/  then :windows
@@ -35,7 +35,7 @@ module Autotag
     def case_sensitive_filenames?
       !case_insensitive_filenames?
     end
-    
+
     # Returns the charset for a system property
     def get_system_charset(type)
       if get_os == :windows and libraries_available?('windows/console','windows/national')
@@ -53,7 +53,7 @@ module Autotag
       end
       nil
     end
-    
+
     # Load a library if it exists
     def libraries_available?(*names)
       names.each{|name|
@@ -65,9 +65,9 @@ module Autotag
       }
       true
     end
-    
+
     private
-    
+
     ICONV_CP_CONVERSIONS= {
       'CP936'   => 'GBK',
       'CP1361'  => 'JOHAB',
@@ -86,7 +86,7 @@ module Autotag
       'CP28605' => 'ISO-8859-15',
       'CP65001' => 'UTF-8',
       }
-    
+
     freeze_all_constants
   end
 end

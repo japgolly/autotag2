@@ -2,14 +2,14 @@
 require_relative 'test_helper'
 
 class APEv2Test < Autotag::TestCase
-  
+
   def test_tag_detection
     assert tag_call(tag_class,:tag_exists?,"tags/apev2.mp3")
     assert !tag_call(tag_class,:tag_exists?,"tags/ip3v2.2_header.mp3")
     assert !tag_call(tag_class,:tag_exists?,"tags/ip3v2.3_header.mp3")
     assert !tag_call(tag_class,:tag_exists?,"tags/ip3v2.4_header.mp3")
   end
-  
+
   def test_read
     AudioFile.open_file("#{test_data_dir}/tags/apev2.mp3") do |af|
       metadata= tag_class.new(af).read
@@ -31,7 +31,7 @@ class APEv2Test < Autotag::TestCase
       assert_af_data af, 0, 287, 3503-287, "\xFF\xF3\x84\x64\x00", "\x00\x00\x41\x4D\x45"
     end
   end
-  
+
   def test_write
     # Create
     content= sample_tag_content(false)
@@ -52,10 +52,10 @@ class APEv2Test < Autotag::TestCase
       assert_equal bullshit, af.read_all
     end
   end
-  
+
   #----------------------------------------------------------------------------
   private
-  
+
   def sample_tag_content(header)
     {
       (header ? :_header : :_footer) => true,
@@ -76,7 +76,7 @@ class APEv2Test < Autotag::TestCase
       :replaygain_track_peak => '0.023487',
     }.deep_freeze
   end
-  
+
   def tag_class
     Tags::APEv2
   end
