@@ -1,3 +1,6 @@
+= 2.2.0 - 10-Mar-2012
+* 20120310 - Better file organisation.
+* 20120310 - Made it work with Ruby 1.9.
 * 20090827 - Made it work with Cygwin and Linux.
 * 20090826 - Added remix albums as an album type.
 
