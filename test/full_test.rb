@@ -1,6 +1,6 @@
 # encoding: utf-8
-require 'test/test_helper'
-require 'test/integration_test_support'
+require_relative 'test_helper'
+require 'integration_test_support'
 
 class FullTest < Autotag::TestCase
   include Autotag::IntegrationTestSupport

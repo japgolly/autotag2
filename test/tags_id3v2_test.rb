@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'test/test_helper'
+require_relative 'test_helper'
 
 class ID3v2Test < Autotag::TestCase
   

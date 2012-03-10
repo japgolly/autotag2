@@ -1,14 +1,23 @@
 # encoding: utf-8
-require 'autotag/ruby_ext'
-require 'test/unit'
+$:<< File.dirname(__FILE__)
+$:.unshift File.expand_path('../../lib',__FILE__)
+
+require 'rubygems'
+require 'bundler'
+Bundler.require :test
+
+require 'minitest/unit'
+MiniTest::Unit.autorun
+
 require 'pp'
+require 'autotag/ruby_ext'
 
 module Autotag
   require 'autotag/audio_file'
   require 'autotag/tag'
   require 'autotag/tags'
 
-  class TestCase < Test::Unit::TestCase
+  class TestCase < MiniTest::Unit::TestCase
     include Autotag
     include Autotag::Tag::Errors
     
