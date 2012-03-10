@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'autotag/app_info'
+require 'autotag/env'
 require 'autotag/audio_file'
 require 'autotag/engine/albumart'
 require 'autotag/engine/cmdline_options'
@@ -8,7 +8,6 @@ require 'autotag/engine/conversions'
 require 'autotag/engine/misc'
 require 'autotag/engine/override_file_reader'
 require 'autotag/engine/ui'
-require 'autotag/ruby_ext'
 require 'autotag/tags'
 require 'autotag/unicode_io'
 

@@ -10,7 +10,7 @@ require 'minitest/unit'
 MiniTest::Unit.autorun
 
 require 'pp'
-require 'autotag/ruby_ext'
+require 'autotag/env'
 
 module Autotag
   require 'autotag/audio_file'

@@ -28,7 +28,7 @@ module Autotag
         when :root_dir_enter
           actual_root_dir, root_dir_after_globbing = a
           @root_dir= root_dir_after_globbing
-          @root_dir_len= (@root_dir.gsub(/[\/\\]$/,'')).size + 1
+          @root_dir_len= (@root_dir.gsub(/[\/\\]$/,'')).length + 1
           puts "\nEntering root dir: #{actual_root_dir}"
 
           # Make a list of all files in the dir tree
@@ -185,7 +185,8 @@ module Autotag
       end
 
       def remove_file_in_pwd_from_all_files(filename)
-        @all_files[@root_dir].delete "#{UnicodeIO.pwd}/#{filename}"[@root_dir_len..-1]
+        x= "#{UnicodeIO.pwd}/#{filename}"[@root_dir_len..-1]
+        @all_files[@root_dir].delete(x)
       end
 
       def safe_convert_u2s(str)
