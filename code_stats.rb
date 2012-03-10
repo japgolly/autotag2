@@ -1,4 +1,5 @@
 # encoding: utf-8
+$:.unshift File.expand_path('../lib',__FILE__)
 require 'autotag/app_info'
 puts "Stats for #{Autotag::TITLE_AND_VERSION}\n\n"
 
