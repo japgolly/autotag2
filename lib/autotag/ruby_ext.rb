@@ -97,7 +97,7 @@ end
 
 class String
   def to_bin
-    force_encoding('binary')
+    dup.force_encoding('binary')
   end
 end
 

@@ -11,7 +11,7 @@ module Autotag
 
       def create
         apply_defaults!
-        x= FLAC_HEADER_ID.dup
+        x= FLAC_HEADER_ID.dup.to_bin
 
         # Add other tags (clearing the last_tag bit)
         if self[:_non_metadata_tags]
@@ -82,14 +82,14 @@ module Autotag
       end
 
       def create_string(str)
-        create_int_le(str.size) + str
+        create_int_le(str.bytes.count) + str.to_bin
       end
 
       def create_tag(type,last,content)
-        header= content.size
+        header= content.bytes.count
         header |= (type << 24)
         header |= (1 << 31) if last
-        create_int_no(header) + content
+        create_int_no(header) + content.to_bin
       end
 
       def sym2tag(sym)

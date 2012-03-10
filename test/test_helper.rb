@@ -29,13 +29,25 @@ module Autotag
 
     def assert_hashes_equal(expected,test)
       assert_kind_of Hash, test
+
+      # Sync encodings
+      test= test.deep_clone
+      test.each do |k,a|
+        e= expected[k]
+        if e.is_a?(String) and a.is_a?(String)
+          a.force_encoding(e.encoding)
+        end
+      end
+
+      # Compare
       if expected != test
-        expected_keys= expected.keys
-        test_keys= test.keys
+        expected_keys= expected.keys.sort
+        test_keys= test.keys.sort
         assert_equal expected_keys, test_keys, "Missing: #{(expected_keys-test_keys).sorted_inspect}\nHas but shouldn't have: #{(test_keys-expected_keys).sorted_inspect}"
         expected_keys.each {|k|
-          puts "KEY: #{k.inspect}\nEXPECTED: #{expected[k].inspect}\nACTUAL  : #{test[k].inspect}" unless expected[k] == test[k]
-          assert_equal expected[k], test[k]
+          e,a = expected[k],test[k]
+          puts "KEY: #{k.inspect}\nEXPECTED: #{e.inspect}\nACTUAL  : #{a.inspect}" unless e == a
+          assert_equal e, a
         }
         raise 'should never reach here'
       end
