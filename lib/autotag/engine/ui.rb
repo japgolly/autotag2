@@ -1,7 +1,6 @@
 # encoding: utf-8
 require 'autotag/app_info'
 require 'autotag/utils'
-require 'iconv'
 
 module Autotag
   class Engine
@@ -21,7 +20,6 @@ module Autotag
         @album_id= 0
         @start_time= Time.now
         @screen_charset= Utils.get_system_charset(:console_output)
-        @u2s_iconv= Iconv.new(@screen_charset, 'utf-8') if @screen_charset
       end
 
       def on_event(event,*a)
@@ -166,14 +164,14 @@ module Autotag
 
       def put(a)
         return if quiet_mode
-        a= safe_convert_u2s(a) if @u2s_iconv
+        a= safe_convert_u2s(a)
         $stdout.write a
         $stdout.flush
       end
 
       def puts(*a)
         return if quiet_mode
-        a= a.map{|s| safe_convert_u2s(s)} if @u2s_iconv
+        a= a.map{|s| safe_convert_u2s(s)}
         $stdout.puts(*a)
         $stdout.flush
       end
@@ -191,9 +189,10 @@ module Autotag
       end
 
       def safe_convert_u2s(str)
-        @u2s_iconv.iconv(str)
-      rescue Iconv::IllegalSequence
-        str.gsub /[^ -~]/, '?'
+        return str unless @screen_charset
+        str.encode(@screen_charset)
+      #rescue Iconv::IllegalSequence
+      #  str.gsub /[^ -~]/, '?'
       end
 
     end # class UI

@@ -1,5 +1,4 @@
 # encoding: utf-8
-require 'iconv'
 
 module Autotag
   module Utils
@@ -11,7 +10,7 @@ module Autotag
       if get_os == :windows && libraries_available?('windows/console')
         old_title= "\0"*255
         Windows::Console::GetConsoleTitle.call(old_title, old_title.length-1)
-        title16= Iconv.iconv('utf-16le', 'utf-8', title)[0]
+        title16= title.encode('utf-16le')
         Windows::Console::SetConsoleTitle.call("#{title16}\0\0")
         on_exit= lambda{ Windows::Console::SetConsoleTitle.call(old_title) }
       end

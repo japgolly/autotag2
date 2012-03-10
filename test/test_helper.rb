@@ -45,8 +45,8 @@ module Autotag
       assert_equal audio_size, af.size
       assert_equal header_size, af.size_of_header if header_size
       assert_equal footer_size, af.size_of_footer if footer_size
-      assert_equal start_of_audio, af.read_all[0..(start_of_audio.size-1)] if start_of_audio
-      assert_equal end_of_audio, af.read_all[(-end_of_audio.size)..-1] if end_of_audio
+      assert_equal start_of_audio.to_bin, af.read_all[0..(start_of_audio.size-1)] if start_of_audio
+      assert_equal end_of_audio.to_bin, af.read_all[(-end_of_audio.size)..-1] if end_of_audio
     end
 
     def assert_valid_metadata(m)
@@ -67,25 +67,15 @@ module Autotag
     end
 
     def filename2utf8(filename)
-      unless @filename2utf8_ready
-        filename_charset= Utils.get_system_charset(:filenames)
-        @f2u_iconv= Iconv.new('utf-8', filename_charset) if filename_charset
-        @filename2utf8_ready= true
-      end
-      @f2u_iconv ? @f2u_iconv.iconv(filename) : filename
+      filename.encode('utf-8')
     end
 
     def utf82filename(filename)
-      unless @utf82filename_ready
-        filename_charset= Utils.get_system_charset(:filenames)
-        @u2f_iconv= Iconv.new(filename_charset,'utf-8') if filename_charset
-        @utf82filename_ready= true
-      end
-      @u2f_iconv ? @u2f_iconv.iconv(filename) : filename
+      filename
     end
 
     def get_file_contents(filename)
-      File.open(filename,'rb') {|io| io.read}
+      File.read(filename,nil,nil,encoding: 'binary')
     end
 
   end
