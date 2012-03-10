@@ -95,7 +95,8 @@ end
 
 class String
   def h
-    eval '"'+(self.strip.split(/ +/).map{|x| "\\x#{x}"}.join)+'"'
+    s= eval '"'+(self.strip.split(/ +/).map{|x| "\\x#{x}"}.join)+'"'
+    s.to_bin
   end
 end
 

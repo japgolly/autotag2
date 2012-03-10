@@ -18,6 +18,20 @@ class Object
   end
 end
 
+#===========================
+# Class
+
+class Class
+  def deep_clone
+    self
+  end
+  def deep_freeze
+    self
+  end
+  def <=>(o)
+    self.to_s <=> o.to_s
+  end
+end
 
 #===========================
 # Collections
@@ -148,7 +162,10 @@ Bignum.send :include, BitManipulation
 
 class Module
   def get_all_subclasses_of(klass)
-    constants.sort.map{|c| module_eval c}.select{|c|c.is_a?(Class) && c.superclass == klass}
+    constants
+      .sort
+      .map{|c| const_get c}
+      .select{|c| c.is_a?(Class) && c.superclass == klass}
   end
 
   def freeze_all_constants

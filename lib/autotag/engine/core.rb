@@ -380,9 +380,9 @@ module Autotag
     end
 
     def tags_equal?(a,b)
-      return false unless a.keys == b.keys
+      return false unless a.keys.sort == b.keys.sort
       a.each_key {|t|
-        return false unless (a[t] - ignorable_attributes) == (b[t] - ignorable_attributes)
+        return false unless (a[t] - ignorable_attributes).sort == (b[t] - ignorable_attributes).sort
       }
       true
     end
