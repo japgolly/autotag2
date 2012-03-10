@@ -1,11 +1,12 @@
 # encoding: utf-8
+
 #===========================
 # Object
 
 class Object
   def deep_clone
     case self
-    when Fixnum,Bignum,Float,NilClass,FalseClass,TrueClass,Continuation,Symbol
+    when Fixnum,Bignum,Float,NilClass,FalseClass,TrueClass,Symbol
       self
     else
       respond_to?(:clone) ? clone : (respond_to?(:dup) ? dup : self)
@@ -90,6 +91,15 @@ class Hash
   end
 end
 
+
+#===========================
+# Strings
+
+class String
+  def to_bin
+    force_encoding('binary')
+  end
+end
 
 #===========================
 # Strings + Symbols
