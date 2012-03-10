@@ -1,9 +1,0 @@
-Tags are easily modifed/overwritten/lost.
-You should never have to manually type the track name, artist name etc etc more than once ever.
-THIS APP relies on properly named files, and/or autotag.txt files so you never have to edit a song's metadata more than once.
-If the tags ever get erased or modified, simply re-run THIS APP.
-THIS APP reads songs' tags first. You can set it to preserve certain tag fields (replaygain data for instance).
-Also, it does not update files that already contain up-to-date tags. Therefore you can run it over your whole collection any time just to make sure, and it will take next to no time.
-
-All configuration options are located in a single file. Easy to change config.
-100% open source. You can modify for your own purposes.
