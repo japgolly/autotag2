@@ -204,8 +204,8 @@ class FullTest < Autotag::TestCase
       assert_runtime_options :force
       assert_equal 0, @e.ui.instance_variable_get(:@uptodate_track_count)
       assert_equal 0, @e.ui.instance_variable_get(:@uptodate_track_size)
-      assert_not_equal 0, @e.ui.instance_variable_get(:@updated_track_count)
-      assert_not_equal 0, @e.ui.instance_variable_get(:@updated_track_size)
+      refute_equal 0, @e.ui.instance_variable_get(:@updated_track_count)
+      refute_equal 0, @e.ui.instance_variable_get(:@updated_track_size)
       (Dir.glob('**/*.mp3').map{|f|filename2utf8(f)} - full_test_useless_files).each {|f| assert_file_changed f}
       full_test_useless_files.each {|f| assert_file_unchanged f}
       testdir_waterfall_men_albums_2006_flac_attack true
@@ -217,10 +217,10 @@ class FullTest < Autotag::TestCase
       @e= new_engine_instance '-p'
       @e.run
       assert_runtime_options :pretend
-      assert_not_equal 0, @e.ui.instance_variable_get(:@uptodate_track_count)
-      assert_not_equal 0, @e.ui.instance_variable_get(:@uptodate_track_size)
-      assert_not_equal 0, @e.ui.instance_variable_get(:@updated_track_count)
-      assert_not_equal 0, @e.ui.instance_variable_get(:@updated_track_size)
+      refute_equal 0, @e.ui.instance_variable_get(:@uptodate_track_count)
+      refute_equal 0, @e.ui.instance_variable_get(:@uptodate_track_size)
+      refute_equal 0, @e.ui.instance_variable_get(:@updated_track_count)
+      refute_equal 0, @e.ui.instance_variable_get(:@updated_track_size)
       (Dir.glob('**/*.mp3').map{|f|filename2utf8(f)} - full_test_useless_files).each {|f| assert_file_unchanged f}
       full_test_useless_files.each {|f| assert_file_unchanged f}
     }
@@ -251,7 +251,7 @@ class FullTest < Autotag::TestCase
         @e= new_engine_instance '-f', *dirs
 #        @e.ui.instance_eval 'alias :quiet_mode :old_quiet_mode' if $0 =~ %r{/ruby/RemoteTestRunner.rb$}
         @e.run
-        changed_file_regex= Regexp.new("(?:^|[\\/])(?:#{dirs.map{|d|Regexp.quote d}.join '|'})(?:[\\/]|$)",0,'U')
+        changed_file_regex= /(?:^|[\\\/])(?:#{dirs.map{|d|Regexp.quote d}.join '|'})(?:[\\\/]|$)/
         (Dir.glob('**/*.{mp3,flac}').map{|f|filename2utf8(f)} - full_test_useless_files).each {|f|
           if f =~ changed_file_regex
             assert_file_changed f
