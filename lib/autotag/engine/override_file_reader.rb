@@ -42,7 +42,7 @@ module Autotag
       private
 
       def extract_field_override(line_of_text, field, str)
-        if line_of_text =~ Regexp.new("^#{str}[:：](.+)$",0,'U')
+        if line_of_text =~ /^#{str}[:：](.+)$/u
           value= unicode_trim($1)
           if field == :album_type
             value= nil if value == ''

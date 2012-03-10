@@ -9,15 +9,16 @@ module Autotag
 
     def read_unicode_file(filename)
       x= File.read(filename, nil, nil, encoding: 'binary')
-      if x[0..1] == "\xFF\xFE"
+      r= if x[0..1] == "\xFF\xFE".to_bin
         x[2..-1].force_encoding 'utf-16le'
-      elsif x[0..1] == "\xFE\xFF"
+      elsif x[0..1] == "\xFE\xFF".to_bin
         x[2..-1].force_encoding 'utf-16be'
-      elsif x[0..2] == "\xEF\xBB\xBF"
+      elsif x[0..2] == "\xEF\xBB\xBF".to_bin
         x[3..-1].force_encoding 'utf-8'
       else
         x.force_encoding 'utf-8'
       end
+      r.encode('utf-8')
     end
 
     def to8(str)
@@ -37,7 +38,7 @@ module Autotag
     #--------------------------------------------------------------------------
     private
 
-    REGEX_TRIM= /^[ 　]+|[ 　]+$/u
+    REGEX_TRIM= /^[ \t　]+|[ \t　]+$/u
 
   end
 end

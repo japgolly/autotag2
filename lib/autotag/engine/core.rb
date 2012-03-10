@@ -11,7 +11,6 @@ require 'autotag/engine/ui'
 require 'autotag/ruby_ext'
 require 'autotag/tags'
 require 'autotag/unicode_io'
-require 'iconv'
 
 module Autotag
   class Engine

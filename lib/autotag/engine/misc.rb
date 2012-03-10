@@ -2,7 +2,6 @@
 require 'autotag/engine/config'
 require 'autotag/unicode_io'
 require 'autotag/utils'
-require 'iconv'
 
 module Autotag
   class Engine

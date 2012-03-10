@@ -60,7 +60,7 @@ class EngineTest < Autotag::TestCase
 
   def test_override_file_read_bad_album_type
       @e.textfile= "#{test_data_dir}/autotag-bad_album_type.txt"
-      assert_raise RuntimeError do
+      assert_raises(RuntimeError) do
         @e.send :read_overrides, :album
       end
   end

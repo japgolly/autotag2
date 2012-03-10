@@ -80,9 +80,9 @@ module Autotag
       sep= '(?: +- +|\. *)'
       FILE_PATTERNS= {
         :artist => [/^(.+)$/u],
-        :album  => [Regexp.new('^(.{4})'+sep+'(.+)$',nil,'U')],
-        :cd     => [Regexp.new('^(?:cd|disc) +([a-z0-9]+)(?:'+sep+'(.+))?$',true,'U')],
-        :track  => [Regexp.new('^(.{1,3})'+sep+'(.+)$',true,'U')],
+        :album  => [/^(.{4})#{sep}(.+)$/u],
+        :cd     => [/^(?:cd|disc) +([a-z0-9]+)(?:#{sep}(.+))?$/iu],
+        :track  => [/^(.{1,3})#{sep}(.+)$/iu],
       }
       FILE_IGNORE_PATTERNS= [/^\./u]
       IGNORABLE_ATTRIBUTES= [:_padding,:_tool]
