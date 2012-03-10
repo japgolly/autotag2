@@ -1,4 +1,4 @@
-# encoding: utf-8
+# encoding: binary
 require 'autotag/tag'
 
 # Params:
@@ -77,15 +77,15 @@ module Autotag
 
       def build_text_value(value)
         v= "_#{value}\0"
-        v[0]= contains_unicode?(v) ? 3 : 0
+        v[0]= [contains_unicode?(v) ? 3 : 0].pack('U').to_bin
         v
       end
 
       def build_frame(id, value)
-        x= id.dup                         # id
-        x<< create_int(value.length,true) # size
-        x<< "\0\0"                        # flags
-        x<< value                         # value
+        x= id.dup                              # id
+        x<< create_int(value.bytes.count,true) # size
+        x<< "\0\0"                             # flags
+        x<< value.to_bin                       # value
       end
 
       def create_albumart_frame(picture_type,data)
@@ -109,16 +109,17 @@ module Autotag
       end
 
       def create_int(i,synchsafe)
-        if synchsafe
-          x= '1234'
+        x= if synchsafe
+          x= [0,0,0,0]
           x[3]= (i&127)
           x[2]= ((i>>7)&127)
           x[1]= ((i>>14)&127)
           x[0]= ((i>>21)&127)
-          x
+          x.pack('U*').to_bin
         else
           [i].pack('N')
         end
+        x
       end
 
       def sym2tag(sym,extended_tag=false)
@@ -141,7 +142,7 @@ module Autotag
         @af.seek_to_start
         self[:_header]= true
         header= @af.read_and_ignore_header(10)
-        self[:_version]= (header[4]==0 ? header[3] : "#{header[3]}.#{header[4]}".to_f)
+        self[:_version]= (header[4].ord==0 ? header[3].ord : "#{header[3]}.#{header[4]}".to_f)
         @use_synchsafe= self[:_version] >= 4
         #TODO: Doesn't support extended headers
         size= read_int(true,header[6..9])
@@ -150,7 +151,7 @@ module Autotag
           pos=0
 
           # Read tag
-          while(1)
+          while true
             frame= {:id => fin.read(4)}
             frame[:size]= read_int(@use_synchsafe)
             frame[:flags]= fin.read(2)
@@ -194,7 +195,7 @@ module Autotag
       end
 
       def read_text_frame(frame)
-        frame[:value]= read_string(frame[:value]) if frame[:id][0] == 84 # 84 is 'T'[0]
+        frame[:value]= read_string(frame[:value]) if frame[:id][0] == 'T'
         if frame[:id] == tagxxx
           if frame[:value] =~ /^(.+?)\0(.+)$/
             self[tag2sym($1,true)]= $2
@@ -209,7 +210,7 @@ module Autotag
       def read_int(synchsafe,x=nil)
         x ||= fin.read(4)
         if synchsafe
-          (x[3]&127) | ((x[2]&127) << 7) | ((x[1]&127) << 14) | ((x[0]&127) << 21)
+          (x[3].ord & 127) | ((x[2].ord & 127) << 7) | ((x[1].ord & 127) << 14) | ((x[0].ord & 127) << 21)
         else
           x.unpack('N').first
         end
@@ -229,7 +230,7 @@ module Autotag
       end
 
       def read_string(x)
-        encoding= x[0]
+        encoding= x[0].ord
         x= x[1..-1]
         x= case encoding
           when 0
@@ -238,15 +239,15 @@ module Autotag
           when 1
             # UTF-16 [UTF-16] encoded Unicode [UNICODE] with BOM. All strings in the same frame SHALL have the same byteorder. Terminated with $00 00.
             # Unicode strings must begin with the Unicode BOM ($FF FE or $FE FF) to identify the byte order.
-            big_endian= (x[0..1]=="\xFE\xFF")
-            convert_utf16 x[2..-1].to_s, big_endian
+            src_enc= (x[0..1]=="\xFE\xFF") ? 'utf-16be' : 'utf-16le'
+            x[2..-1].force_encoding(src_enc).encode('utf-8')
           when 2
             # UTF-16BE [UTF-16] encoded Unicode [UNICODE] without BOM. Terminated with $00 00.
             # UNTESTED
-            convert_utf16 x, true
+            x.dup.force_encoding('utf-16be').encode('utf-8')
           when 3
             # UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
-            x.to_s
+            x.dup.force_encoding('utf-8')
           else
             raise InvalidTag, "Invalid encoding flag: '#{encoding}' (POS:#{fin.tell})"
           end

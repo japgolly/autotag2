@@ -102,7 +102,7 @@ class ID3v2Test < Autotag::TestCase
       # Test album art image
       expected_img= get_file_contents("#{test_data_dir}/tags/ip3v2.4_header_with_itunes_albumart.jpg")
       actual_img= aa_metadata[:front_cover].delete :image
-      assert_equal expected_img.length, actual_img.length
+      assert_equal expected_img.bytes.count, actual_img.bytes.count
       assert_equal expected_img, actual_img
 
       # Test album art metadata
